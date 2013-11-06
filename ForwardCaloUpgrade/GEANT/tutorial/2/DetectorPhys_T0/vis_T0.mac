@@ -1,0 +1,35 @@
+
+# Sets some default verbose
+#
+/control/verbose 2
+/control/saveHistory
+/run/verbose 2
+#
+# create empty scene
+#
+/vis/scene/create
+#/vis/open OGLIX
+
+/vis/viewer/set/viewpointThetaPhi 45 45
+
+
+
+
+/vis/open HepRepFile
+/vis/drawVolume
+/vis/viewer/flush
+/vis/scene/add/trajectories
+/vis/scene/add/hits
+
+
+
+
+############## for test 
+/gun/particle e-
+/gun/direction 1 0 0
+/gun/position 0 0 0 cm
+/gun/energy 100.0 keV
+################################
+/tracking/storeTrajectory 1
+/vis/scene/endOfEventAction accumulate
+

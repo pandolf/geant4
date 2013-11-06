@@ -1,0 +1,188 @@
+                            Example02
+                            ---------
+
+	This example simulates a Hadron Endcap (HE) calorimeter
+        with SE (photon preshower) and ECAL in front of
+        and some additional dead materials between ECAL and HE. 
+	(This setup is very close to the real geometry)
+	
+ 1- GEOMETRY DEFINITION
+ -----------------------
+
+ 	The Hadron Endcap (HE) calorimeter is a box (149.6) along Z-axis 
+        consisting of 17 layers. The front of HE calorimeter starts from
+        z=397.2*cm and propagates to positive direction. The transverse
+        HE calorimeter size is 540.0*cm (X-axis) and 540.0*cm (Y-axis). 
+        Each HE layer (88.0*mm) consists of an absorber plate (79.0*mm Brass) 
+        and of an air gap (9.0*mm). Inside air gap the aluminum wrapper 
+        (8.0*mm) is placed. The sensitive plate of 3.7*mm thickness of 
+        scintillator is inside of aluminum wrapper. The layer is replicated.
+ 	
+        In front of HE calorimeter the next materials are placed:
+
+          a) Zero layer of HE calorimeter (15.0*mm aluminum wrapper
+             with 9.0*mm sensitive scintillator material inside);
+
+          b) Dead material (cables from ECAL) (23.4*cm of copper at z = 366.675*cm);
+		      (since V00_03_00 this position is relative to ECAL size,
+              this was done to center dead material between ECAL and HCAL); 
+
+          c) G10 plate behind ECAL and in front of HE (2.5*mm at z = 337.525*cm);
+             (since V00_03_00 this position is relative to ECAL size,
+              this was done to have possibility to increase Ecal size
+			  and dead material size); 
+
+          d) ECAL itself (220.0*mm box of PbWO4 material at z = 326.4*cm);
+
+          e) Aluminum support in front of ECAL (4.5*mm at z = 312.2*cm);
+
+          f) Aluminum part of SE (photon preshower) (2.72*cm at z = 298.9*cm);
+
+          g) Lead part of SE (photon preshower) (1.3*cm at z = 296.65*cm);
+
+          h) G10 plate in front of SE (2.5*mm at z = 295.775*cm). 	
+
+    1a. The new option is introduced for the ECAL geometry:
+    -------------------------------------------------------
+
+          a) as default geometry - ECAL is 220.0*mm box of PbWO4 material;
+          
+          b) second option - ECAL is a sampling calorimeter with the set of 
+             variable parameters: number of calorimeter's layers, thickness of 
+             absorber and  sensitive layers, different absorber and sensitive 
+             materials. All these parameters can be chosen by user through 
+             input file (hadr01.in); 
+
+          c) also there is possibility to apply uniform magnetic field along 
+             z-axis; 
+ 
+          d) user can chose the value of production cuts for the different
+             sensitive and absorber medias (Ecal and Hcal);
+
+          e) since V00_02_00 release total size of ECAL can be extended 
+             till 400.0*mm along z-axis;
+		  
+		  f) since V00_03_00 total size of dead material can be extended
+		     to 400.0*mm along z-axis;
+ 
+          g) examples of how to set these parameters are presented in: ele01.in, hadr01.in
+
+		  h) Notes on Birks' law parametrization:
+		  
+		     Chou-Birks law:
+             double rkb     = birk1/density;
+             double c       = birk2*rkb*rkb;
+             if (abs(charge) >= 2.) rkb /= birk3; // based on alpha particle data
+             weight = 1./(1.+rkb*dedx+c*dedx*dedx);
+			 
+			 L3 Birks law:
+             weight = 1. - birkSlope*log(rkb*dedx);
+             if (weight < birkCut) weight = birkCut;
+             else if (weight > 1.) weight = 1.;
+
+
+ 2- HISTOGRAMs
+ --------------
+
+      There are 3 TH1D-histograms with deposited energies in the different
+      part of setup: 
+
+          a) Ecal - total deposited energy in sensitive ECAL (GeV scale);
+
+          b) Hcal - sum of deposited energy in all sensitive
+                    (scintillator) layers (MeV scale);
+
+          c) Zero - deposited energy in the scintillator of "zero"
+                    HE layer.
+
+      There are also ROOT "TTree" with different values:
+
+          a) ROOT 'TTree' "Total" presents deposited energy in sensitive
+             layers of ECAL, HCAL, Zero-layer and in Ecal absorber material;
+
+          b) ROOT 'TTree' "Vector" presents deposited energies for each
+             layer (17 entries) of HE calorimeter; 
+
+          c) ROOT 'TTree' "Range" presents total range of charged in
+             sensitive medias of Ecal and HCAL.
+            
+          d) ROOT 'TTree' "Cell" presents deposited energy in cells
+             of Ecal calorimeter. 
+ 
+      The 6 TH1D-histograms with shower profile distributions are presents:
+             
+          a) EcalTrShape - Ecal transverse shower profile;
+
+          b) EcalLoShape - Ecal longitudinal shower profile; 
+
+          c) HcalTrShape - Hcal transverse shower profile;
+
+          d) HcalLoShape - Hcal longitudinal shower profile;
+
+          e) AbsTrShape  - absorber Ecal transverse shower profile;
+       
+          f) AbsLoShape  - absorber Ecal longitudinal shower profile;
+
+       The 2 TH1D-histograms with Moliere radius (cylinder with 90% of energy)
+       are added:
+      
+          a) EcalSensMol - distribution for Ecal sensitive material;
+                    
+          b) EcalAbsMol  - distribution for Ecal absorber material;
+
+       There is the possibility to change the bin width and total number 
+       of bins for these (shower profiles) histograms. See examples: ele01.in, hadr01.in
+
+       The 2-dimensions (TH2D-histogram) with hit point distribution
+       on front of Eca
+
+ 3- CHANGE PHYSICS LIST
+ ----------------------
+
+  a) open with editor the fcalor.cc-file in the main directory;
+
+  b) chose the next 2-lines with preferable physics list,
+     for example:
+
+     #include QGSP_BERT_EMV.hh 
+     and
+     runManager-> SetUserInitialization(new QGSP_BERT_EMV)
+  
+ 4- Optional HepMC ASCII File Usage
+ ----------------------------------
+ 
+   Since V00_03_00 release, there is an option to use particles from an event 
+   generator like Pythia. Any events in the standardized HepMC format can be 
+   input through an ASCII text file. The folder UserCode/ForwardCaloUpgrade/Pythia 
+   shows an example of how to generate such a file. The sample input file 
+   hepmc01.in shows how to select the hepmcAscii primary generator and use the 
+   ascii file.
+     	
+ 5- HOW TO START 
+ ----------------
+
+   Now all necessary environment settings are collected in
+   config.csh - file. User can change this setting for his choice.
+
+  a) source config.csh
+
+  c) gmake 
+
+  e) Run program 
+
+     $MyGeant/fcalor hadr01.in > test_out01
+
+
+ 6- SAMPLE INPUT FILEs
+ ---------------------
+
+    a) hadr01.in  - example of control lines for job running with particle gun. 
+
+    b) ele01.in - another example of control lines for job running with particle gun. 
+       (see STEERING_CARDS - directory)
+
+    c) hepmc01.in - example of control lines for job running with HepMC ascii file.
+       (see STEERING_CARDS - directory)	
+
+    d) HepMCoutJets.dat - example of HepMC ascii file.
+       (see STEERING_CARDS - directory)

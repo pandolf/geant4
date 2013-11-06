@@ -1,0 +1,184 @@
+#======================================
+#     Input file for GEANT4 simulation
+#======================================
+#
+/control/verbose 2
+/run/verbose 1
+/tracking/verbose 0
+#
+# Set name of ROOT output file:
+#------------------------------
+#
+/test/histo/setRootName test_hepmc_my_02.root
+#
+# Set Job run number (necessary for saving of random number):
+#------------------------------------------------------------
+#
+/test/histo/setRunNumber 200
+#
+# Set Ecal calorimeter: homogeneous or sampling (Shashlyk) type 
+#--------------------------------------------------------------
+#
+# Absorber materials can be: Lead, Brass, Tungsten:
+#--------------------------------------------------
+#
+# Sensitive materials are: LAG, YAG, LSO, LYSO, LYSOc, YSO and PbWO:
+#-------------------------------------------------------------------
+# Sens1 = (LAG  = Lu3_Al5_O12  and density 6.7  g/cm3);
+# Sens2 = (YAG  = Y3_Al5_O12   and density 4.57 g/cm3);
+# Sens3 = (LSO  = Lu2_Si_O5    and density 7.41 g/cm3);
+# Sens4 = (LYSO = Lu2(1-x)_Y2x_Si_O5, x=0.1 and density 7.11 g/cm3);
+# Sens5 = (LYSOc= Lu2(1-x)_Y2x_Si_O5:Ce x=0.1 and density 7.11 g/cm3);
+# Sens6 = (YSO  = Y2_Si_O5     and density 4.54 g/cm3);
+# PbWO  = (PbWO = Pb_W_O4      and density 8.30 g/cm3);
+#------------------------------------------------------
+#
+# setNbOfLayers    - number of layers in sampling Ecal  
+# setEcalAbsMat    - type of Ecal absorber material
+# setEcalSensMat   - type of Ecal sensitive material
+# setEcalAbsThick  - thickness of Ecal absorber material in layer
+# setEcalSensThick - thickness of Ecal sensitive material in layer
+# setDeadThick     - thickness of dead material between Ecal and Hcal
+#
+# Total length of Ecal calorimeter L=(AbsThick+SensThick)*NbOfLayers
+# must be  <= 400.0 mm.
+#
+# Total length of dead material must be <= 40.0 cm.
+#
+# If you want to simulate the homogeneous Ecal calorimeter 
+# please set NbOfLayers=1 and EcalAbsThick=0.0
+#
+# For preventing of warning messages when you set zero thickness 
+# (setEcalAbsThick=0.0 or setEcalSensMat=0.0),  it is recommended
+# to comment appropriate line /run/setCutForRegion for this 
+# material
+#
+/ecal/det/setNbOfLayers 1
+/ecal/det/setEcalAbsMat Lead
+/ecal/det/setEcalSensMat PbWO
+/ecal/det/setEcalAbsThick  0.0 mm
+/ecal/det/setEcalSensThick 220.0 mm
+##/ecal/det/setDeadThick 23.4 cm
+#
+# Set number and transverse size of Ecal cells:
+#----------------------------------------------
+# setEcalCells(0) - number of cells (= 1x1, 2x2, 3x3, 4x4 or 5x5);
+# setEcalCells(1) - transverse size of cell in [mm].
+#
+/ecal/det/setEcalCells 9 28.0 
+#
+# Set energy response for individual Ecal cells:
+#------------------------------------------------
+# setEcalResponse(0) - photostatistics photons/GeV;
+# setEcalResponse(1) - light collection efficiency;
+# setEcalResponse(0) - light collection uniformity;
+#
+/test/histo/setEcalResponse 5.0E5 0.03 0.0001
+#
+# Set noise value [MeV] for individual Ecal cells:
+#-------------------------------------------------
+/test/histo/setEcalCellNoise 140.0 MeV
+# 
+# Set Birks-Chou constants for Hcal sensitive media:
+#---------------------------------------------------
+# setHcalBirks(0) - [g / MeV*cm2];
+# setHcalBirks(1) - [g / MeV*cm2]**2;
+# setHcalBirks(2) - for alpha particle;
+#
+/ecal/det/setHcalBirks 0.0052 0.142 1.75
+#
+# Set Birks or BirkL3 parametrization for Ecal
+#----------------------------------------------
+# setEcalBirkL3(0) - "off"(0) or "on"(>0) of L3 parametrization;
+# setEcalBirkL3(1) - birkSlope;
+# setEcalBirkL3(2) - birkCut;
+#
+/ecal/det/setEcalBirks  0.03333 0.00 1.00
+/ecal/det/setEcalBirkL3 1.0 0.253694 0.10
+# 
+# Set type of Hcal absorber material:
+#------------------------------------
+# only Brass have been foreseen yet. This is needed for applying
+# different production cuts in Hcal absorber material
+#
+/ecal/det/setHcalAbsMat Brass
+#
+# Set type of Hcal sensitive material:
+#-------------------------------------
+# user can choose from the next list:
+# PbWO, LAG, YAG, LSO, YSO, LYSO and LYSOc.
+# Scintillator is used as default sensitive material.
+#
+##/ecal/det/setHcalSensMat LYSO
+#
+# Apply uniform magnetic field along beam direction (z-axis): 
+#------------------------------------------------------------
+#
+/ecal/det/setMagField 0.0 kG
+#
+# Set binning for Shower profile histos: 
+#---------------------------------------
+#
+# setHcalRbin(0) - number of bins for Hcal transverse shower profile
+# setHcalRbin(1) - bin width [mm] for Hcal transverse shower profile
+#
+# setSensRbin(0) - number of bins for Ecal transverse shower profile
+# setSensRbin(1) - bin width [mm] for Ecal transverse shower profile
+#
+# setSensLbin(0) - number of bins for Ecal longitudinal shower profile
+# setSensLbin(1) - bin width [mm] for Ecal longitudinal shower profile
+#
+# setAbsRbin(0) - number of bins for Ecal absorber transverse profile
+# setAbsRbin(1) - bin width [mm] for Ecal absorber transverse profile
+#
+# setAbsLbin(0) - number of bins for Ecal absorber longitudinal profile
+# setAbsLbin(1) - bin width [mm] for Ecal absorber longitudinal profile
+# ( if Ecal is sampling calorimeter ==> bin width = 1 layer )
+#
+/test/histo/setHcalRbin 540 5.0
+/test/histo/setSensRbin 540 5.0
+/test/histo/setSensLbin 200 1.1
+/test/histo/setAbsRbin 540 5.0
+/test/histo/setAbsLbin 160 2.0
+#
+/ecal/det/update
+#
+# Set default production cut for all medias [mm]:
+#------------------------------------------------ 
+/run/setCut 0.1 mm
+#
+# Set special production cut for choosen medias [mm]:
+#---------------------------------------------------
+#
+/run/setCutForRegion Brass 0.5 mm
+##/run/setCutForRegion Lead 0.1 mm
+/run/setCutForRegion PbWO 0.1 mm
+#
+# Select generator type (particleGun or hepmcAscii):
+#---------------------------------------------------
+#
+/generator/select hepmcAscii
+#
+# HepMC settings:
+#----------------
+#
+##/generator/hepmcAscii/open PythiaMonoJet_out_10.dat
+/generator/hepmcAscii/open HepMCoutJets.dat
+/generator/hepmcAscii/verbose 0
+# 
+/run/initialize
+#
+# Restart run from saved seed:
+#-----------------------------
+##/random/resetEngineFrom run100.rndm
+#
+# Set number of simulated events:
+#--------------------------------
+#
+/run/beamOn 10
+#
+# Save the seed of this current run:
+#-----------------------------------
+##/random/saveThisRun
+#
+#==========================================================================

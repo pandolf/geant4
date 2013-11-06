@@ -1,0 +1,33 @@
+/run/verbose 2
+/vis/scene/create
+/vis/open OGLIX
+/vis/sceneHandler/create OGLIX
+/vis/sceneHandler/attach
+/vis/viewer/create ! ! 600
+/vis/viewer/refresh
+/vis/scene/notifyHandlers
+/vis/viewer/flush
+/vis/viewer/refresh viewer-0
+/vis/viewer/update viewer-0
+/vis/scene/add/trajectories
+/tracking/storeTrajectory 1
+/vis/scene/notifyHandlers
+/vis/modeling/trajectories/create/drawByParticleID
+/vis/modeling/trajectories/drawByParticleID-0/set e- red
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set e+ blue
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set pi+ green
+/vis/scene/notifyHandlers scene-0
+/vis/modeling/trajectories/drawByParticleID-0/set pi- yellow
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/create/particleFilter
+/vis/filtering/trajectories/particleFilter-0/add pi+
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/particleFilter-0/add pi-
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/particleFilter-0/add e-
+/vis/scene/notifyHandlers scene-0
+/vis/filtering/trajectories/particleFilter-0/add e+
+/vis/scene/notifyHandlers scene-0
+/vis/scene/endOfEventAction accumulate 10
