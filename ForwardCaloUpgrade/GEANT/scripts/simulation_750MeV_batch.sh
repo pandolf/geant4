@@ -91,7 +91,7 @@ energ=(0.75)
 energ_mip=0
 
 # Choose #events to simulate
-events=1000
+events=10000
 
 # Check Arrays sizes
 if [ ${#absorber[@]} -ne $configs ] || [ ${#sensitiv[@]} -ne $configs ] || [ ${#absthick[@]} -ne $configs ] || [ ${#sensthick[@]} -ne $configs ] || [ ${#particle[@]} -ne $configs ] || [ ${#nlayers[@]} -ne $configs ] ; then
