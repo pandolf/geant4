@@ -59,11 +59,6 @@ mkdir -p $workdir/inputfiles
 MyGeant=/afs/cern.ch/user/p/pandolf/geant4/9.4.p02/x86_64-slc6-gcc46-opt/bin/Linux-g++
 runnumber=`date +"%d%H%M"`
 
-#Generic inputfile that is used to create actual inputfiles
-inputfile=$workdir/generic_input.in
-#Actual inputfiles
-tempfile=$workdir/tempinput.in
-
 
 #Set number of different configurations to simulate (The following arrays must have size #configs)
 configs=1
@@ -79,6 +74,14 @@ particle=(e-)
 # Choose number of layers
 nlayers=($2)
 
+
+#Generic inputfile that is used to create actual inputfiles
+inputfile=$workdir/generic_input.in
+#Actual inputfiles
+#tempfile=$workdir/tempinput.in
+tempfile=$workdir/inputfiles/tempinput_n${nlayers}_act${sensthick}_abs${absthick}.in
+
+
 # Chose file in which Histograms will be stored
 storename=${workdir}/rootfiles/samplinghistos_n${nlayers}_act${sensthick}_abs${absthick}.root
 # Chose file in which parameter table will be stored
@@ -91,7 +94,7 @@ energ=(0.75)
 energ_mip=0
 
 # Choose #events to simulate
-events=10000
+events=2500
 
 # Check Arrays sizes
 if [ ${#absorber[@]} -ne $configs ] || [ ${#sensitiv[@]} -ne $configs ] || [ ${#absthick[@]} -ne $configs ] || [ ${#sensthick[@]} -ne $configs ] || [ ${#particle[@]} -ne $configs ] || [ ${#nlayers[@]} -ne $configs ] ; then
@@ -168,9 +171,11 @@ for i in `seq 0 $runs`; do
 	fi
 
 #Choose rootfile to save info about single run
-	rootfile=rootfiles/temp/${i}_${energ[$j]}.root
+	rootfile=rootfiles/temp/temp_n${nlayers}_act${sensthick}_abs${absthick}.root
+	#rootfile=rootfiles/temp/${i}_${energ[$j]}.root
 	touch $rootfile
-	rootfile_sed="rootfiles\/temp\/${i}_${energ[$j]}.root"  #sed doesn't like /
+	#rootfile_sed="rootfiles\/temp\/${i}_${energ[$j]}.root"  #sed doesn't like /
+	rootfile_sed="rootfiles\/temp\/temp_n${nlayers}_act${sensthick}_abs${absthick}.root"  #sed doesn't like /
 	
 #Modify generic_input.in
 
@@ -184,10 +189,10 @@ for i in `seq 0 $runs`; do
 	sed -i'' "/\/setEcalSensThick/s/mysensthick/${sensthick[$i]} mm/g" $tempfile
 	sed -i'' "/setRootName/s/myrootfile/${rootfile_sed}/g" $tempfile 
 	sed -i'' "/\/gun\/energy/s/myenergy/${energ[$j]}. GeV/g" $tempfile
-	if [ ! -d $workdir/inputfiles/${runnumber} ] ; then
-	    mkdir $workdir/inputfiles/${runnumber}
-	fi
-	cp $tempfile $workdir/inputfiles/${runnumber}/$tempfile_${i}_${energ[$j]}
+	#if [ ! -d $workdir/inputfiles/${runnumber} ] ; then
+	#    mkdir $workdir/inputfiles/${runnumber}
+	#fi
+	#cp $tempfile $workdir/inputfiles/${runnumber}/$tempfile_${i}_${energ[$j]}
 
 #Execute fcalor
 
