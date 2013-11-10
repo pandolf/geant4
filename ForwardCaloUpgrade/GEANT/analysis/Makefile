@@ -1,11 +1,8 @@
 CC = g++
 CFLAGS = -Wall -c -g
 
-#ROOFIT_INCLUDE := $(shell cd $(BASEDIR); scram tool info roofitcore | grep INCLUDE= | sed 's|INCLUDE=||')
-#ROOFIT_LIBDIR := $(shell cd $(BASEDIR); scram tool info roofitcore | grep LIBDIR= | sed 's|LIBDIR=||')
 
 INCLUDES = -I. -I$(ROOTSYS)/include  -I$(BASEDIR) -I$(BASEDIR)/CommonTools -I$(BASEDIR)/UserCode/pandolf/ -I$(BASEDIR)/CondFormats/JetMETObjects/interface
-#INCLUDES = -I. -I$(ROOTSYS)/include -I$(ROOFIT_INCLUDE)/ -I$(BASEDIR)/src -I$(BASEDIR)/src/CommonTools -I$(BASEDIR)/src/UserCode/pandolf/ -I$(BASEDIR)/src/CondFormats/JetMETObjects/interface
 
 ROOTSYS ?= ERROR_RootSysIsNotDefined
 
