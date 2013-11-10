@@ -260,7 +260,7 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
     H_mol = (TH1D*) f->Get("EcalSensMol");
     H_mol->Fit("gaus");
     Double_t rad_mol = H_mol->GetFunction("gaus")->GetParameter(1);
-    H_mol->SetName("h_mol_"+config+"_"+Senergy);
+    H_mol->SetName("h_mol_"+suffix);
     H_mol->SetTitle("ECal Sens Moliere Radius");
   }
   else{
