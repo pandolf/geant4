@@ -16,6 +16,14 @@ if [ "`pwd`" != "$workdir" ] ; then
     exit
 fi
 
+
+
+if [ $# -ne 4 ] ; then
+    echo "USAGE: ./simulation_750MeV_batch.sh [full/clean/root] nLayers activeLayerThickness absorberLayerThickness"
+    exit
+fi
+
+
 # Usage
 
 if [ "$1" != "clean" ]  && [ "$1" != "root" ] && [ "$1" != "full" ] ; then
@@ -53,11 +61,6 @@ runnumber=`date +"%d%H%M"`
 inputfile=$workdir/generic_input.in
 #Actual inputfiles
 tempfile=$workdir/tempinput.in
-# Chose file in which Histograms will be stored
-storename=$workdir/rootfiles/${runnumber}_samplinghistos.root
-# Chose file in which parameter table will be stored
-outfilename=$workdir/tables/${runnumber}_parameters.dat
-
 #Set number of different configurations to simulate (The following arrays must have size #configs)
 configs=1
 
@@ -65,12 +68,18 @@ configs=1
 absorber=(Lead)
 sensitiv=(CeF3)
 # Choose thickness of abs/scint
-absthick=(5)
-sensthick=(10)
+absthick=($4)
+sensthick=($3)
 # Choose particle (mu-,e-)
 particle=(e-)
 # Choose number of layers
-nlayers=(20)
+nlayers=($2)
+
+# Chose file in which Histograms will be stored
+storename=${workdir}/rootfiles/prova_samplinghistos_n${nlayers}_act${sensthick}_abs${absthick}.root
+# Chose file in which parameter table will be stored
+outfilename=${workdir}/tables/prova_parameters_n${nlayers}_act${sensthick}_abs${absthick}.dat
+
 
 # Choose energies for e- (used to calculate samp_resolution)
 energ=(0.75)
@@ -78,7 +87,7 @@ energ=(0.75)
 energ_mip=0
 
 # Choose #events to simulate
-events=1000
+events=5000
 
 # Check Arrays sizes
 if [ ${#absorber[@]} -ne $configs ] || [ ${#sensitiv[@]} -ne $configs ] || [ ${#absthick[@]} -ne $configs ] || [ ${#sensthick[@]} -ne $configs ] || [ ${#particle[@]} -ne $configs ] || [ ${#nlayers[@]} -ne $configs ] ; then
