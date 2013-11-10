@@ -16,6 +16,7 @@ activeLayerThickness = int(sys.argv[3])
 absorberLayerThickness = int(sys.argv[4])
 
 
+#queue = "1nd"
 queue = "8nh"
 
 diskoutputdir = "/cmsrm/pc24_2/pandolf/geant/EcalEndcaps/750MeV/" + batchName
@@ -23,7 +24,7 @@ diskoutputdir = "/cmsrm/pc24_2/pandolf/geant/EcalEndcaps/750MeV/" + batchName
 dir = "/afs/cern.ch/work/p/pandolf/geant4/ForwardCaloUpgrade/GEANT/batchOutput_750MeV_" + batchName
 os.system("mkdir -p "+dir)
 os.system("mkdir -p "+dir+"/log/")
-os.system("mkdir -p "+dir+"/input/")
+os.system("mkdir -p "+dir+"/inputfiles/")
 os.system("mkdir -p "+dir+"/src/")
 os.system("mkdir -p "+dir+"/rootfiles/")
 os.system("mkdir -p "+dir+"/tables/")
@@ -56,6 +57,7 @@ outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + s
 #outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/tables/{}\n') 
 outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i cp {} '+dir+'/{}\n') 
 outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i cp {} '+dir+'/{}\n') 
+outputfile.write('ls inputfiles/tempinput_' + suffix + '*.in | xargs -i cp {} '+dir+'/{}\n') 
 outputfile.close
 os.system("echo bsub -q "+queue+" -o "+dir+"/log/log_"+suffix+".log source "+outputname)
 os.system("bsub -q "+queue+" -o "+dir+"/log/log_"+suffix+".log source "+outputname+" -copyInput= "+suffix)
