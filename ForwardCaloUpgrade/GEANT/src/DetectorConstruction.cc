@@ -169,6 +169,10 @@ G4Element* Lu = new G4Element("Lutecium",symbol="Lu", z=71., a=174.96*g/mole);
 G4Element* W  = new G4Element("Tungsten",symbol="W" , z=74., a=183.84*g/mole);
 G4Element* Pb = new G4Element("Lead"    ,symbol="Pb", z=82., a=207.20*g/mole);
 
+// ->jking...
+G4Element* F  = new G4Element("Fluor"   ,symbol="F" , z=9.,  a=18.998*g/mole);
+// ...jking<-
+
 // define simple materials
 
 pAlum =
@@ -391,6 +395,27 @@ G4double rYso[nYso] = { 1.80    };
 G4MaterialPropertiesTable* proYso = new G4MaterialPropertiesTable();
 proYso->AddProperty("RINDEX", eYso, rYso, nYso);
 pSens6->SetMaterialPropertiesTable(proYso);
+
+//->jking ...
+
+// define ceramic scintillator CeFe (CeF03) 6.16 g/cm3
+// ------------------------------------------------------
+pSens7 =
+new G4Material("CeF3" , density= 6.16*g/cm3, ncomponents=2);  
+pSens7->AddElement(Ce , natoms=1);
+pSens7->AddElement(F ,  natoms=3);
+
+//something about Cherenkov radiation - not altered
+const G4int nCefe = 1;
+G4double eCefe[nYso] = { 3.10*eV };  //edit!
+G4double rCefe[nYso] = { 1.80    };  // edti!
+
+G4MaterialPropertiesTable* proCefe = new G4MaterialPropertiesTable();
+proCefe->AddProperty("RINDEX", eCefe, rCefe, nCefe);
+pSens7->SetMaterialPropertiesTable(proCefe);
+
+//... jking<-
+
 
 // examples of vacuum
 
@@ -1059,7 +1084,16 @@ void DetectorConstruction::SetEcalSensMaterial(G4String materialChoice)
   if( EcalSensMaterial->GetName() != "PbWO_def" && EcalSensMaterial->GetName() != "LAG"
     && EcalSensMaterial->GetName() != "YAG"  && EcalSensMaterial->GetName() != "LSO"
     && EcalSensMaterial->GetName() != "YSO"  && EcalSensMaterial->GetName() != "LYSO"
-    && EcalSensMaterial->GetName() != "PbWO" && EcalSensMaterial->GetName() != "LYSOc")
+    && EcalSensMaterial->GetName() != "PbWO" && EcalSensMaterial->GetName() != "LYSOc" 
+      //->jking ...
+    
+   && EcalSensMaterial->GetName() != "CeF3" 
+
+      //... jking <-
+
+   )
+
+
      { G4cout << "\n ===> Stop from DetectorConstruction::SetEcalSensMaterial(): "
               << "\n EcalSensMaterial = " <<  EcalSensMaterial->GetName()
               << "\n Please choose Ecal sensitive material from "

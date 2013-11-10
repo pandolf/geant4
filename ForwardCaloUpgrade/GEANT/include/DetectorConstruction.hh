@@ -126,7 +126,10 @@ class DetectorConstruction : public G4VUserDetectorConstruction
      G4Material*        pSens4 ;
      G4Material*        pSens5 ;
      G4Material*        pSens6 ;
-          
+
+  //->jking...
+     G4Material*        pSens7 ;
+  //...jking<-
      G4double           ZeroWrapThick;
      G4double           ZeroGapThick;
      G4double           ZeroSensThick;
