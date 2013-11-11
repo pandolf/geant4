@@ -15,7 +15,8 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 int main() {
 
 
-  std::string batchProd = "5k_v4";
+  std::string batchProd = "2p5k_v1";
+  //std::string batchProd = "5k_v4";
 
   DrawBase* db = new DrawBase("db");
 
@@ -53,6 +54,8 @@ std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& batchProd, float
 
 
   for( unsigned iLayer=1; iLayer<nLayers; ++iLayer ) {
+
+    if( activeLayerThickness==10. && absorberLayerThickness==5. && iLayer>26 ) continue;
 
     char fileName[200];
     sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f.root", batchProd.c_str(), iLayer, activeLayerThickness, absorberLayerThickness );
@@ -154,7 +157,7 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.55, 0.63, 0.9, 0.9, "CeF_{3} / Lead" );
+  TLegend* legend = new TLegend( 0.58, 0.63, 0.9, 0.9, "CeF_{3} / Lead" );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
@@ -174,8 +177,20 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   legend->AddEntry( h1_4, legendText4, "P" );
   legend->Draw("same");
 
-  TPaveText* labelTop = db->get_labelTop();
-  labelTop->Draw("same");
+
+  float x1 = 0.4;
+  float y1 = 0.953;
+  float x2 = 0.96;
+  float y2 = 0.975;
+
+  TPaveText* label_top = new TPaveText(x1,y1,x2,y2, "brNDC");
+  label_top->SetFillColor(kWhite);
+  label_top->SetTextSize(0.038);
+  label_top->SetTextAlign(31); // align right
+  label_top->SetTextFont(62);
+  label_top->AddText("Electron gun, E = 750 MeV");
+  label_top->Draw("same");
+
 
   h1_1->Draw("P same");
   h1_2->Draw("P same");
