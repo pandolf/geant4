@@ -35,6 +35,10 @@ void RunAction::BeginOfRunAction(const G4Run* aRun)
   G4cout << "### Run " << JobRunNumber << " start." << G4endl;
   G4cout << "### Run " << aRun->GetRunID() << " start." << G4endl;
 
+  G4cout <<  "   GetNbOfEcalCells()   : " <<    Det->GetNbOfEcalCells()  << std::endl;
+  G4cout <<  "   GetEcalCellSize()    : " <<    Det->GetEcalCellSize()   << std::endl;
+  Det->PrintCalorParameters();
+
 //inform the runManager to save random number seed
 
   G4RunManager::GetRunManager()->SetRandomNumberStore(true);
