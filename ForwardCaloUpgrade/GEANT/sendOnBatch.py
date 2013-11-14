@@ -5,8 +5,8 @@ import time
 import re
 
 
-if (len(sys.argv) != 5):
-    print "usage sendOnBatch.py batchName nLayers activeLayerThickness absorberLayerThickness"
+if (len(sys.argv) != 5) and (len(sys.argv) != 6):
+    print "usage sendOnBatch.py batchName nLayers activeLayerThickness absorberLayerThickness transverseCellSize[default=20mm]"
     sys.exit(1)
 
 
@@ -14,6 +14,9 @@ batchName = str(sys.argv[1])
 nLayers = int(sys.argv[2])
 activeLayerThickness = int(sys.argv[3])
 absorberLayerThickness = int(sys.argv[4])
+transverseCellSize = 20
+if len(sys.argv) == 6:
+    transverseCellSize = sys.argv[5]
 
 
 #queue = "1nd"
@@ -39,10 +42,10 @@ if diskoutputdir != "none":
 
 pwd = os.environ['PWD']
 
-suffix = "n"+ str(nLayers) + "_act" + str(activeLayerThickness) + "_abs" + str(absorberLayerThickness)
+suffix = "n"+ str(nLayers) + "_act" + str(activeLayerThickness) + "_abs" + str(absorberLayerThickness) + "_trasv" + str(transverseCellSize)
 
 # prepare the script to run
-outputname = dir+"/src/submit_n" + str(nLayers) + "_act" + str(activeLayerThickness) + "_abs" + str(absorberLayerThickness) + ".src"
+outputname = dir+"/src/submit_" + suffix + ".src"
 outputfile = open(outputname,'w')
 outputfile.write('#!/bin/bash\n')
 outputfile.write('export LANGUAGE=C\n')
@@ -52,7 +55,7 @@ outputfile.write('source newconfig.sh\n')
 #outputfile.write('source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.08/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh\n')
 #outputfile.write('cd -\n')
 #outputfile.write('cd $WORKDIR\n')
-outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + str(nLayers)+ " " + str(activeLayerThickness) + " " + str(absorberLayerThickness) + "\n")
+outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + str(nLayers)+ " " + str(activeLayerThickness) + " " + str(absorberLayerThickness) + " " + transverseCellSize + "\n")
 #outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/rootfiles/{}\n') 
 #outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/tables/{}\n') 
 outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i cp {} '+dir+'/{}\n') 
