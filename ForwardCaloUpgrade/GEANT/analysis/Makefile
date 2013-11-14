@@ -16,6 +16,12 @@ EXTRALIBS := -L$(ROOTSYS)/lib -L$(BASEDIR)/lib/slc5_amd64_gcc462/ -lHtml -lMathC
 drawResolutionVsLength: drawResolutionVsLength.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawResolutionVsLength drawResolutionVsLength.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+drawResolutionVsTrasv: drawResolutionVsTrasv.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawResolutionVsTrasv drawResolutionVsTrasv.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
+drawLeadVsTung: drawLeadVsTung.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawLeadVsTung drawLeadVsTung.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 
 
 
