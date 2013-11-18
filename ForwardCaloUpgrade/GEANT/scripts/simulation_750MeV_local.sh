@@ -18,10 +18,12 @@ fi
 
 
 
-if [ $# -ne 4 ] ; then
-    echo "USAGE: ./simulation_750MeV_batch.sh [full/clean/root] nLayers activeLayerThickness absorberLayerThickness"
+
+if [ $# -ne 5 ] ; then
+    echo "USAGE: ./simulation_750MeV_local.sh [full/clean/root] nLayers activeLayerThickness absorberLayerThickness transverseCellSize"
     exit
 fi
+
 
 
 # Usage
@@ -57,10 +59,7 @@ mkdir -p $workdir/inputfiles
 MyGeant=/afs/cern.ch/user/p/pandolf/geant4/9.4.p02/x86_64-slc6-gcc46-opt/bin/Linux-g++
 runnumber=`date +"%d%H%M"`
 
-#Generic inputfile that is used to create actual inputfiles
-inputfile=$workdir/generic_input.in
-#Actual inputfiles
-tempfile=$workdir/tempinput.in
+
 #Set number of different configurations to simulate (The following arrays must have size #configs)
 configs=1
 
@@ -74,11 +73,21 @@ sensthick=($3)
 particle=(e-)
 # Choose number of layers
 nlayers=($2)
+transverseCellSize=($5)
+
+suffix=n${nlayers}_act${sensthick}_abs${absthick}_trasv${transverseCellSize}
+
+#Generic inputfile that is used to create actual inputfiles
+inputfile=$workdir/generic_input.in
+#Actual inputfiles
+#tempfile=$workdir/tempinput.in
+tempfile=$workdir/inputfiles/tempinput_${suffix}.in
+
 
 # Chose file in which Histograms will be stored
-storename=${workdir}/rootfiles/prova_samplinghistos_n${nlayers}_act${sensthick}_abs${absthick}.root
+storename=${workdir}/rootfiles/prova_samplinghistos_${suffix}.root
 # Chose file in which parameter table will be stored
-outfilename=${workdir}/tables/prova_parameters_n${nlayers}_act${sensthick}_abs${absthick}.dat
+outfilename=${workdir}/tables/prova_parameters_${suffix}.dat
 
 
 # Choose energies for e- (used to calculate samp_resolution)
@@ -87,7 +96,7 @@ energ=(0.75)
 energ_mip=0
 
 # Choose #events to simulate
-events=5000
+events=100
 
 # Check Arrays sizes
 if [ ${#absorber[@]} -ne $configs ] || [ ${#sensitiv[@]} -ne $configs ] || [ ${#absthick[@]} -ne $configs ] || [ ${#sensthick[@]} -ne $configs ] || [ ${#particle[@]} -ne $configs ] || [ ${#nlayers[@]} -ne $configs ] ; then
@@ -102,7 +111,7 @@ fi
 #------------------------------------
 # Basically echo what you have just given as input
 
-echo -e "\nThe follwing simulation is about to run\n"
+echo -e "\nThe following simulation is about to run\n"
 echo "runnumber:  $runnumber"
 echo "events/run: $events"
 
@@ -164,9 +173,11 @@ for i in `seq 0 $runs`; do
 	fi
 
 #Choose rootfile to save info about single run
-	rootfile=rootfiles/temp/${i}_${energ[$j]}.root
+	rootfile=rootfiles/temp/provatemp_${suffix}.root
+	#rootfile=rootfiles/temp/${i}_${energ[$j]}.root
 	touch $rootfile
-	rootfile_sed="rootfiles\/temp\/${i}_${energ[$j]}.root"  #sed doesn't like /
+	#rootfile_sed="rootfiles\/temp\/${i}_${energ[$j]}.root"  #sed doesn't like /
+	rootfile_sed="rootfiles\/temp\/temp_${suffix}.root"  #sed doesn't like /
 	
 #Modify generic_input.in
 
@@ -180,10 +191,11 @@ for i in `seq 0 $runs`; do
 	sed -i'' "/\/setEcalSensThick/s/mysensthick/${sensthick[$i]} mm/g" $tempfile
 	sed -i'' "/setRootName/s/myrootfile/${rootfile_sed}/g" $tempfile 
 	sed -i'' "/\/gun\/energy/s/myenergy/${energ[$j]}. GeV/g" $tempfile
-	if [ ! -d $workdir/inputfiles/${runnumber} ] ; then
-	    mkdir $workdir/inputfiles/${runnumber}
-	fi
-	cp $tempfile $workdir/inputfiles/${runnumber}/$tempfile_${i}_${energ[$j]}
+	sed -i'' "/\/setEcalCells/s/mytransversesize/${transverseCellSize[$i]}/g" $tempfile
+	#if [ ! -d $workdir/inputfiles/${runnumber} ] ; then
+	#    mkdir $workdir/inputfiles/${runnumber}
+	#fi
+	#cp $tempfile $workdir/inputfiles/${runnumber}/$tempfile_${i}_${energ[$j]}
 
 #Execute fcalor
 
@@ -191,13 +203,16 @@ for i in `seq 0 $runs`; do
 	echo -e "#Layers: ${nlayers[$i]}"
 	echo -e "Abs :    ${absthick[$i]}"
 	echo -e "Sens:    ${sensthick[$i]}"
+	echo -e "Transv cell size:  ${transverseCellSize[$i]}\n"
 	echo -e "Particle ${particle[$i]}"
-	echo -e "Energy:  ${energ[$j]}\n"
+	echo -e "Energy:  ${energ[$j]}"
+	echo -e "${workdir}"
 
 	sleep 2
 	
 	if [ "$1" == "full" ] ; then
 	    
+
 	    $workdir/fcalor $tempfile # > /dev/null
 #	    $MyGeant/fcalor $tempfile # > /dev/null
 	    
