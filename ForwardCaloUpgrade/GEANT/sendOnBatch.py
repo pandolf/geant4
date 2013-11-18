@@ -59,6 +59,7 @@ outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + s
 #outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/rootfiles/{}\n') 
 #outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/tables/{}\n') 
 outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i cp {} '+dir+'/{}\n') 
+outputfile.write('ls rootfiles/temp/temp_' + suffix + '*.root | xargs -i cp {} '+dir+'/{}\n') 
 outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i cp {} '+dir+'/{}\n') 
 outputfile.write('ls inputfiles/tempinput_' + suffix + '*.in | xargs -i cp {} '+dir+'/{}\n') 
 outputfile.close
