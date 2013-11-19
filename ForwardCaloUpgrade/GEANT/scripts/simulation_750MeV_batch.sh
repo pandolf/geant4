@@ -19,8 +19,8 @@ fi
 
 
 
-if [ $# -ne 4 ] ; then
-    echo "USAGE: ./simulation_750MeV_batch.sh [full/clean/root] nLayers activeLayerThickness absorberLayerThickness"
+if [ $# -ne 5 ] && [ $# -ne 6 ] ; then
+    echo "USAGE: ./simulation_750MeV_batch.sh [full/clean/root] nLayers activeLayerThickness absorberLayerThickness transverseCellSize particleImpactPosition[=0mm]"
     exit
 fi
 
@@ -73,19 +73,30 @@ sensthick=($3)
 particle=(e-)
 # Choose number of layers
 nlayers=($2)
+transverseCellSize=($5)
+impactPosition=0
+if [ $# -eq 6 ]; then
+    impactPosition=($6)  
+fi
+impactPosition_cm=$(echo "${impactPosition}/10" |bc -l)
 
+
+suffix=n${nlayers}_act${sensthick}_abs${absthick}_trasv${transverseCellSize}
+if [ ${impactPosition} -ne 0 ]; then
+    suffix=${suffix}_impact${impactPosition}  
+fi
 
 #Generic inputfile that is used to create actual inputfiles
 inputfile=$workdir/generic_input.in
 #Actual inputfiles
 #tempfile=$workdir/tempinput.in
-tempfile=$workdir/inputfiles/tempinput_n${nlayers}_act${sensthick}_abs${absthick}.in
+tempfile=$workdir/inputfiles/tempinput_${suffix}.in
 
 
 # Chose file in which Histograms will be stored
-storename=${workdir}/rootfiles/samplinghistos_n${nlayers}_act${sensthick}_abs${absthick}.root
+storename=${workdir}/rootfiles/samplinghistos_${suffix}.root
 # Chose file in which parameter table will be stored
-outfilename=${workdir}/tables/parameters_n${nlayers}_act${sensthick}_abs${absthick}.dat
+outfilename=${workdir}/tables/parameters_${suffix}.dat
 
 
 # Choose energies for e- (used to calculate samp_resolution)
@@ -109,7 +120,7 @@ fi
 #------------------------------------
 # Basically echo what you have just given as input
 
-echo -e "\nThe follwing simulation is about to run\n"
+echo -e "\nThe following simulation is about to run\n"
 echo "runnumber:  $runnumber"
 echo "events/run: $events"
 
@@ -171,11 +182,11 @@ for i in `seq 0 $runs`; do
 	fi
 
 #Choose rootfile to save info about single run
-	rootfile=rootfiles/temp/temp_n${nlayers}_act${sensthick}_abs${absthick}.root
+	rootfile=rootfiles/temp/temp_${suffix}.root
 	#rootfile=rootfiles/temp/${i}_${energ[$j]}.root
 	touch $rootfile
 	#rootfile_sed="rootfiles\/temp\/${i}_${energ[$j]}.root"  #sed doesn't like /
-	rootfile_sed="rootfiles\/temp\/temp_n${nlayers}_act${sensthick}_abs${absthick}.root"  #sed doesn't like /
+	rootfile_sed="rootfiles\/temp\/temp_${suffix}.root"  #sed doesn't like /
 	
 #Modify generic_input.in
 
@@ -189,6 +200,9 @@ for i in `seq 0 $runs`; do
 	sed -i'' "/\/setEcalSensThick/s/mysensthick/${sensthick[$i]} mm/g" $tempfile
 	sed -i'' "/setRootName/s/myrootfile/${rootfile_sed}/g" $tempfile 
 	sed -i'' "/\/gun\/energy/s/myenergy/${energ[$j]}. GeV/g" $tempfile
+	sed -i'' "/\/setEcalCells/s/mytransversesize/${transverseCellSize[$i]}/g" $tempfile
+	sed -i'' "/\/gun\/setVxPosition/s/0.0 0.0 315.0 cm/${impactPosition_cm[$i]} 0.0 315.0 cm/g" $tempfile
+
 	#if [ ! -d $workdir/inputfiles/${runnumber} ] ; then
 	#    mkdir $workdir/inputfiles/${runnumber}
 	#fi
@@ -200,8 +214,9 @@ for i in `seq 0 $runs`; do
 	echo -e "#Layers: ${nlayers[$i]}"
 	echo -e "Abs :    ${absthick[$i]}"
 	echo -e "Sens:    ${sensthick[$i]}"
+	echo -e "Transv cell size:  ${transverseCellSize[$i]}\n"
 	echo -e "Particle ${particle[$i]}"
-	echo -e "Energy:  ${energ[$j]}\n"
+	echo -e "Energy:  ${energ[$j]}"
 
 	sleep 2
 	
