@@ -9,15 +9,15 @@
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProdLead, const std::string& batchProdTung, int nLayers );
 std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int nLayers );
-void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 );
+void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::string& batchProdTung, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 );
 
 
 
 int main() {
 
 
-  std::string batchProdLead = "2p5k_v1";
-  std::string batchProdTung = "2p5k_v1";
+  std::string batchProdLead = "2p5k_v4_withTemp";
+  std::string batchProdTung = "tung_v6";
 
   DrawBase* db = new DrawBase("db");
 
@@ -31,6 +31,7 @@ int main() {
 
   drawStuffForOneVariable( db, "sf",   "Sampling Fraction", "", batchProdLead, batchProdTung, nLayers );
   drawStuffForOneVariable( db, "ecal",   "ECAL Energy", "MeV",  batchProdLead, batchProdTung, nLayers );
+  drawStuffForOneVariable( db, "e_dep",   "ECAL Energy", "MeV",  batchProdLead, batchProdTung, nLayers );
 
   return 0;
 
@@ -44,8 +45,8 @@ void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const st
   std::pair<TH1D*,TH1D*> pair_tung_act10_abs5 =  get_histos_vs_length( varName, batchProdTung, 10., 5., nLayers );
   std::pair<TH1D*,TH1D*> pair_tung_act10_abs2 =  get_histos_vs_length( varName, batchProdTung, 10., 2., nLayers );
 
-  drawComparison( db, varName+"res", axisName + " Resolution",    "", pair_lead_act10_abs5.second, pair_lead_act10_abs2.second, pair_tung_act10_abs5.second, pair_tung_act10_abs2.second );
-  drawComparison( db, varName      , axisName                , units, pair_lead_act10_abs5.first , pair_lead_act10_abs2.first , pair_tung_act10_abs5.first , pair_tung_act10_abs2.first  );
+  drawComparison( db, batchProdLead, batchProdTung, varName+"res", axisName + " Resolution",    "", pair_lead_act10_abs5.second, pair_lead_act10_abs2.second, pair_tung_act10_abs5.second, pair_tung_act10_abs2.second );
+  drawComparison( db, batchProdLead, batchProdTung, varName      , axisName                , units, pair_lead_act10_abs5.first , pair_lead_act10_abs2.first , pair_tung_act10_abs5.first , pair_tung_act10_abs2.first  );
 
 }
 
@@ -54,11 +55,11 @@ std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const s
 
 
   char histoName_sf[200];
-  sprintf( histoName_sf, "%s_vs_length_act%.0f_abs%.0f", varName.c_str(), activeLayerThickness, absorberLayerThickness );
+  sprintf( histoName_sf, "%s_%s_vs_length_act%.0f_abs%.0f", batchProd.c_str(), varName.c_str(), activeLayerThickness, absorberLayerThickness );
   TH1D* h1_sf = new TH1D( histoName_sf, "", nLayers, 0.5, (float)nLayers+0.5 );
 
   char histoName_reso[200];
-  sprintf( histoName_reso, "%sres_vs_length_act%.0f_abs%.0f", varName.c_str(), activeLayerThickness, absorberLayerThickness );
+  sprintf( histoName_reso, "%s_%sres_vs_length_act%.0f_abs%.0f", batchProd.c_str(), varName.c_str(), activeLayerThickness, absorberLayerThickness );
   TH1D* h1_reso = new TH1D( histoName_reso, "", nLayers, 0.5, (float)nLayers+0.5 );
 
   std::string histoName_get = "h_" + varName + "_config0_750MeV";
@@ -69,7 +70,10 @@ std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const s
     if( activeLayerThickness==10. && absorberLayerThickness==5. && iLayer>26 ) continue; // EE is too long (>400 cm)
 
     char fileName[200];
-    sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv20.root", batchProd.c_str(), iLayer, activeLayerThickness, absorberLayerThickness );
+    if( batchProd=="2p5k_v1" )
+      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f.root", batchProd.c_str(), iLayer, activeLayerThickness, absorberLayerThickness );
+    else
+      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv20.root", batchProd.c_str(), iLayer, activeLayerThickness, absorberLayerThickness );
     TFile* file = TFile::Open( fileName );
 
     if( file==0 ) {
@@ -80,6 +84,37 @@ std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const s
     }
 
     TH1D* h1_sf_tmp = (TH1D*)file->Get(histoName_get.c_str());
+
+    if( h1_sf_tmp==0 ) {
+ 
+      TH1F::AddDirectory(kTRUE);
+
+      if( iLayer==1 ) 
+        std::cout << "-> Didn't find histogram: '" << histoName_get << ". Will go for the Cell tree." << std::endl;
+
+      char fileName_temp[500];
+      sprintf( fileName_temp, "../batchOutput_750MeV_%s/rootfiles/temp/temp_n%d_act%.0f_abs%.0f_trasv20.root", batchProd.c_str(), iLayer, activeLayerThickness, absorberLayerThickness );
+      TFile* file_temp = TFile::Open( fileName_temp );
+
+      TTree* tree_cell = (TTree*)file_temp->Get("Cell");
+
+      int n_cells;
+      tree_cell->SetBranchAddress( "n_cells", &n_cells);
+      tree_cell->GetEntry(1);
+
+      std::string treeVarName = varName + "[0]";
+      for( unsigned icell=1; icell<n_cells; ++icell ) { //add for all cells
+        char anotherCellName[100];
+        sprintf( anotherCellName, "+%s[%d]", varName.c_str(), icell );
+        std::string anotherCellName_str(anotherCellName);
+        treeVarName += anotherCellName_str;
+      }
+
+      h1_sf_tmp = new TH1D("sf_tmp", "", 200, 0., 750.); //eMax = 750 mev
+      
+      tree_cell->Project( "sf_tmp", treeVarName.c_str() );
+
+    }
     
     float sf_mean = h1_sf_tmp->GetMean();
     float sf_rms  = h1_sf_tmp->GetRMS();
@@ -112,8 +147,10 @@ std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const s
 
 
 
-void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 ) {
+void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::string& batchProdTung, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 ) {
 
+  TString yAxisName_tstr(yAxisName);
+  bool isResolution = yAxisName_tstr.Contains("Resolution");
 
   const char* name1 = h1_1->GetName();
   const char* name2 = h1_2->GetName();
@@ -125,11 +162,12 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   int act3, abs3;
   int act4, abs4;
 
-  std::string scanfText = varName + "_vs_length_act%d_abs%d";
-  sscanf( name1, scanfText.c_str(), &act1, &abs1 );
-  sscanf( name2, scanfText.c_str(), &act2, &abs2 );
-  sscanf( name3, scanfText.c_str(), &act3, &abs3 );
-  sscanf( name4, scanfText.c_str(), &act4, &abs4 );
+  std::string scanfTextLead = batchProdLead + "_" + varName + "_vs_length_act%d_abs%d";
+  sscanf( name1, scanfTextLead.c_str(), &act1, &abs1 );
+  sscanf( name2, scanfTextLead.c_str(), &act2, &abs2 );
+  std::string scanfTextTung = batchProdTung + "_" + varName + "_vs_length_act%d_abs%d";
+  sscanf( name3, scanfTextTung.c_str(), &act3, &abs3 );
+  sscanf( name4, scanfTextTung.c_str(), &act4, &abs4 );
 
   float markerSize = 1.6;
 
@@ -153,12 +191,14 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 
   float xMax = h1_1->GetXaxis()->GetXmax();
   float yMax = h1_1->GetMaximum();
-  if( h1_2->GetMaximum() >yMax ) yMax = h1_2 ->GetMaximum();
-  if( h1_3->GetMaximum()>yMax )  yMax = h1_3->GetMaximum();
-  if( h1_4->GetMaximum()>yMax )  yMax = h1_4->GetMaximum();
-  float scaleFactor = (varName=="ecal") ? 1.8 : 1.5;
+  if( h1_2->GetMaximum()>yMax ) yMax = h1_2 ->GetMaximum();
+  if( h1_3->GetMaximum()>yMax ) yMax = h1_3->GetMaximum();
+  if( h1_4->GetMaximum()>yMax ) yMax = h1_4->GetMaximum();
+  float scaleFactor = 1.5;
+  if( isResolution ) scaleFactor = 1.1;
   yMax *= scaleFactor;
   
+  if(varName=="ecal"||varName=="e_dep") yMax = 900.;
 
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
@@ -171,7 +211,7 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.53, 0.63, 0.9, 0.9 );
+  TLegend* legend = new TLegend( 0.4, 0.66, 0.9, 0.9 );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
@@ -180,10 +220,10 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   char legendText3[200];
   char legendText4[200];
 
-  sprintf( legendText1, "%d mm CeF_{3} / %d mm Lead", act1, abs1 );
-  sprintf( legendText2, "%d mm CeF_{3} / %d mm Lead", act2, abs2 );
-  sprintf( legendText3, "%d mm CeF_{3} / %d mm Tungstate", act3, abs3 );
-  sprintf( legendText4, "%d mm CeF_{3} / %d mm Tungstate", act4, abs4 );
+  sprintf( legendText1, "%d mm CeF_{3} / %d mm Pb", act1, abs1 );
+  sprintf( legendText2, "%d mm CeF_{3} / %d mm Pb", act2, abs2 );
+  sprintf( legendText3, "%d mm CeF_{3} / %d mm W", act3, abs3 );
+  sprintf( legendText4, "%d mm CeF_{3} / %d mm W", act4, abs4 );
 
   legend->AddEntry( h1_1, legendText1, "P" );
   legend->AddEntry( h1_2, legendText2, "P" );
