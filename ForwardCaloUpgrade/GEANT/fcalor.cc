@@ -70,7 +70,18 @@ int main(int argc,char** argv)
 // Initilization detector construction class
 // -----------------------------------------
   DetectorConstruction* detector = new DetectorConstruction;
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
   runManager->SetUserInitialization(detector);
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
+
 
 // Initilization of the different physics list
 // --------------------------------------------
@@ -89,11 +100,23 @@ int main(int argc,char** argv)
   PrimaryGeneratorAction* gen_action = 
                           new PrimaryGeneratorAction(detector);
   runManager->SetUserAction(gen_action);
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
+
 
 // Set user run-action class
 // -------------------------
   RunAction* run_action = new RunAction(detector, gen_action, histo);  
   runManager->SetUserAction(run_action);
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
+
 
 
 // Set user event-action class
@@ -106,6 +129,12 @@ int main(int argc,char** argv)
   G4UserSteppingAction* stepping_action =
                     new SteppingAction(detector, event_action, histo);
   runManager->SetUserAction(stepping_action);
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
+
   
 // Initialize G4 kernel
 
@@ -151,6 +180,13 @@ int main(int argc,char** argv)
       session->SessionStart();
       delete session;
     }
+
+
+     std::cout <<  "   GetNbOfEcalLayers()  : " <<    detector->GetNbOfEcalLayers() << std::endl;
+     std::cout <<  "   GetEcalOffset()      : " <<    detector->GetEcalOffset()     << std::endl;
+     std::cout <<  "   GetHcalOffset()      : " <<    detector->GetHcalOffset()     << std::endl;
+     std::cout <<  "   GetNbOfEcalCells()   : " <<    detector->GetNbOfEcalCells()  << std::endl;
+     std::cout <<  "   GetEcalCellSize()    : " <<    detector->GetEcalCellSize()   << std::endl;
 
   // Job termination
   // Free the store: user actions, physics_list and detector_description are
