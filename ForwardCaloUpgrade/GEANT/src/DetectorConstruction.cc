@@ -240,10 +240,18 @@ new G4Material("Brass"  , density= 8.530*g/cm3, ncomponents=2);
 pBra->AddElement(Cu, fractionmass=0.7);
 pBra->AddElement(Zn, fractionmass=0.3);
 
+
 pBra_d =
-new G4Material("Brass_def"  , density= 8.530*g/cm3, ncomponents=2);
-pBra_d->AddElement(Cu, fractionmass=0.7);
-pBra_d->AddElement(Zn, fractionmass=0.3);
+new G4Material("Brass_def"  , density= 8.2*g/cm3, ncomponents=3);
+pBra_d->AddElement(Cu, fractionmass=0.6);
+pBra_d->AddElement(Pb, fractionmass=0.02);
+pBra_d->AddElement(Zn, fractionmass=0.38);
+
+//pBra_eth =
+//new G4Material("Brass_eth"  , density= 8.2*g/cm3, ncomponents=3);
+//pBra_eth->AddElement(Cu, fractionmass=0.6);
+//pBra_eth->AddElement(Pb, fractionmass=0.02);
+//pBra_eth->AddElement(Zn, fractionmass=0.38);
 
 // define G10 material (22% Si + 27% C + 42% O + 6% H + 3% Cl):
 // ------------------------------------------------------------
