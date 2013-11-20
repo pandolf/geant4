@@ -203,14 +203,14 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   c1->cd();
 
   TH2D* h2_axes = new TH2D("axes", "", 10, 0., xMax, 10, 0., yMax );
-  h2_axes->SetXTitle("Distance from Center of Central Cell [mm]");
+  h2_axes->SetXTitle("Beam Offset [mm]");
   std::string totalAxisName = yAxisName;
   if( units!="" ) totalAxisName = totalAxisName + " [" + units + "]";
   h2_axes->SetYTitle(totalAxisName.c_str());
   
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.2, 0.66, 0.9, 0.9, "CeF_{3} / Lead (3x3 20x20mm Cells)" );
+  TLegend* legend = new TLegend( 0.2, 0.66, 0.7, 0.9, "CeF_{3} / Lead (3x3 20x20mm Cells)" );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
