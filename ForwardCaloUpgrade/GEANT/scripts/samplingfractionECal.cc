@@ -19,6 +19,8 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
     Double_t xabs = 3.5;
   else if(absorber == "Lead")
     Double_t xabs = 5.6;
+  else if(absorber == "Brass_d")
+    Double_t xabs = 15.;
   else{
     cout << "Absorber X_0 not defined!" << endl;
     return;
@@ -46,8 +48,8 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
 
   //------------------------------------------------------------
   //Book histos
-  Double_t EcalMaxBin = 50000;
-  Double_t AbseMaxBin = 50000;
+  Double_t EcalMaxBin = 1000.*energy;
+  Double_t AbseMaxBin = 1000.*energy;
   Double_t EcalMinBin = 0;
   Double_t AbseMinBin = 0;
   if(particle=="mu-")
@@ -59,11 +61,17 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
   sprintf( suffix_cstr, "config%s_%.0fMeV", config.Data(), (float)(1000.*energy) );
   TString suffix(suffix_cstr);
   
-  TH1F *H_ecal       = new TH1F("h_ecal_"+suffix,"",EcalMaxBin/Divider,EcalMinBin,EcalMaxBin);
-  TH1F *H_abse       = new TH1F("h_abse_"+suffix,"",AbseMaxBin/Divider,AbseMinBin,AbseMaxBin);
+  TH1F *H_ecal       = new TH1F("h_ecal_"+suffix,"",200, EcalMinBin, EcalMaxBin);
+  TH1F *H_abse       = new TH1F("h_abse_"+suffix,"",200, AbseMinBin, AbseMaxBin);
 
-  TH1F *H_ecal_cut   = new TH1F("h_ecal_cut_"+suffix,"",EcalMaxBin/Divider,EcalMinBin,EcalMaxBin);
-  TH1F *H_abse_cut   = new TH1F("h_abse_cut_"+suffix,"" ,AbseMaxBin/Divider,AbseMinBin,AbseMaxBin);
+  TH1F *H_ecal_cut   = new TH1F("h_ecal_cut_"+suffix,"",200, EcalMinBin, EcalMaxBin);
+  TH1F *H_abse_cut   = new TH1F("h_abse_cut_"+suffix,"",200, AbseMinBin, AbseMaxBin);
+
+  //TH1F *H_ecal       = new TH1F("h_ecal_"+suffix,"",EcalMaxBin/Divider,EcalMinBin,EcalMaxBin);
+  //TH1F *H_abse       = new TH1F("h_abse_"+suffix,"",AbseMaxBin/Divider,AbseMinBin,AbseMaxBin);
+
+  //TH1F *H_ecal_cut   = new TH1F("h_ecal_cut_"+suffix,"",EcalMaxBin/Divider,EcalMinBin,EcalMaxBin);
+  //TH1F *H_abse_cut   = new TH1F("h_abse_cut_"+suffix,"" ,AbseMaxBin/Divider,AbseMinBin,AbseMaxBin);
 
   TH1F *H_sf         = new TH1F("h_sf_"+suffix,"",200,0,1);
 
@@ -87,8 +95,8 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
   H_sf ->GetXaxis()->SetTitle("Sampling fraction") ;
   H_mol->GetXaxis()->SetTitle("Moliere radius [mm]") ;
   
-  TString ti_ecal     = "Energy deposited in "+Sthickabs+" mm "+absorber+" ("+Snlayers+" layers) by "+particle+" ("+Senergy+" GeV)";    
-  TString ti_abse     = "Energy deposited in "+Sthicksens+" mm "+sensitiv+" ("+Snlayers+" layers) by "+particle+" ("+Senergy+" GeV)";    
+  TString ti_abse     = "Energy deposited in "+Sthickabs+" mm "+absorber+" ("+Snlayers+" layers) by "+particle+" ("+Senergy+" GeV)";    
+  TString ti_ecal     = "Energy deposited in "+Sthicksens+" mm "+sensitiv+" ("+Snlayers+" layers) by "+particle+" ("+Senergy+" GeV)";    
   TString ti_ecal_cut = "Energy deposited in "+Sthickabs+" mm "+absorber+" by "+particle+" ("+Senergy+" GeV) after radiative tail cut";    
   TString ti_abse_cut = "Energy deposited in "+Sthickabs+" mm "+absorber+" by "+particle+" ("+Senergy+" GeV) adter radiative tail cut";    
   TString ti_sf       = "Sampling fraction of "+particle+" in "+absorber+"-"+sensitiv+" configuration ("+Sthickabs+" mm - "+Sthicksens+" mm)";
