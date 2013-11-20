@@ -7,17 +7,42 @@
 #include "TCanvas.h"
 
 
+
+bool isBrass = false;
+
+
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int nLayers );
 std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int nLayers );
 void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 );
 
 
 
-int main() {
+int main( int argc, char* argv[] ) {
+
+
+  //if( argc!= 2 ) {
+  //  std::cout << "USAGE: ./drawResolutionVsLength [batchProd]" << std::endl;
+  //  exit(11);
+  //}
 
 
   std::string batchProd = "2p5k_v4_withTemp";
-  //std::string batchProd = "5k_v4";
+  if( argc > 1 ) {
+    std::string batchProd_str(argv[1]);
+    batchProd = batchProd_str;
+  }
+
+
+  if( argc > 2 ) {
+    std::string isBrass_str(argv[2]);
+    if( isBrass_str=="true" ) 
+      isBrass = true;
+  }
+
+
+  if( isBrass )
+    std::cout << "-> Using brass as absorber." << std::endl;
+
 
   DrawBase* db = new DrawBase("db");
 
@@ -30,8 +55,8 @@ int main() {
   int nLayers = 30;
 
   drawStuffForOneVariable( db, "sf",         "Sampling Fraction", "", batchProd, nLayers );
-  drawStuffForOneVariable( db, "ecal",       "ECAL Energy", "MeV", batchProd, nLayers );
-  drawStuffForOneVariable( db, "e_dep",      "ECAL Energy", "MeV", batchProd, nLayers );
+  drawStuffForOneVariable( db, "ecal",       "ECAL Energy", "MeV",    batchProd, nLayers );
+  drawStuffForOneVariable( db, "e_dep",      "ECAL Energy", "MeV",    batchProd, nLayers );
 
   return 0;
 
@@ -40,13 +65,20 @@ int main() {
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int nLayers ) {
 
-  std::pair<TH1D*,TH1D*> pair_act5_abs5  =  get_histos_vs_length( varName, batchProd, 5., 5., nLayers );
-  std::pair<TH1D*,TH1D*> pair_act5_abs2  =  get_histos_vs_length( varName, batchProd, 5., 2., nLayers );
-  std::pair<TH1D*,TH1D*> pair_act10_abs5 =  get_histos_vs_length( varName, batchProd, 10., 5., nLayers );
-  std::pair<TH1D*,TH1D*> pair_act10_abs2 =  get_histos_vs_length( varName, batchProd, 10., 2., nLayers );
 
-  drawComparison( db, varName+"res", axisName + " Resolution",    "", pair_act5_abs5.second, pair_act5_abs2.second, pair_act10_abs5.second, pair_act10_abs2.second );
-  drawComparison( db, varName,       axisName,                 units, pair_act5_abs5.first,  pair_act5_abs2.first,  pair_act10_abs5.first,  pair_act10_abs2.first );
+  float act1 = 5.;
+  float act2 = 10.;
+
+  float abs1 = (isBrass) ? 5.  : 2.;
+  float abs2 = (isBrass) ? 12. : 5.;
+
+  std::pair<TH1D*,TH1D*> pair_1 =  get_histos_vs_length( varName, batchProd, act1, abs1, nLayers );
+  std::pair<TH1D*,TH1D*> pair_2 =  get_histos_vs_length( varName, batchProd, act1, abs2, nLayers );
+  std::pair<TH1D*,TH1D*> pair_3 =  get_histos_vs_length( varName, batchProd, act2, abs1, nLayers );
+  std::pair<TH1D*,TH1D*> pair_4 =  get_histos_vs_length( varName, batchProd, act2, abs2, nLayers );
+
+  drawComparison( db, varName+"res", axisName + " Resolution",    "", pair_1.second, pair_2.second, pair_3.second, pair_4.second );
+  drawComparison( db, varName,       axisName,                 units, pair_1.first,  pair_2.first,  pair_3.first,  pair_4.first );
 
 }
 
@@ -209,7 +241,8 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.58, 0.63, 0.9, 0.9, "CeF_{3} / Lead" );
+  std::string legendTitle = (isBrass) ? "CeF_{3} / Brass" : "CeF_{3} / Lead";
+  TLegend* legend = new TLegend( 0.58, 0.63, 0.9, 0.9, legendTitle.c_str() );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
