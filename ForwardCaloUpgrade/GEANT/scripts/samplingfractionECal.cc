@@ -19,7 +19,7 @@ void samplingfractionECal(TString workdir, TString rootfile, TString particle, T
     Double_t xabs = 3.5;
   else if(absorber == "Lead")
     Double_t xabs = 5.6;
-  else if(absorber == "Brass_d")
+  else if(absorber == "Brass_def")
     Double_t xabs = 15.;
   else{
     cout << "Absorber X_0 not defined!" << endl;
