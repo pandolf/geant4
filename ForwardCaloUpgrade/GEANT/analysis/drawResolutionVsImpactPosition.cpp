@@ -7,16 +7,36 @@
 #include "TCanvas.h"
 
 
-void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int maxImpaxtPosition );
-std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int maxImpaxtPosition );
-void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3 );
+bool isBrass=false;
+bool isTung=false;
+
+
+void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int maxImpactPosition );
+std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, float trasv, int maxImpactPosition );
+void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, float trasv, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3 );
 
 
 
-int main() {
+int main( int argc, char* argv[] ) {
 
 
   std::string batchProd = "impact_v2";
+  if( argc > 1 ) {
+    std::string batchProd_str(argv[1]);
+    batchProd = batchProd_str;
+  }
+
+  TString batchProd_tstr(batchProd);
+  isTung = batchProd_tstr.Contains("tung");
+  isBrass = batchProd_tstr.Contains("brass");
+
+  if( isBrass )
+    std::cout << "-> Using brass as absorber." << std::endl;
+  if( isTung )
+    std::cout << "-> Using tungsten as absorber." << std::endl;
+
+
+
 
   DrawBase* db = new DrawBase("db");
 
@@ -26,51 +46,85 @@ int main() {
   system(mkdir_command.c_str());
 
 
-  int maxImpaxtPosition = 20;
+  int maxImpactPosition = 20;
 
-  drawStuffForOneVariable( db, "sf",         "Sampling Fraction", "", batchProd, maxImpaxtPosition );
-  drawStuffForOneVariable( db, "ecal",       "ECAL Energy", "MeV", batchProd, maxImpaxtPosition );
-  drawStuffForOneVariable( db, "e_dep",      "ECAL Energy", "MeV", batchProd, maxImpaxtPosition );
+  drawStuffForOneVariable( db, "sf",         "Sampling Fraction", "", batchProd, maxImpactPosition );
+  drawStuffForOneVariable( db, "ecal",       "ECAL Energy", "MeV", batchProd, maxImpactPosition );
+  drawStuffForOneVariable( db, "e_dep",      "ECAL Energy", "MeV", batchProd, maxImpactPosition );
 
   return 0;
 
 }
 
 
-void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int maxImpaxtPosition ) {
+void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, int maxImpactPosition ) {
 
-  std::pair<TH1D*,TH1D*> pair_act5_abs2  =  get_histos_vs_impactPosition( varName, batchProd, 25, 5., 2., maxImpaxtPosition );
-  std::pair<TH1D*,TH1D*> pair_act10_abs5 =  get_histos_vs_impactPosition( varName, batchProd, 10, 10., 5., maxImpaxtPosition );
-  std::pair<TH1D*,TH1D*> pair_act10_abs2 =  get_histos_vs_impactPosition( varName, batchProd, 15, 10., 2., maxImpaxtPosition );
+  int n1=25;
+  int n2=10;
+  int n3=20;
 
-  drawComparison( db, varName+"res", axisName + " Resolution",    "", pair_act5_abs2.second, pair_act10_abs5.second, pair_act10_abs2.second );
-  drawComparison( db, varName,       axisName,                 units, pair_act5_abs2.first,  pair_act10_abs5.first,  pair_act10_abs2.first );
+  float act1=5.;
+  float act2=10.;
+  float act3=10.;
+
+  float abs1=2.;
+  float abs2=5.;
+  float abs3=2.;
+
+  float trasv = 20.;
+
+  if( isTung ) {
+
+    n1=15;
+    n2=15;
+    n3=15;
+
+    act1=5.;
+    act2=10.;
+    act3=10.;
+
+    abs1=3.;
+    abs2=3.;
+    abs3=3.;
+
+    trasv = 20.;
+    //trasv = 25.;
+
+  }
+
+  std::pair<TH1D*,TH1D*> pair_1 =  get_histos_vs_impactPosition( varName, batchProd, n1, act1, abs1, trasv, maxImpactPosition );
+  std::pair<TH1D*,TH1D*> pair_2 =  get_histos_vs_impactPosition( varName, batchProd, n2, act2, abs2, trasv, maxImpactPosition );
+  std::pair<TH1D*,TH1D*> pair_3 =  get_histos_vs_impactPosition( varName, batchProd, n3, act3, abs3, trasv, maxImpactPosition );
+//std::pair<TH1D*,TH1D*> pair_3 =  get_histos_vs_impactPosition( varName, batchProd, 15, 10., 2., maxImpactPosition );
+
+  drawComparison( db, varName+"res", axisName + " Resolution",    "", trasv, pair_1.second, pair_2.second, pair_3.second );
+  drawComparison( db, varName,       axisName,                 units, trasv, pair_1.first,  pair_2.first,  pair_3.first );
 
 }
 
 
-std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int maxImpaxtPosition ) {
+std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, float trasv, int maxImpactPosition ) {
 
 
   char histoName_sf[200];
   sprintf( histoName_sf, "%s_vs_impact_n%d_act%.0f_abs%.0f", varName.c_str(), nLayers, activeLayerThickness, absorberLayerThickness );
-  TH1D* h1_sf = new TH1D( histoName_sf, "", maxImpaxtPosition, 0.5, (float)maxImpaxtPosition+0.5 );
+  TH1D* h1_sf = new TH1D( histoName_sf, "", maxImpactPosition, 0.5, (float)maxImpactPosition+0.5 );
 
   char histoName_reso[200];
   sprintf( histoName_reso, "%sres_vs_impact_n%d_act%.0f_abs%.0f", varName.c_str(), nLayers, activeLayerThickness, absorberLayerThickness );
-  TH1D* h1_reso = new TH1D( histoName_reso, "", maxImpaxtPosition, 0.5, (float)maxImpaxtPosition+0.5 );
+  TH1D* h1_reso = new TH1D( histoName_reso, "", maxImpactPosition, 0.5, (float)maxImpactPosition+0.5 );
 
   std::string histoName_get = "h_" + varName + "_config0_750MeV";
 
 
 
-  for( unsigned iImpact=1; iImpact<maxImpaxtPosition; ++iImpact ) {
+  for( unsigned iImpact=1; iImpact<maxImpactPosition; ++iImpact ) {
 
     char fileName[500];
     if( iImpact>0 )
-      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv20_impact%d.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, iImpact );
+      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv%.0f_impact%d.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, trasv, iImpact );
     else
-      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv20.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness );
+      sprintf( fileName, "../batchOutput_750MeV_%s/rootfiles/samplinghistos_n%d_act%.0f_abs%.0f_trasv%.0f.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, trasv );
     TFile* file = TFile::Open( fileName );
 
     if( file==0 ) {
@@ -91,9 +145,9 @@ std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName,
 
       char fileName_temp[500];
       if( iImpact>0 )
-        sprintf( fileName_temp, "../batchOutput_750MeV_%s/rootfiles/temp/temp_n%d_act%.0f_abs%.0f_trasv20_impact%d.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, iImpact );
+        sprintf( fileName_temp, "../batchOutput_750MeV_%s/rootfiles/temp/temp_n%d_act%.0f_abs%.0f_trasv%.0f_impact%d.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, trasv, iImpact );
       else
-        sprintf( fileName_temp, "../batchOutput_750MeV_%s/rootfiles/temp/temp_n%d_act%.0f_abs%.0f_trasv20.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness );
+        sprintf( fileName_temp, "../batchOutput_750MeV_%s/rootfiles/temp/temp_n%d_act%.0f_abs%.0f_trasv%.0f.root", batchProd.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, trasv );
       TFile* file_temp = TFile::Open( fileName_temp );
 
       TTree* tree_cell = (TTree*)file_temp->Get("Cell");
@@ -147,7 +201,7 @@ std::pair<TH1D*,TH1D*> get_histos_vs_impactPosition( const std::string& varName,
 
 
 
-void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3 ) {
+void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, float trasv, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3 ) {
 
   TString yAxisName_tstr(yAxisName);
   bool isResolution = yAxisName_tstr.Contains("Resolution");
@@ -210,7 +264,14 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.2, 0.66, 0.7, 0.9, "CeF_{3} / Lead (3x3 20x20mm Cells)" );
+  std::string absMaterial = "Lead";
+  if( isTung ) absMaterial = "Tungsten";
+  if( isBrass ) absMaterial = "Brass";
+
+  char legendTitle[300];
+  sprintf(legendTitle, "CeF_{3} / %s (%.0fx%.0f Cells)", absMaterial.c_str(), trasv, trasv );
+
+  TLegend* legend = new TLegend( 0.2, 0.66, 0.7, 0.9, legendTitle );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
@@ -226,7 +287,8 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 
   legend->AddEntry( h1_1, legendText1, "P" );
   legend->AddEntry( h1_2, legendText2, "P" );
-  legend->AddEntry( h1_3, legendText3, "P" );
+  if( !isTung )
+    legend->AddEntry( h1_3, legendText3, "P" );
   //legend->AddEntry( h1_4, legendText4, "P" );
   legend->Draw("same");
 
@@ -247,7 +309,8 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 
   h1_1->Draw("P same");
   h1_2->Draw("P same");
-  h1_3->Draw("P same");
+  if( !isTung )
+    h1_3->Draw("P same");
   //h1_4->Draw("P same");
 
   gPad->RedrawAxis();
