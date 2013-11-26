@@ -19,6 +19,9 @@ drawResolutionVsLength: drawResolutionVsLength.cpp DrawBase.o fitTools.o
 drawResolutionVsTrasv: drawResolutionVsTrasv.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawResolutionVsTrasv drawResolutionVsTrasv.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+drawResolutionVsImpactPosition: drawResolutionVsImpactPosition.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawResolutionVsImpactPosition drawResolutionVsImpactPosition.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 drawLeadVsTung: drawLeadVsTung.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawLeadVsTung drawLeadVsTung.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 

@@ -7,17 +7,30 @@
 #include "TCanvas.h"
 
 
+bool isBrass=false;
+
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProdLead, const std::string& batchProdTung, int nLayers );
 std::pair<TH1D*,TH1D*> get_histos_vs_length( const std::string& varName, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int nLayers );
 void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::string& batchProdTung, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3, TH1D* h1_4 );
 
 
 
-int main() {
-
+int main( int argc, char* argv[] ) {
 
   std::string batchProdLead = "2p5k_v4_withTemp";
-  std::string batchProdTung = "tung_v6";
+  std::string batchProdTung = "tung_3mm_v3";
+  //std::string batchProdTung = "tung_3mm_v2_postSmearFix";
+
+  if( argc>1 ) {
+    std::string batchProdTung_str(argv[1]);
+    batchProdTung = batchProdTung_str;
+  }
+
+  TString batchProdTung_tstr(batchProdTung);
+  isBrass = batchProdTung_tstr.Contains("brass");
+  if( isBrass )
+    std::cout << "-> Recognized this as Brass." << std::endl;
+  
 
   DrawBase* db = new DrawBase("db");
 
@@ -40,10 +53,13 @@ int main() {
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProdLead, const std::string& batchProdTung, int nLayers ) {
 
+  float abs1 = (isBrass) ? 12.: 3.;
+  float abs2 = (isBrass) ? 5. : 3.;
+
   std::pair<TH1D*,TH1D*> pair_lead_act10_abs5 =  get_histos_vs_length( varName, batchProdLead, 10., 5., nLayers );
   std::pair<TH1D*,TH1D*> pair_lead_act10_abs2 =  get_histos_vs_length( varName, batchProdLead, 10., 2., nLayers );
-  std::pair<TH1D*,TH1D*> pair_tung_act10_abs5 =  get_histos_vs_length( varName, batchProdTung, 10., 5., nLayers );
-  std::pair<TH1D*,TH1D*> pair_tung_act10_abs2 =  get_histos_vs_length( varName, batchProdTung, 10., 2., nLayers );
+  std::pair<TH1D*,TH1D*> pair_tung_act10_abs5 =  get_histos_vs_length( varName, batchProdTung, 10., abs1, nLayers );
+  std::pair<TH1D*,TH1D*> pair_tung_act10_abs2 =  get_histos_vs_length( varName, batchProdTung,  5., abs2, nLayers );
 
   drawComparison( db, batchProdLead, batchProdTung, varName+"res", axisName + " Resolution",    "", pair_lead_act10_abs5.second, pair_lead_act10_abs2.second, pair_tung_act10_abs5.second, pair_tung_act10_abs2.second );
   drawComparison( db, batchProdLead, batchProdTung, varName      , axisName                , units, pair_lead_act10_abs5.first , pair_lead_act10_abs2.first , pair_tung_act10_abs5.first , pair_tung_act10_abs2.first  );
@@ -199,6 +215,7 @@ void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::
   yMax *= scaleFactor;
   
   if(varName=="ecal"||varName=="e_dep") yMax = 900.;
+  if(varName=="ecalres"||varName=="e_depres") yMax = 0.7;
 
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
@@ -211,7 +228,7 @@ void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::
   
   h2_axes->Draw();
 
-  TLegend* legend = new TLegend( 0.4, 0.66, 0.9, 0.9 );
+  TLegend* legend = new TLegend( 0.32, 0.66, 0.9, 0.9 );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
@@ -220,10 +237,12 @@ void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::
   char legendText3[200];
   char legendText4[200];
 
+  std::string tungText = (isBrass) ? "Brass" : "W";
+
   sprintf( legendText1, "%d mm CeF_{3} / %d mm Pb", act1, abs1 );
   sprintf( legendText2, "%d mm CeF_{3} / %d mm Pb", act2, abs2 );
-  sprintf( legendText3, "%d mm CeF_{3} / %d mm W", act3, abs3 );
-  sprintf( legendText4, "%d mm CeF_{3} / %d mm W", act4, abs4 );
+  sprintf( legendText3, "%d mm CeF_{3} / %d mm %s", act3, abs3, tungText.c_str() );
+  sprintf( legendText4, "%d mm CeF_{3} / %d mm %s", act4, abs4, tungText.c_str() );
 
   legend->AddEntry( h1_1, legendText1, "P" );
   legend->AddEntry( h1_2, legendText2, "P" );

@@ -69,8 +69,8 @@ void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const st
   float act1 = 5.;
   float act2 = 10.;
 
-  float abs1 = (isBrass) ? 5.  : 2.;
-  float abs2 = (isBrass) ? 12. : 5.;
+  float abs1 = (isBrass) ? 12.  : 5.;
+  float abs2 = (isBrass) ? 5.   : 2.;
 
   std::pair<TH1D*,TH1D*> pair_1 =  get_histos_vs_length( varName, batchProd, act1, abs1, nLayers );
   std::pair<TH1D*,TH1D*> pair_2 =  get_histos_vs_length( varName, batchProd, act1, abs2, nLayers );
@@ -229,6 +229,7 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   yMax *= scaleFactor;
   
   if(varName=="ecal"||varName=="e_dep") yMax = 900.;
+  if(varName=="ecalres"||varName=="e_depres") yMax = 0.7;
 
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();

@@ -5,6 +5,11 @@
 #include "CommonTools/fitTools.h"
 
 #include "TCanvas.h"
+#include "TString.h"
+
+
+bool isBrass=false;
+bool isTung=false;
 
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string&  axisName, const std::string& units, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv );
@@ -14,10 +19,31 @@ float getMoliereRadius( float act, float abs );
 
 
 
-int main() {
+int main( int argc, char* argv[] ) {
 
 
   std::string batchProd = "trasv_v3";
+  if( argc > 1 ) {
+    std::string batchProd_str(argv[1]);
+    batchProd = batchProd_str;
+  }
+
+
+  //if( argc > 2 ) {
+  //  std::string isBrass_str(argv[2]);
+  //  if( isBrass_str=="true" ) 
+  //    isBrass = true;
+  //}
+
+  TString batchProd_tstr(batchProd);
+  isTung = batchProd_tstr.Contains("tung");
+  isBrass = batchProd_tstr.Contains("brass");
+
+  if( isBrass )
+    std::cout << "-> Using brass as absorber." << std::endl;
+  if( isTung )
+    std::cout << "-> Using tungsten as absorber." << std::endl;
+
 
   DrawBase* db = new DrawBase("db");
 
@@ -29,8 +55,10 @@ int main() {
 
   float activeLayerThickness = 10.;
   float absorberLayerThickness = 2.;
+  if( isTung ) absorberLayerThickness=3.;
+  if( isBrass ) absorberLayerThickness=5.;
   int minTrasv = 1;
-  int maxTrasv = 30;
+  int maxTrasv = (isBrass) ? 40 : 30;
 
   drawStuffForOneVariable( db, "sf",   "Sampling Fraction", "", batchProd, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
   drawStuffForOneVariable( db, "ecal", "ECAL Energy", "MeV", batchProd, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
@@ -44,12 +72,13 @@ int main() {
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv ) {
 
-  std::pair<TH1D*,TH1D*> pair_act10_abs2 =  get_histos_vs_trasv( varName, batchProd, 15, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
-  std::pair<TH1D*,TH1D*> pair_act10_abs5 =  get_histos_vs_trasv( varName, batchProd, 10, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
-  std::pair<TH1D*,TH1D*> pair_act5_abs2  =  get_histos_vs_trasv( varName, batchProd, 25, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
 
-  drawComparison( db, varName+"res", axisName+" Resolution", "",    pair_act10_abs2.second, pair_act10_abs5.second, pair_act5_abs2.second );
-  drawComparison( db, varName,       axisName,               units, pair_act10_abs2.first , pair_act10_abs5.first , pair_act5_abs2.first  );
+  std::pair<TH1D*,TH1D*> pair_1 =  get_histos_vs_trasv( varName, batchProd, 15, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
+  std::pair<TH1D*,TH1D*> pair_2 =  get_histos_vs_trasv( varName, batchProd, 10, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
+  std::pair<TH1D*,TH1D*> pair_3  =  get_histos_vs_trasv( varName, batchProd, 25, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
+
+  drawComparison( db, varName+"res", axisName+" Resolution", "",    pair_1.second, pair_2.second, pair_3.second );
+  drawComparison( db, varName,       axisName,               units, pair_1.first , pair_2.first , pair_3.first  );
 
 }
 
@@ -223,7 +252,11 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   TH1D* h1_moliere1 = new TH1D("moliere1", "", 10, 0., 1.);
   h1_moliere1->SetLineColor(color1);
 
-  TLegend* legend = new TLegend( 0.28, 0.7, 0.6, 0.9, "CeF_{3} / Lead" );
+  std::string legendTitle = "CeF_{3} / ";
+  if( isBrass ) legendTitle += "Brass";
+  else if( isTung ) legendTitle += "Tungsten";
+  else  legendTitle += "Lead";
+  TLegend* legend = new TLegend( 0.28, 0.7, 0.6, 0.9, legendTitle.c_str() );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
@@ -261,6 +294,7 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   delete c1;
   delete h2_axes;
   delete legend;
+  delete h1_moliere1;
 
 }
 
@@ -268,14 +302,30 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
 float getMoliereRadius( float act, float abs ) {
 
   float moliereRadius = 0.;
-  if( act==10. && abs==2. )
-    moliereRadius = 28.1;
-  else if( act==10. && abs==5. )
-    moliereRadius = 25.4;
-  else if( act== 5. && abs==2. )
-    moliereRadius = 22.6;
-  else if( act== 5. && abs==5. )
-    moliereRadius = 22.3;
+  if( isBrass ) {
+    if( act==10. && abs==5. )
+      moliereRadius = 31.1;
+    else if( act==10. && abs==12. )
+      moliereRadius = 29.8;
+    else if( act== 5. && abs==5. )
+      moliereRadius = 29.8;
+    else if( act== 5. && abs==12. )
+      moliereRadius = 29.2;
+  } else if( isTung ) {
+    if( act==10. && abs==3. )
+      moliereRadius = 23.1;
+    else if( act==5. && abs==3. )
+      moliereRadius = 19.0;
+  } else {
+    if( act==10. && abs==2. )
+      moliereRadius = 28.1;
+    else if( act==10. && abs==5. )
+      moliereRadius = 25.4;
+    else if( act== 5. && abs==2. )
+      moliereRadius = 22.6;
+    else if( act== 5. && abs==5. )
+      moliereRadius = 22.3;
+  }
 
   return moliereRadius;
 
