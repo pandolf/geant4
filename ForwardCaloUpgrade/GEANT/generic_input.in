@@ -61,7 +61,7 @@
 # setEcalCells(0) - number of cells (= 1x1, 2x2, 3x3, 4x4 or 5x5);
 # setEcalCells(1) - transverse size of cell in [mm].
 #
-/ecal/det/setEcalCells 9 20.0 
+/ecal/det/setEcalCells 9 mytransversesize
 #
 # Set energy response for individual Ecal cells:
 #------------------------------------------------
@@ -164,7 +164,8 @@
 # Smearing(1) - "Type" of smearing area: 0 - ring, >0 - square;
 # Smearing(2) - ring radius or square side [mm] of smearing area.
 #
-/gun/setVxSmearing 0 0 50.0
+/gun/setVxSmearing 0 0 0
+#/gun/setVxSmearing 0 0 50.0
 #
 # Set momentum direction of primary particle (Px, Py, and Pz):
 #-------------------------------------------------------------
