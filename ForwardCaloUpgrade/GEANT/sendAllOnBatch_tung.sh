@@ -12,6 +12,8 @@ cat sendOnBatch.py | sed 's/simulation_750MeV_batch/simulation_750MeV_tung_batch
 for i in `seq 0 30`; do
     #python sendOnBatch_tung.py $1 $i 5 2 20
     #python sendOnBatch_tung.py $1 $i 5 5 20
-    python sendOnBatch_tung.py $1 $i 10 2 20
-    python sendOnBatch_tung.py $1 $i 10 5 20
+    #python sendOnBatch_tung.py $1 $i 10 2 20
+    #python sendOnBatch_tung.py $1 $i 10 5 20
+    python sendOnBatch_tung.py $1 $i 5  3 20
+    python sendOnBatch_tung.py $1 $i 10 3 20
 done
