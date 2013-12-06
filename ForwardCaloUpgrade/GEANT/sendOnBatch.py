@@ -5,8 +5,8 @@ import time
 import re
 
 
-if (len(sys.argv) != 5) and (len(sys.argv) != 6):
-    print "usage sendOnBatch.py batchName nLayers activeLayerThickness absorberLayerThickness transverseCellSize[default=20mm]"
+if (len(sys.argv) != 5) and (len(sys.argv) != 6) and (len(sys.argv) != 7):
+    print "usage sendOnBatch.py batchName nLayers activeLayerThickness absorberLayerThickness transverseCellSize[default=20mm] impactPosition[=0mm]"
     sys.exit(1)
 
 
@@ -15,8 +15,11 @@ nLayers = int(sys.argv[2])
 activeLayerThickness = int(sys.argv[3])
 absorberLayerThickness = int(sys.argv[4])
 transverseCellSize = 20
-if len(sys.argv) == 6:
+if len(sys.argv) > 5:
     transverseCellSize = sys.argv[5]
+impactPosition = 0
+if len(sys.argv) > 6:
+    impactPosition = sys.argv[6]
 
 
 #queue = "1nd"
@@ -29,7 +32,7 @@ os.system("mkdir -p "+dir)
 os.system("mkdir -p "+dir+"/log/")
 os.system("mkdir -p "+dir+"/inputfiles/")
 os.system("mkdir -p "+dir+"/src/")
-os.system("mkdir -p "+dir+"/rootfiles/")
+os.system("mkdir -p "+dir+"/rootfiles/temp/")
 os.system("mkdir -p "+dir+"/tables/")
 
 
@@ -43,6 +46,9 @@ if diskoutputdir != "none":
 pwd = os.environ['PWD']
 
 suffix = "n"+ str(nLayers) + "_act" + str(activeLayerThickness) + "_abs" + str(absorberLayerThickness) + "_trasv" + str(transverseCellSize)
+if (int(impactPosition) > 0) :
+    suffix = suffix + "_impact" + str(impactPosition)
+
 
 # prepare the script to run
 outputname = dir+"/src/submit_" + suffix + ".src"
@@ -55,7 +61,7 @@ outputfile.write('source newconfig.sh\n')
 #outputfile.write('source /afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.08/x86_64-slc6-gcc46-opt/root/bin/thisroot.sh\n')
 #outputfile.write('cd -\n')
 #outputfile.write('cd $WORKDIR\n')
-outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + str(nLayers)+ " " + str(activeLayerThickness) + " " + str(absorberLayerThickness) + " " + transverseCellSize + "\n")
+outputfile.write( "bash "+ pwd + "/scripts/simulation_750MeV_batch.sh full " + str(nLayers)+ " " + str(activeLayerThickness) + " " + str(absorberLayerThickness) + " " + str(transverseCellSize) + " " + str(impactPosition) + "\n")
 #outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/rootfiles/{}\n') 
 #outputfile.write('ls tables/parameters_' + suffix + '*.dat | xargs -i scp -o BatchMode=yes -o StrictHostKeyChecking=no {} pccmsrm24:'+diskoutputdir+'/tables/{}\n') 
 outputfile.write('ls rootfiles/samplinghistos_' + suffix + '*.root | xargs -i cp {} '+dir+'/{}\n') 
