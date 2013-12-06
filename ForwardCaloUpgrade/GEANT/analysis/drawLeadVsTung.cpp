@@ -17,7 +17,8 @@ void drawComparison( DrawBase* db, const std::string& batchProdLead, const std::
 
 int main( int argc, char* argv[] ) {
 
-  std::string batchProdLead = "2p5k_v4_withTemp";
+  std::string batchProdLead = "2p5k_v5";
+  //std::string batchProdLead = "2p5k_v4_withTemp";
   std::string batchProdTung = "tung_3mm_v3";
   //std::string batchProdTung = "tung_3mm_v2_postSmearFix";
 
