@@ -46,7 +46,7 @@ int main( int argc, char* argv[] ) {
   system(mkdir_command.c_str());
 
 
-  int maxImpactPosition = 30;
+  int maxImpactPosition = 45;
 
   drawStuffForOneVariable( db, "sf",         "Sampling Fraction", "", batchProd, maxImpactPosition );
   drawStuffForOneVariable( db, "ecal",       "ECAL Energy", "MeV", batchProd, maxImpactPosition );
@@ -81,8 +81,7 @@ void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const st
     abs1=3.;
     abs2=3.;
 
-    trasv = 20.;
-    //trasv = 25.;
+    trasv = 25.;
 
   }
 
@@ -254,8 +253,8 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   float scaleFactor = 1.8;
   yMax *= scaleFactor;
   
-  if(varName=="ecal"||varName=="e_dep") yMax = 700.;
-  //if(varName=="ecalres"||varName=="e_depres") yMax = 1.2;
+  if(varName=="ecal"||varName=="e_dep") yMax = 600.;
+  if(varName=="ecalres"||varName=="e_depres") yMax = 2.;
 
   TCanvas* c1 = new TCanvas("c1", "", 600, 600);
   c1->cd();
@@ -268,12 +267,18 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   
   h2_axes->Draw();
 
+  TLine* cell1 = new TLine( trasv*0.5, 0., trasv*0.5, yMax );
+  cell1->Draw("same");
+
+  TLine* cell2 = new TLine( trasv*1.5, 0., trasv*1.5, yMax );
+  cell2->Draw("same");
+
   std::string absMaterial = "Lead";
   if( isTung ) absMaterial = "Tungsten";
   if( isBrass ) absMaterial = "Brass";
 
   char legendTitle[300];
-  sprintf(legendTitle, "CeF_{3} / %s (%.0fx%.0f Cells)", absMaterial.c_str(), trasv, trasv );
+  sprintf(legendTitle, "CeF_{3} / %s (%.0fx%.0fmm cells)", absMaterial.c_str(), trasv, trasv );
 
   TLegend* legend = new TLegend( 0.2, 0.66, 0.7, 0.9, legendTitle );
   legend->SetTextSize(0.038);
@@ -284,10 +289,10 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   char legendText3[200];
   char legendText4[200];
 
-  sprintf( legendText1, "%d mm / %d mm (%d layers, %dx%d)", act1, abs1, n1, nCells1, nCells1 );
-  sprintf( legendText2, "%d mm / %d mm (%d layers, %dx%d)", act2, abs2, n2, nCells2, nCells2 );
-  sprintf( legendText3, "%d mm / %d mm (%d layers, %dx%d)", act3, abs3, n3, nCells3, nCells3 );
-  sprintf( legendText4, "%d mm / %d mm (%d layers, %dx%d)", act4, abs4, n4, nCells4, nCells4 );
+  sprintf( legendText1, "%d mm / %d mm (%d layers, %.0fx%.0f)", act1, abs1, n1, sqrt(nCells1), sqrt(nCells1) );
+  sprintf( legendText2, "%d mm / %d mm (%d layers, %.0fx%.0f)", act2, abs2, n2, sqrt(nCells2), sqrt(nCells2) );
+  sprintf( legendText3, "%d mm / %d mm (%d layers, %.0fx%.0f)", act3, abs3, n3, sqrt(nCells3), sqrt(nCells3) );
+  sprintf( legendText4, "%d mm / %d mm (%d layers, %.0fx%.0f)", act4, abs4, n4, sqrt(nCells4), sqrt(nCells4) );
 
   legend->AddEntry( h1_1, legendText1, "P" );
   legend->AddEntry( h1_2, legendText2, "P" );
