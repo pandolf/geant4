@@ -13,7 +13,7 @@ bool isTung=false;
 
 
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string&  axisName, const std::string& units, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv );
-std::pair<TH1D*,TH1D*> get_histos_vs_trasv( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv );
+std::pair<TH1D*,TH1D*> get_histos_vs_trasv( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv, bool nineCells=true );
 void drawComparison( DrawBase* db, const std::string& varName, const std::string& yAxisName, const std::string& units, TH1D* h1_1, TH1D* h1_2, TH1D* h1_3 );
 float getMoliereRadius( float act, float abs );
 
@@ -53,7 +53,8 @@ int main( int argc, char* argv[] ) {
   system(mkdir_command.c_str());
 
 
-  float activeLayerThickness = 10.;
+  float activeLayerThickness = 5.;
+  //float activeLayerThickness = 10.;
   float absorberLayerThickness = 2.;
   if( isTung ) absorberLayerThickness=3.;
   if( isBrass ) absorberLayerThickness=5.;
@@ -73,9 +74,21 @@ int main( int argc, char* argv[] ) {
 void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const std::string& axisName, const std::string& units, const std::string& batchProd, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv ) {
 
 
-  std::pair<TH1D*,TH1D*> pair_1 =  get_histos_vs_trasv( varName, batchProd, 15, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
-  std::pair<TH1D*,TH1D*> pair_2 =  get_histos_vs_trasv( varName, batchProd, 10, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
-  std::pair<TH1D*,TH1D*> pair_3  =  get_histos_vs_trasv( varName, batchProd, 25, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
+  int n1 = 15;
+  int n2 = 10;
+  int n3 = 25;
+
+  if( isTung ) {
+
+    n1 = 15;
+    n2 = 15;
+    n3 = 15;
+
+  }
+
+  std::pair<TH1D*,TH1D*> pair_1 = get_histos_vs_trasv( varName, batchProd, n1, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
+  std::pair<TH1D*,TH1D*> pair_2 = get_histos_vs_trasv( varName, batchProd, n2, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv, false );
+  std::pair<TH1D*,TH1D*> pair_3 = get_histos_vs_trasv( varName, batchProd, n3, activeLayerThickness, absorberLayerThickness, minTrasv, maxTrasv );
 
   drawComparison( db, varName+"res", axisName+" Resolution", "",    pair_1.second, pair_2.second, pair_3.second );
   drawComparison( db, varName,       axisName,               units, pair_1.first , pair_2.first , pair_3.first  );
@@ -83,16 +96,19 @@ void drawStuffForOneVariable( DrawBase* db, const std::string& varName, const st
 }
 
 
-std::pair<TH1D*,TH1D*> get_histos_vs_trasv( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv ) {
+std::pair<TH1D*,TH1D*> get_histos_vs_trasv( const std::string& varName, const std::string& batchProd, int nLayers, float activeLayerThickness, float absorberLayerThickness, int minTrasv, int maxTrasv, bool nineCells ) {
+
+
+  int nCells = (nineCells) ? 9 : 1;
 
   int nSteps = 1 + maxTrasv-minTrasv;
 
   char histoName_sf[200];
-  sprintf( histoName_sf, "%s_vs_trasv_act%.0f_abs%.0f", varName.c_str(), activeLayerThickness, absorberLayerThickness );
+  sprintf( histoName_sf, "%s_vs_trasv_n%d_act%.0f_abs%.0f_ncells%d", varName.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, nCells );
   TH1D* h1_sf = new TH1D( histoName_sf, "", nSteps, (float)minTrasv-0.5, (float)maxTrasv+0.5 );
 
   char histoName_reso[200];
-  sprintf( histoName_reso, "%sres_vs_trasv_act%.0f_abs%.0f", varName.c_str(), activeLayerThickness, absorberLayerThickness );
+  sprintf( histoName_reso, "%sres_vs_trasv_n%d_act%.0f_abs%.0f_ncells%d", varName.c_str(), nLayers, activeLayerThickness, absorberLayerThickness, nCells );
   TH1D* h1_reso = new TH1D( histoName_reso, "", nSteps, (float)minTrasv-0.5, (float)maxTrasv+0.5 );
 
   std::string histoName_get = "h_" + varName + "_config0_750MeV";
@@ -131,13 +147,19 @@ std::pair<TH1D*,TH1D*> get_histos_vs_trasv( const std::string& varName, const st
       tree_cell->SetBranchAddress( "n_cells", &n_cells);
       tree_cell->GetEntry(1);
 
-      std::string treeVarName = varName + "[0]";
-      for( unsigned icell=1; icell<n_cells; ++icell ) { //add for all cells
-        char anotherCellName[100];
-        sprintf( anotherCellName, "+%s[%d]", varName.c_str(), icell );
-        std::string anotherCellName_str(anotherCellName);
-        treeVarName += anotherCellName_str;
+      std::string treeVarName = varName;
+      if( nineCells ) {
+        treeVarName += "[0]";
+        for( unsigned icell=1; icell<n_cells; ++icell ) { //add for all cells
+          char anotherCellName[100];
+          sprintf( anotherCellName, "+%s[%d]", varName.c_str(), icell );
+          std::string anotherCellName_str(anotherCellName);
+          treeVarName += anotherCellName_str;
+        }
+      } else {
+        treeVarName += "[4]"; // only central cell
       }
+
 
       h1_sf_tmp = new TH1D("sf_tmp", "", 200, 0., 750.); //eMax = 750 mev
       
@@ -185,13 +207,14 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   const char* name2 = h1_2->GetName();
   const char* name3 = h1_3->GetName();
 
-  std::string scanfText = varName + "_vs_trasv_act%d_abs%d";
-  int act1, abs1;
-  sscanf( name1, scanfText.c_str(), &act1, &abs1 );
-  int act2, abs2;
-  sscanf( name2, scanfText.c_str(), &act2, &abs2 );
-  int act3, abs3;
-  sscanf( name3, scanfText.c_str(), &act3, &abs3 );
+  std::string scanfText = varName + "_vs_trasv_n%d_act%d_abs%d_ncells%d";
+  int act1, abs1, n1, nCells1;
+  int act2, abs2, n2, nCells2;
+  int act3, abs3, n3, nCells3;
+  
+  sscanf( name1, scanfText.c_str(), &n1, &act1, &abs1, &nCells1 );
+  sscanf( name2, scanfText.c_str(), &n2, &act2, &abs2, &nCells2 );
+  sscanf( name3, scanfText.c_str(), &n3, &act3, &abs3, &nCells3 );
 
   float markerSize = 1.6;
 
@@ -256,15 +279,18 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   if( isBrass ) legendTitle += "Brass";
   else if( isTung ) legendTitle += "Tungsten";
   else  legendTitle += "Lead";
-  TLegend* legend = new TLegend( 0.28, 0.7, 0.6, 0.9, legendTitle.c_str() );
+  TLegend* legend = new TLegend( 0.28, 0.63, 0.6, 0.9, legendTitle.c_str() );
   legend->SetTextSize(0.038);
   legend->SetFillColor(0);
 
   char legendText1[200];
+  char legendText2[200];
 
-  sprintf( legendText1, "%d mm / %d mm", act1, abs1 );
+  sprintf( legendText1, "%d mm / %d mm (%d layers, %.0fx%.0f)", act1, abs1, n1, sqrt(nCells1), sqrt(nCells1) );
+  sprintf( legendText2, "%d mm / %d mm (%d layers, %.0fx%.0f)", act2, abs2, n2, sqrt(nCells2), sqrt(nCells2) );
 
   legend->AddEntry( h1_1, legendText1, "P" );
+  legend->AddEntry( h1_2, legendText2, "P" );
   legend->AddEntry( line_moliere1, "Moliere Radius", "L" );
   legend->Draw("same");
 
@@ -277,10 +303,10 @@ void drawComparison( DrawBase* db, const std::string& varName, const std::string
   label_top->AddText("Electron gun, E = 750 MeV");
   label_top->Draw("same");
 
-  
 
 
   h1_1->Draw("P same");
+  h1_2->Draw("P same");
 
   gPad->RedrawAxis();
 
