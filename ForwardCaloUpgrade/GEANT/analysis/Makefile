@@ -28,6 +28,9 @@ drawLeadVsTung: drawLeadVsTung.cpp DrawBase.o fitTools.o
 drawGaussian: drawGaussian.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawGaussian drawGaussian.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+computeCost: computeCost.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o computeCost computeCost.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 
 
 
