@@ -44,11 +44,9 @@ os.system("mkdir -p "+dir+"/tables/")
 
 pwd = os.environ['PWD']
 
-suffix = "n"+ str(options.nLayers) + "_act" + str(options.activeLayerThickness) + "_abs" + str(options.absorberLayerThickness) + "_trasv" + str(options.transverseCellSize)
+suffix = "e" + str(options.energy) + "_n"+ str(options.nLayers) + "_act" + str((int)(options.activeLayerThickness)) + "_abs" + str((int)(options.absorberLayerThickness)) + "_trasv" + str((int)(options.transverseCellSize))
 if (int(options.impactPosition) > 0) :
-    suffix = suffix + "_impact" + str(options.impactPosition)
-
-print(suffix)
+    suffix = suffix + "_impact" + str((int)(options.impactPosition))
 
 
 # prepare the script to run

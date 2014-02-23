@@ -86,10 +86,11 @@ fi
 impactPosition_cm=$(echo "${impactPosition}/10" |bc -l)
 
 
-suffix=n${nlayers}_act${sensthick}_abs${absthick}_trasv${transverseCellSize}
+suffix=e${energ}_n${nlayers}_act${sensthick}_abs${absthick}_trasv${transverseCellSize}
 if [ ${impactPosition} -ne 0 ]; then
     suffix=${suffix}_impact${impactPosition}  
 fi
+
 
 #Generic inputfile that is used to create actual inputfiles
 inputfile=$workdir/generic_input.in
