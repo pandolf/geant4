@@ -31,6 +31,9 @@ drawGaussian: drawGaussian.cpp DrawBase.o fitTools.o
 computeCost: computeCost.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o computeCost computeCost.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+drawPerformanceVsCost: drawPerformanceVsCost.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawPerformanceVsCost drawPerformanceVsCost.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 
 
 
