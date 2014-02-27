@@ -34,6 +34,9 @@ computeCost: computeCost.cpp DrawBase.o fitTools.o
 drawPerformanceVsCost: drawPerformanceVsCost.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawPerformanceVsCost drawPerformanceVsCost.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+drawResolutionVsLength_200GeV: drawResolutionVsLength_200GeV.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawResolutionVsLength_200GeV drawResolutionVsLength_200GeV.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 
 
 
