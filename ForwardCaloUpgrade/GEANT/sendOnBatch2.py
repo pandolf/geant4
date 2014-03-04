@@ -3,7 +3,19 @@ import os
 import sys
 import time
 import re
+import math
 from optparse import OptionParser
+
+
+def get_string(x):
+  thestring = str(int(x))
+  if ( math.modf(x)[0] > 0. ) :
+    thestring = str(int(math.modf(x)[1]) ) + "p" + str(int(10.*(math.modf(x)[0])) )
+  return thestring
+
+
+
+
 
 
 parser = OptionParser()
@@ -44,9 +56,26 @@ os.system("mkdir -p "+dir+"/tables/")
 
 pwd = os.environ['PWD']
 
-suffix = "e" + str(options.energy) + "_n"+ str(options.nLayers) + "_act" + str((int)(options.activeLayerThickness)) + "_abs" + str((int)(options.absorberLayerThickness)) + "_trasv" + str((int)(options.transverseCellSize))
+
+# convert parser strings to float
+act = float(options.activeLayerThickness)
+abs = float(options.absorberLayerThickness)
+trasv = float(options.transverseCellSize)
+impact = float(options.impactPosition)
+
+# convert floats to usable strings:
+act_str = get_string(act)
+abs_str = get_string(act)
+trasv_str = get_string(act)
+impact_str = get_string(act)
+
+
+
+suffix = "e" + str(options.energy) + "_n"+ str(options.nLayers) + "_act" + act_str + "_abs" + abs_str + "_trasv" + trasv_str
+#suffix = "e" + str(options.energy) + "_n"+ str(options.nLayers) + "_act" + str((int)(options.activeLayerThickness)) + "_abs" + str((int)(options.absorberLayerThickness)) + "_trasv" + str((int)(options.transverseCellSize))
 if (int(options.impactPosition) > 0) :
-    suffix = suffix + "_impact" + str((int)(options.impactPosition))
+    suffix = suffix + "_impact" + impact_str
+
 
 
 # prepare the script to run

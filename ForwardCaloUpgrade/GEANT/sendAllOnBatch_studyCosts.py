@@ -24,8 +24,8 @@ X0_target = 24.
 
 detectorLength = 0.
 
-tung_thickness = 3. # in mm, fixed
-cef3_thickness = 2. # in mm, will vary
+tung_thickness = 2.5 # in mm, fixed
+cef3_thickness = 1. # in mm, will vary
 
 
 while ( detectorLength<220. ) :
@@ -39,24 +39,16 @@ while ( detectorLength<220. ) :
 
   detectorLength = ((nLayers+1)*cef3_thickness + nLayers*tung_thickness)
 
-  print( "" )
-  print( "tung_thickness: " + str(tung_thickness) )
-  print( "cef3_thickness: " + str(cef3_thickness) )
-  print( "X0_target: " + str(X0_target) )
-  print( "X0_tung_singleLayer: " + str(X0_tung_singleLayer) )
-  print( "X0_cef3_singleLayer: " + str(X0_cef3_singleLayer) )
-  print( "nLayers: " + str(nLayers) )
-
-#  print("python sendOnBatch2.py -e 1   -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  os.system("python sendOnBatch2.py -e 1   -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  print("python sendOnBatch2.py -e 5  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  os.system("python sendOnBatch2.py -e 5  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  print("python sendOnBatch2.py -e 10  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  os.system("python sendOnBatch2.py -e 10  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  #print("python sendOnBatch2.py -e 100 -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
-#  #os.system("python sendOnBatch2.py -e 100 -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
+  print("python sendOnBatch2.py -e 1   -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  os.system("python sendOnBatch2.py -e 1   -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  print("python sendOnBatch2.py -e 5  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  os.system("python sendOnBatch2.py -e 5  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  print("python sendOnBatch2.py -e 10  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  os.system("python sendOnBatch2.py -e 10  -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str(cef3_thickness) + " --abs " + str(tung_thickness) )
+  #print("python sendOnBatch2.py -e 100 -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
+  #os.system("python sendOnBatch2.py -e 100 -l " + str(options.batchName) + " -n " +str((int)(nLayers)) + " --act " + str((int)(cef3_thickness)) + " --abs " + str((int)(tung_thickness)) )
 
 
-  cef3_thickness = cef3_thickness + 1.
+  cef3_thickness = cef3_thickness + 0.5
   #cef3_thickness = cef3_thickness + 0.5
 

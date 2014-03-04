@@ -76,12 +76,15 @@ energ=($2)
 energ_mip=0
 
 nlayers=($3)
-sensthick=($4)
-absthick=($5)
-transverseCellSize=($6)
+
+sensthick=` echo $4|sed 's/\.0//'|sed 's/\./p/'`
+absthick=` echo $5|sed 's/\.0//'|sed 's/\./p/'`
+transverseCellSize=` echo $6|sed 's/\.0//'|sed 's/\./p/'`
+#absthick=($5)
+#transverseCellSize=($6)
 impactPosition=0
 if [ $# -eq 6 ]; then
-    impactPosition=($7)  
+    impactPosition=` echo $7|sed 's/\.0//'|sed 's/\./p/'`
 fi
 impactPosition_cm=$(echo "${impactPosition}/10" |bc -l)
 
