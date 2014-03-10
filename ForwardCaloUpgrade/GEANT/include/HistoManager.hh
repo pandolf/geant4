@@ -83,6 +83,7 @@ class HistoManager
 
     TTree*    tree_tot;
     TTree*    tree_vec;
+    TTree*    tree_vec_ecal;
     TTree*    tree_ran;
     TTree*    tree_cell;
 
@@ -94,6 +95,7 @@ class HistoManager
     G4double  e_ecal, e_hcal, e_zero, e_abs;
     G4double  r_hcal, r_ecal;
     G4double  e_vec[17];
+    G4double  e_vec_ecal[100];
 
     G4int     n_cells;
     G4double  e_dep[25], e_phot[25], e_unif[25], e_eff[25];

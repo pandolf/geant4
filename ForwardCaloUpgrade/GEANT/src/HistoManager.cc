@@ -25,6 +25,7 @@ HistoManager::HistoManager()
 
  tree_tot  = 0;
  tree_vec  = 0;
+ tree_vec_ecal  = 0;
  tree_ran  = 0;
  tree_cell = 0;
 
@@ -52,6 +53,7 @@ HistoManager::~HistoManager()
 
   delete tree_tot;
   delete tree_vec;
+  delete tree_vec_ecal;
   delete tree_ran;
   delete tree_cell;
   delete histoMessenger;
@@ -118,6 +120,11 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
     histo[4]-> GetYaxis()-> SetTitle("1/E dE/dbin");   
     histo[4]-> SetFillColor(kBlue);
     histo[4]-> SetStats(1);
+
+  tree_vec_ecal = new TTree("VectorEcal", "Layer energy info for ECAL layers");
+  tree_vec_ecal-> Branch("nLtot",&nLtot,"nLtot/I");
+  tree_vec_ecal-> Branch("e_vec_ecal",e_vec_ecal,"e_vec_ecal[nLtot]/D");
+
 
 // Ecal Molier radius [mm] in sensitive material (90% energy)
 //-----------------------------------------------------------
@@ -194,6 +201,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 
   tree_tot = 0;
   tree_vec = 0;
+  tree_vec_ecal = 0;
   tree_ran = 0;
   tree_cell= 0;
 
@@ -213,6 +221,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 
   tree_tot->  Write();
   tree_vec->  Write();
+  tree_vec_ecal->  Write();
   tree_ran->  Write();
   tree_cell-> Write();
 
@@ -304,6 +313,8 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
           histo[4]-> Fill(xlbin,p_lon[jlo]/EdepEcalLong);
        }
      }
+     for(G4int ilo=0; ilo<nLtot; ilo++) e_vec_ecal[ilo] = p_lon[ilo];
+     tree_vec_ecal-> Fill();
    }
 
 // Fill Hcal transverse shower profile in sensitive material
