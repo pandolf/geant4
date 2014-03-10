@@ -13,7 +13,7 @@ std::vector<float> cycleVector( std::vector<float> inputVector );
 int main( int argc, char* argv[] ) {
 
  
-  std::string SFname = "dummy";
+  std::string SFname = "FN";
   if( argc>1 ) {
     std::string SFname_str(argv[1]);
     SFname = SFname_str;
@@ -83,7 +83,7 @@ int main( int argc, char* argv[] ) {
   for( unsigned i=0; i<bestConfig; ++i )
     lysf = cycleVector(lysf);
   for(unsigned j=0; j<lysf.size(); ++j )
-    std::cout << lysf[j] << " ";
+    std::cout << lysf[j] << "\t";
   std::cout << std::endl;
   
   
