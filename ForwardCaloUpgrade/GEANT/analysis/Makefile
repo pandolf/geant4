@@ -37,6 +37,9 @@ drawPerformanceVsCost: drawPerformanceVsCost.cpp DrawBase.o fitTools.o
 drawResolutionVsLength_200GeV: drawResolutionVsLength_200GeV.cpp DrawBase.o fitTools.o
 	$(CC) -Wall $(INCLUDES) -o drawResolutionVsLength_200GeV drawResolutionVsLength_200GeV.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
 
+drawOptimalConfigurationFrascati: drawOptimalConfigurationFrascati.cpp DrawBase.o fitTools.o
+	$(CC) -Wall $(INCLUDES) -o drawOptimalConfigurationFrascati drawOptimalConfigurationFrascati.cpp DrawBase.o fitTools.o $(ROOTFLAG) $(EXTRALIBS)
+
 
 
 
