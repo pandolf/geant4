@@ -48,10 +48,81 @@ int main( int argc, char* argv[] ) {
   float ecalMean_noSF = ecal_noSF[0]->GetMean();
   float ecalRes_noSF =  ecal_noSF[0]->GetRMS()/ecalMean_noSF;
 
-  TFile* prova = TFile::Open("prova.root", "recreate");
-  prova->cd();
-  ecal_noSF[0]->Write();
-  prova->Close();
+  std::vector<TH1D*> ecal_SF = getEcalDepositHistos( ecal_depth, "SF", &lysf );
+
+
+  // and now plot
+  DrawBase* db = new DrawBase("LYSF");
+  
+
+  TCanvas* c1 = new TCanvas("c1", "", 600, 600);
+  c1->cd();
+
+  float xMin = -0.5;
+  float xMax = 19.5;
+  TH2D* axes = new TH2D("axes", "", 10, xMin, xMax, 10, 0., 0.15);
+  axes->SetXTitle( "Configuration Number" );
+  axes->SetYTitle( "ECAL Energy Resolution" );
+
+  axes->Draw();
+
+  TGraphErrors* gr_reso_vs_config = new TGraphErrors(0);
+
+  float minReso=1.;
+  int bestConfig = -1;
+  for( unsigned i=0; i<ecal_SF.size(); ++i ) {
+    float thisReso = ecal_SF[i]->GetRMS()/ecal_SF[i]->GetMean();
+    gr_reso_vs_config->SetPoint( i, (float)i, thisReso );
+    if( thisReso<minReso ) {
+      minReso = thisReso;
+      bestConfig = i;
+    }
+  }
+
+  std::cout << "-> Best resolution (" << minReso << ") found for ordering N." << bestConfig << ":" << std::endl;
+  for( unsigned i=0; i<bestConfig; ++i )
+    lysf = cycleVector(lysf);
+  for(unsigned j=0; j<lysf.size(); ++j )
+    std::cout << lysf[j] << " ";
+  std::cout << std::endl;
+  
+  
+
+  gr_reso_vs_config->SetMarkerStyle(20);
+  gr_reso_vs_config->SetMarkerColor(kBlack);
+  gr_reso_vs_config->SetMarkerSize(1.3);
+
+  TLine* line_noSF = new TLine( xMin, ecalRes_noSF, xMax, ecalRes_noSF );
+  line_noSF->SetLineWidth(2.);
+  line_noSF->SetLineColor(46);
+  line_noSF->Draw("same");
+
+  gr_reso_vs_config->Draw("p same");
+
+
+  float x1 = 0.4;
+  float y1 = 0.953;
+  float x2 = 0.96;
+  float y2 = 0.975;
+
+  TPaveText* label_top = new TPaveText(x1,y1,x2,y2, "brNDC");
+  label_top->SetFillColor(kWhite);
+  label_top->SetTextSize(0.038);
+  label_top->SetTextAlign(31); // align right
+  label_top->SetTextFont(62);
+  label_top->AddText("Electron gun, E = 750 MeV");
+  label_top->Draw("same");
+
+  TLegend* legend = new TLegend( 0.18, 0.2, 0.55, 0.4 );
+  legend->SetTextSize(0.035);
+  //legend->SetTextFont(22);
+  legend->SetFillColor(0);
+  legend->AddEntry( line_noSF, "Uniform Sampling", "L");
+  legend->AddEntry( gr_reso_vs_config, "Non-uniform Sampling Configurations", "P" );
+  legend->Draw("same");
+
+  c1->SaveAs("resolutionVsFrascatiOrdering.eps");
+  c1->SaveAs("resolutionVsFrascatiOrdering.png");
 
   return 0;
 
@@ -78,19 +149,27 @@ std::vector<TH1D*> getEcalDepositHistos( TTree* ecal_depth, const std::string& n
 
 
     for( unsigned i=0; i<tmp_sf.size(); ++i ) {
+      std::cout << std::endl << "-> Starting configuration N." << i << ": " << std::endl;
+      for(unsigned j=0; j<tmp_sf.size(); ++j )
+        std::cout << tmp_sf[j] << " ";
+      std::cout << std::endl;
       TH1D* ecalHisto = getSingleEcalHisto( ecal_depth, Form("%s_%d", name.c_str(), i), tmp_sf );
       returnVector.push_back(ecalHisto);
       tmp_sf = cycleVector(tmp_sf);
     }
+
+    std::cout << std::endl << std::endl << "REVERSE" << std::endl;
     std::reverse(tmp_sf.begin(),tmp_sf.end()); 
 
     for( unsigned i=0; i<tmp_sf.size(); ++i ) {
+      std::cout << std::endl << "-> Starting configuration N." << i+10 << ": " << std::endl;
+      for(unsigned j=0; j<tmp_sf.size(); ++j )
+        std::cout << tmp_sf[j] << " ";
+      std::cout << std::endl;
       TH1D* ecalHisto = getSingleEcalHisto( ecal_depth, Form("%s_%d", name.c_str(), 10+i), tmp_sf );
       returnVector.push_back(ecalHisto);
       tmp_sf = cycleVector(tmp_sf);
     }
-//  for(unsigned i=0; i<lysf.size(); ++i )
-//    std::cout << i << " " << lysf[i] << std::endl;
 
   }
 
