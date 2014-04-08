@@ -130,6 +130,7 @@ void EventAction::EndOfEventAction(const G4Event* evt)
 // fill Ecal transverse hits energy
 //---------------------------------
   myana-> FillEcalTransHits(dEHitsEcal);
+  myana-> FillEcalHitsTree(dEHitsEcal);
 
 //print per event (modulo n)
 //---------------------------

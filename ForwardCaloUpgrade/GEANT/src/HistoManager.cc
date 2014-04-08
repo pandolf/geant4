@@ -28,6 +28,7 @@ HistoManager::HistoManager()
  tree_vec_ecal  = 0;
  tree_ran  = 0;
  tree_cell = 0;
+ tree_hits = 0;
 
  fileName = "test_01.root";
  
@@ -50,6 +51,7 @@ HistoManager::~HistoManager()
 {
   for(G4int ih=0; ih<nhist; ih++) delete histo[ih];
   delete hits;
+  delete tree_hits;
 
   delete tree_tot;
   delete tree_vec;
@@ -189,6 +191,14 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
     hits-> SetFillColor(kBlue);
     hits-> SetStats(1);
 
+  tree_hits = new TTree("tree_hits", ""); 
+  tree_hits-> Branch("nhits" , &t_nhits , "&t_nhits/I");
+  tree_hits-> Branch("hit_x" , t_hit_x , "t_hit_x[t_nhits]/F");
+  tree_hits-> Branch("hit_y" , t_hit_y , "t_hit_y[t_nhits]/F");
+  //tree_hits-> Branch("hit_z" , t_hit_z , "t_hit_z[t_nhits]/F");
+  tree_hits-> Branch("hit_e" , t_hit_e , "t_hit_e[t_nhits]/F");
+  tree_hits-> Branch("totalEnergy" , &t_totalEnergy , "t_totalEnergy/F");
+
   return;
 }
 
@@ -198,6 +208,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 {
   for(G4int ih=0;ih<nhist;ih++) histo[ih]=0;
   hits = 0;
+  tree_hits = 0;
 
   tree_tot = 0;
   tree_vec = 0;
@@ -218,6 +229,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 
   for(G4int ih=0; ih<nhist; ih++) histo[ih]->Write();
   hits->Write();
+  tree_hits->Write();
 
   tree_tot->  Write();
   tree_vec->  Write();
@@ -286,8 +298,11 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
 //-----------------------------------------------------------
    void HistoManager::FillTransShape(G4double* p_tra)
    {
+
      EdepEcalRad = 0.;
-     for(G4int itr=0; itr<nRtot; itr++) EdepEcalRad += p_tra[itr];
+     for(G4int itr=0; itr<nRtot; itr++) {
+       EdepEcalRad += p_tra[itr];
+     }
      if( EdepEcalRad > 0. ) { 
        G4double EdepTemp = 0.0;
        G4double xMolier = 0.0;  
@@ -299,6 +314,7 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
        }
        histo[5]-> Fill(xMolier);
      }
+
    }
 
 // Fill Ecal longitudinal shower profile in sensitive material
@@ -306,7 +322,9 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
    void HistoManager::FillLongShape(G4double* p_lon)
    {
      EdepEcalLong = 0.;
-     for(G4int ilo=0; ilo<nLtot; ilo++) EdepEcalLong += p_lon[ilo];
+     for(G4int ilo=0; ilo<nLtot; ilo++) {
+       EdepEcalLong += p_lon[ilo];
+     }
      if( EdepEcalLong > 0. ) {
        for(G4int jlo=0; jlo<nLtot; jlo++) {
           G4double xlbin = dLbin*jlo + 0.5*dLbin; 
@@ -396,6 +414,34 @@ void HistoManager::Book(G4double Ekin, G4int nLayers)
        }
      }
    }
+
+
+// Fill Ecal hit point distribution in sensitive media (3D in tree)
+//-----------------------------------------------------------------
+   void HistoManager::FillEcalHitsTree(G4double* pa_lon)
+   {   
+
+     EdepEcalHits = 0.;
+     t_nhits=0;
+     for(G4int ij=0; ij<nRtot*nRtot; ij++) EdepEcalHits += pa_lon[ij];
+     t_totalEnergy = EdepEcalHits;
+     if( EdepEcalHits > 0. ) {
+       for(G4int ij=0; ij<nRtot*nRtot; ij++) {
+           G4int iy_ind = ij / nRtot;
+           G4int ix_ind = ij - iy_ind*nRtot; 
+           if( pa_lon[ij] > 0.0 && t_nhits<1000) {
+             t_hit_x[t_nhits] = -0.5*dRbin*nRtot + dRbin*ix_ind + 0.5*dRbin;
+             t_hit_y[t_nhits] = -0.5*dRbin*nRtot + dRbin*iy_ind + 0.5*dRbin;
+             t_hit_e[t_nhits] = pa_lon[ij];
+             t_nhits++;
+           }
+       }
+     }
+
+     tree_hits->Fill();
+
+   }
+
 
 // Set binning for Ecal transverse shower profile
 //------------------------------------------------

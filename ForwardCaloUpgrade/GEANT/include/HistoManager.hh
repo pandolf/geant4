@@ -6,6 +6,7 @@
 
 #include "globals.hh"
 #include "G4ThreeVector.hh"
+#include "TH3D.h"
 
 // ====================================================================
 
@@ -43,6 +44,7 @@ class HistoManager
 
     void FillCells(G4int, G4double*);
     void FillEcalTransHits(G4double*);
+    void FillEcalHitsTree(G4double*);
 
     void SetFileName(G4String);
 
@@ -80,6 +82,13 @@ class HistoManager
 
     TH1D*  histo[nhist];
     TH2D*  hits;
+    TTree* tree_hits;
+    int t_nhits;
+    float t_hit_x[1000];
+    float t_hit_y[1000];
+    //float t_hit_z[1000];
+    float t_hit_e[1000];
+    float t_totalEnergy;
 
     TTree*    tree_tot;
     TTree*    tree_vec;
