@@ -86,7 +86,8 @@ int main( int argc, char* argv[] ) {
 
 
   CaloParameters lysocal = drawSingleConfiguration( db, batchProd, "LYSO", lysocal_act_n, lysocal_act_thick, lysocal_abs_thick );
-  std::cout << "LYSOCAL: " << std::endl;
+  std::cout << std::endl << std::endl;
+  std::cout << "*** LYSOCAL: " << std::endl;
   std::cout << "sf: " << lysocal.sf << std::endl;
   std::cout << "mol: " << lysocal.mol << std::endl;
   std::cout << "res: " << lysocal.res << std::endl;
@@ -148,19 +149,17 @@ int main( int argc, char* argv[] ) {
     //detectorLength = (((float)nLayers+1)*cef3_thickness + (float)nLayers*tung_thickness);
 
     int nLayers = TMath::Ceil( X0_target / ( X0_cef3_singleLayer + X0_tung_singleLayer ) );
-    if( tung_thickness==3. && cef3_thickness==3. ) nLayers = 24;
-    if( tung_thickness==3. && cef3_thickness==9. ) nLayers = 17;
-    if( tung_thickness==3. && cef3_thickness==10. ) nLayers = 17;
     float X0_eff = (float)nLayers*X0_cef3_singleLayer + (float)nLayers*X0_tung_singleLayer;
     detectorLength = (float)nLayers*cef3_thickness + (float)nLayers*tung_thickness;
     if( detectorLength>250. ) break;
     
     CaloParameters thiscal = drawSingleConfiguration( db, batchProd, "CeF3", nLayers, cef3_thickness, tung_thickness );
-
-    std::cout << std::endl;
-    std::cout << "sf: " << thiscal.sf << std::endl;
-    std::cout << "res: " << thiscal.res << std::endl;
+    std::cout << std::endl << std::endl;
+    std::cout << "*** CeF3CAL (N=" << nLayers << ", CeF3=" << cef3_thickness << "mm) " << std::endl;
+    std::cout << "sf: "  << thiscal.sf << std::endl;
     std::cout << "mol: " << thiscal.mol << std::endl;
+    std::cout << "res: " << thiscal.res << std::endl;
+
     if( thiscal.sf>0. ) {
       h1_sf_vs_thickness->SetBinContent( thisBin, thiscal.sf );
       //h1_sf_vs_thickness->SetBinError  ( thisBin, thiscal.sferr );
@@ -264,6 +263,26 @@ int main( int argc, char* argv[] ) {
   h1_res_vs_thickness_norm->Draw("L same");
   h1_sf_vs_thickness_norm ->Draw("L same");
   h1_mol_vs_thickness_norm->Draw("L same");
+
+  //h1_cost_vs_thickness_norm->SetMarkerStyle(20);
+  //h1_res_vs_thickness_norm ->SetMarkerStyle(20);
+  //h1_sf_vs_thickness_norm  ->SetMarkerStyle(20);
+  //h1_mol_vs_thickness_norm ->SetMarkerStyle(20);
+
+  //h1_cost_vs_thickness_norm->SetMarkerSize(1.3);
+  //h1_res_vs_thickness_norm ->SetMarkerSize(1.3);
+  //h1_sf_vs_thickness_norm  ->SetMarkerSize(1.3);
+  //h1_mol_vs_thickness_norm ->SetMarkerSize(1.3);
+
+  //h1_cost_vs_thickness_norm->SetMarkerColor(kBlack);
+  //h1_res_vs_thickness_norm ->SetMarkerColor(46);
+  //h1_sf_vs_thickness_norm  ->SetMarkerColor(29);
+  //h1_mol_vs_thickness_norm ->SetMarkerColor(38);
+
+  //h1_cost_vs_thickness_norm->Draw("p same");
+  //h1_res_vs_thickness_norm->Draw("p same");
+  //h1_sf_vs_thickness_norm ->Draw("p same");
+  //h1_mol_vs_thickness_norm->Draw("p same");
 
 
   c1->SaveAs(Form("%s/CeF3_vs_LYSO.eps", db->get_outputdir().c_str()));
@@ -616,23 +635,12 @@ TF1* drawAndFit( DrawBase* db, TGraphErrors* gr_S, const std::string& name, cons
 
   gPad->RedrawAxis();
 
-  std::string act_str;
-  double intpart;
-  if( modf(act, &intpart) > 0. ) {
-    char act_str_char[100];
-    sprintf( act_str_char, "%.0fp%.0f", act, 10*modf(act, &intpart) );
-    std::string act_str_tmp(act_str_char);
-    act_str = act_str_tmp;
-  } else {
-    char act_str_char[100];
-    sprintf( act_str_char, "%.0f", act );
-    std::string act_str_tmp(act_str_char);
-    act_str = act_str_tmp;
-  }
+  std::string act_str = getStringWithDecimal(act);
+  std::string abso_str = getStringWithDecimal(abso);
 
 
-  c1->SaveAs(Form("%s/fit_%s_n%d_%s_act%s_abs%.0f.eps", db->get_outputdir().c_str(), name.c_str(), nLayers, actType.c_str(), act_str.c_str(), abso) );
-  c1->SaveAs(Form("%s/fit_%s_n%d_%s_act%s_abs%.0f.png", db->get_outputdir().c_str(), name.c_str(), nLayers, actType.c_str(), act_str.c_str(), abso) );
+  c1->SaveAs(Form("%s/fit_%s_n%d_%s_act%s_abs%s.eps", db->get_outputdir().c_str(), name.c_str(), nLayers, actType.c_str(), act_str.c_str(), abso_str.c_str()) );
+  c1->SaveAs(Form("%s/fit_%s_n%d_%s_act%s_abs%s.png", db->get_outputdir().c_str(), name.c_str(), nLayers, actType.c_str(), act_str.c_str(), abso_str.c_str()) );
 
   delete c1;
   delete h2_axes;
@@ -652,7 +660,7 @@ std::string getStringWithDecimal( float act ) {
   fracpart = modf(act, &intpart);
   if( fracpart > 0. ) {
     char act_str_char[100];
-    sprintf( act_str_char, "%.0fp%.0f", intpart, 10*fracpart );
+    sprintf( act_str_char, "%.0fp%.0f", floor(intpart), 10*fracpart );
     std::string act_str_tmp(act_str_char);
     act_str = act_str_tmp;
   } else {
