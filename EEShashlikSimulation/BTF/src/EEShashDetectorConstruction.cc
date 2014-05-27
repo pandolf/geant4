@@ -154,7 +154,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   fNofLayers = 10;
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
-  G4double calorSizeXY  = 25.*mm;
+  G4double calorSizeXY  = 24.*mm;
 
   G4double layerThickness = absThickness + actThickness;
   G4double calorThickness = fNofLayers * layerThickness;
@@ -170,7 +170,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // world:
   G4double worldSizeXY = 1.2 * (3.*calorSizeXY);
-  G4double worldSizeZ  = 1.2 * (fibreLength); 
+  G4double worldSizeZ  = 2. * (fibreLength); 
   
   // Get materials
   //G4Material* defaultMaterial = G4Material::GetMaterial("G4_AIR");
@@ -233,7 +233,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4VSolid* calorimeterS
     = new G4ExtrudedSolid( "Calorimeter",            // its name
         octagonFace,
-        layerThickness/2.,
+        fNofLayers*layerThickness/2.,
         G4TwoVector(0.,0.), 1.,
         G4TwoVector(0.,0.), 1.);
   //= new G4Box("Calorimeter",     // its name
@@ -356,15 +356,15 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  defaultMaterial,  // its material
                  "Fibre");   // its name
                                    
-  new G4PVPlacement(
-                 0,                // no rotation
-                 G4ThreeVector(),  // at (0,0,0)
-                 fibreLV,          // its logical volume                         
-                 "Fibre",    // its name
-                 worldLV,          // its mother  volume
-                 false,            // no boolean operation
-                 0,                // copy number
-                 fCheckOverlaps);  // checking overlaps 
+  //new G4PVPlacement(
+  //               0,                // no rotation
+  //               G4ThreeVector(),  // at (0,0,0)
+  //               fibreLV,          // its logical volume                         
+  //               "Fibre",    // its name
+  //               worldLV,          // its mother  volume
+  //               false,            // no boolean operation
+  //               0,                // copy number
+  //               fCheckOverlaps);  // checking overlaps 
 
 
 
@@ -391,31 +391,46 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  fibreCladMaterial,      // its material
                  "FibreClad");         // its name
 
+
+  // place core and clad inside the fibre volume
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(), // its position
+                 fibreCoreLV,            // its logical volume                         
+                 "FibreCore",            // its name
+                 fibreLV,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
   
+  new G4PVPlacement(
+                 0,                // no rotation
+                 G4ThreeVector(), // its position
+                 fibreCladLV,            // its logical volume                         
+                 "FibreClad",            // its name
+                 fibreLV,          // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+
+  
+
+  // and now place the 4 fibres:
+  int fibreCopy=0;
   for( int ix=-1; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
 
-      G4double xPos = ix*(calorSizeXY/2.-chamferLength/4.);
-      G4double yPos = iy*(calorSizeXY/2.-chamferLength/4.);
+      G4double xPos = ix*(calorSizeXY/2.-0.696);
+      G4double yPos = iy*(calorSizeXY/2.-0.696);
 
       new G4PVPlacement(
                      0,                // no rotation
                      G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.), // its position
-                     fibreCoreLV,            // its logical volume                         
-                     "FibreCore",            // its name
-                     fibreLV,          // its mother  volume
+                     fibreLV,            // its logical volume                         
+                     "Fibre",            // its name
+                     worldLV,          // its mother  volume
                      false,            // no boolean operation
-                     0,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
-
-      new G4PVPlacement(
-                     0,                // no rotation
-                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.), // its position
-                     fibreCladLV,            // its logical volume                         
-                     "FibreClad",            // its name
-                     fibreLV,          // its mother  volume
-                     false,            // no boolean operation
-                     0,                // copy number
+                     fibreCopy++,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
     }
