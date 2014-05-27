@@ -38,7 +38,7 @@
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EEShashRunAction::EEShashRunAction()
+EEShashRunAction::EEShashRunAction( )
  : G4UserRunAction()
 { 
   // set printing event number per each event
@@ -60,19 +60,33 @@ EEShashRunAction::EEShashRunAction()
   //
   
   // Creating histograms
-  analysisManager->CreateH1("1","Edep in absorber", 100, 0., 800*MeV);
-  analysisManager->CreateH1("2","Edep in gap", 100, 0., 100*MeV);
-  analysisManager->CreateH1("3","trackL in absorber", 100, 0., 1*m);
-  analysisManager->CreateH1("4","trackL in gap", 100, 0., 50*cm);
+  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 800*MeV);
+  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 100*MeV);
+  analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 1*m);
+  analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 50*cm);
 
   // Creating ntuple
   //
   analysisManager->CreateNtuple("EEShash", "Edep and TrackL");
   analysisManager->CreateNtupleDColumn("Eabs");
-  analysisManager->CreateNtupleDColumn("Egap");
+  analysisManager->CreateNtupleDColumn("Eact");
   analysisManager->CreateNtupleDColumn("Labs");
-  analysisManager->CreateNtupleDColumn("Lgap");
+  analysisManager->CreateNtupleDColumn("Lact");
   analysisManager->FinishNtuple();
+
+
+  hitsFile_ = TFile::Open("hits.root", "RECREATE");
+  hitsFile_->cd();
+
+  // fuck the system, use a simple TTree*
+  hitsTree_ = new TTree("hitsTree", "");
+
+  for( unsigned i=0; i<nLayers_; ++i ) {
+    EactLayer_[i] = -1.;
+    LYLayer_[i] = 1.;
+  }
+  
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -96,6 +110,12 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
   //
   G4String fileName = "EEShash";
   analysisManager->OpenFile(fileName);
+
+  hitsTree_->Branch( "nLayers", &nLayers_, "nLayers/I" );
+  hitsTree_->Branch( "EactLayer_", EactLayer_, "EactLayer[nLayers]/F" );
+  hitsTree_->Branch( "LYLayer_", LYLayer_, "LYLayer[nLayers]/F" );
+
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -119,7 +139,7 @@ void EEShashRunAction::EndOfRunAction(const G4Run* /*run*/)
        << " rms = " 
        << G4BestUnit(analysisManager->GetH1(1)->rms(),  "Energy") << G4endl;
     
-    G4cout << " EGap : mean = " 
+    G4cout << " Eact : mean = " 
        << G4BestUnit(analysisManager->GetH1(2)->mean(), "Energy") 
        << " rms = " 
        << G4BestUnit(analysisManager->GetH1(2)->rms(),  "Energy") << G4endl;
@@ -129,7 +149,7 @@ void EEShashRunAction::EndOfRunAction(const G4Run* /*run*/)
       << " rms = " 
       << G4BestUnit(analysisManager->GetH1(3)->rms(),  "Length") << G4endl;
 
-    G4cout << " LGap : mean = " 
+    G4cout << " Lact : mean = " 
       << G4BestUnit(analysisManager->GetH1(4)->mean(), "Length") 
       << " rms = " 
       << G4BestUnit(analysisManager->GetH1(4)->rms(),  "Length") << G4endl;
@@ -139,6 +159,10 @@ void EEShashRunAction::EndOfRunAction(const G4Run* /*run*/)
   //
   analysisManager->Write();
   analysisManager->CloseFile();
+
+  hitsFile_->cd();
+  hitsTree_->Write();
+  hitsFile_->Close();
 
 }
 
