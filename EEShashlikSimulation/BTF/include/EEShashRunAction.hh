@@ -32,6 +32,8 @@
 #define EEShashRunAction_h 1
 
 #include "G4UserRunAction.hh"
+#include "TFile.h"
+#include "TTree.h"
 #include "globals.hh"
 
 class G4Run;
@@ -62,6 +64,15 @@ class EEShashRunAction : public G4UserRunAction
 
     virtual void BeginOfRunAction(const G4Run*);
     virtual void   EndOfRunAction(const G4Run*);
+
+  private:
+
+    TFile* hitsFile_;    
+    TTree* hitsTree_;
+    unsigned int nLayers_;
+    float EactLayer_[100];
+    float LYLayer_[100];
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
