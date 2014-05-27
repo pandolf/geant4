@@ -92,6 +92,7 @@ void EEShashDetectorConstruction::DefineMaterials()
   G4double z;  // z=mean number of protons;  
   G4double density; 
   G4int ncomponents, natoms;
+  G4double fractionmass;
 
   G4String symbol;
 
@@ -102,11 +103,16 @@ void EEShashDetectorConstruction::DefineMaterials()
   G4Element* Ge = new G4Element("Germanium"  ,symbol="Ge", z=32., a=72.64*g/mole);
   G4Element* O  = new G4Element("Oxygen"     ,symbol="O" , z=8. , a=16.00*g/mole);
 
+  G4Element* N  = new G4Element("Nitrogen"     ,symbol="N" , z=7., a= 14.01*g/mole);
+
   G4Element* C  = new G4Element("Carbon"     ,symbol="C" , z=6. , a=12.0107*g/mole);
   G4Element* H  = new G4Element("Hydrogen"   ,symbol="H" , z=1. , a=1.00794*g/mole);
 
 
   
+  G4Material* pAir = new G4Material("Air" , density= 1.290*mg/cm3, ncomponents=2);
+  pAir->AddElement(N, fractionmass=0.7);
+  pAir->AddElement(O, fractionmass=0.3);
 
 
   // absorber
@@ -173,8 +179,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double worldSizeZ  = 2. * (fibreLength); 
   
   // Get materials
-  //G4Material* defaultMaterial = G4Material::GetMaterial("G4_AIR");
-  G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
+  G4Material* defaultMaterial = G4Material::GetMaterial("Air");
+  //G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
   //G4Material* absMaterial     = G4Material::GetMaterial("Lead");
   G4Material* absMaterial     = G4Material::GetMaterial("Tungsten");
   G4Material* actMaterial     = G4Material::GetMaterial("CeF3");
@@ -511,7 +517,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       }
 
       G4double zPos = (bgoLength-calorThickness)/2.;
-      G4double miniGap = 0.001*mm;
+      G4double miniGap = 1.*mm;
       G4double xPos = ix*(calorSizeXY + miniGap);
       G4double yPos = iy*(calorSizeXY + miniGap);
 
