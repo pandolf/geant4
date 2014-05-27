@@ -1,4 +1,6 @@
 # $Id: CMakeLists.txt 68058 2013-03-13 14:47:43Z gcosmo $
+set(useROOT true)
+
 
 #----------------------------------------------------------------------------
 # Setup the project
@@ -24,6 +26,11 @@ endif()
 #
 include(${Geant4_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/include)
+if(useROOT)
+	EXECUTE_PROCESS(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CXX_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ROOT_CXX_FLAGS}")
+	include_directories(${ROOT_INCLUDE_DIR})
+endif(useROOT) 
 
 #----------------------------------------------------------------------------
 # Locate sources and headers for this project
@@ -37,7 +44,11 @@ file(GLOB headers ${PROJECT_SOURCE_DIR}/include/*.hh)
 #
 add_executable(runEEShashlik runEEShashlik.cc ${sources} ${headers})
 target_link_libraries(runEEShashlik ${Geant4_LIBRARIES})
-
+if(useROOT)
+	EXECUTE_PROCESS(COMMAND root-config --libs OUTPUT_VARIABLE ROOT_LD_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
+	set(CMAKE_EXE_LINKER_FLAGS ${ROOT_LD_FLAGS})
+	target_link_libraries(runEEShashlik ${ROOT_LIBRARIES})
+endif(useROOT)
 #----------------------------------------------------------------------------
 # Copy all scripts to the build directory, i.e. the directory in which we
 # build EEShash. This is so that we can run the executable directly because it
