@@ -1,0 +1,36 @@
+ Unpack the Geant4 source package geant4.10.00.tar.gz to a location of your choice. For illustration only, this guide will assume it's been unpacked in a directory named /path/to, so that the Geant4 source package sits in a subdirectory
+
+    /path/to/geant4.10.00
+  
+
+We refer to this directory as the source directory. The next step is to create a directory in which to configure and run the build and store the build products. This directory should not be the same as, or inside, the source directory. In this guide, we create this build directory alongside our source directory:
+
+    $ cd /path/to
+    $ mkdir geant4.10.0-build
+    $ ls
+    geant4.10.00  geant4.10.0-build
+  
+
+To configure the build, change into the build directory and run CMake:
+
+    $ cd /path/to/geant4.10.0-build
+
+    $ ccmake /path/to/geant4.10.00
+
+
+then toggle in the configuration and:
+
+ set the install dir where you want
+ turn on data
+ turn on qt
+ turn on opengl
+ whatever else you want
+
+then press [c] to configure. and when that's done press [g] to generate and exit.
+
+then 
+
+    $ make -j 2
+    $ make install
+ 
+
