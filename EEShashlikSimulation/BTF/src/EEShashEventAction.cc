@@ -110,15 +110,19 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
+    //fBgoHCID 
+    //  = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
   }
 
   // Get hits collections
   EEShashCalorHitsCollection* absHC = GetHitsCollection(fAbsHCID, event);
   EEShashCalorHitsCollection* actHC = GetHitsCollection(fActHCID, event);
+  //EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
 
   // Get hit with total values
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
-  EEShashCalorHit* actHit = (*actHC)[absHC->entries()-1];
+  EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
+  //EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
  
   // Print per event (modulo n)
   //
@@ -147,15 +151,25 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // fill ntuple
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
+  //analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
   analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
   analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
-
+  
   int nLayers = actHC->entries()-1; // the last hit is the total energy
   analysisManager->FillNtupleIColumn(4, nLayers);
   for( unsigned i=0; i<nLayers; ++i ) {
     EEShashCalorHit* actHit_i = (*actHC)[i];
     analysisManager->FillNtupleDColumn(5+i, actHit_i->GetEdep());
   }
+
+
+
+//int nBGO = bgoHC->entries()-1; // the last hit is the total energy
+//analysisManager->FillNtupleIColumn(50, nBGO);
+//for( unsigned i=0; i<nBGO; ++i ) {
+//  EEShashCalorHit* bgoHit_i = (*bgoHC)[i];
+//  analysisManager->FillNtupleDColumn(50+i, bgoHit_i->GetEdep());
+//}
 
 
   analysisManager->AddNtupleRow();  
