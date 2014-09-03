@@ -149,7 +149,18 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
   analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
   analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
+
+  int nLayers = actHC->entries()-1; // the last hit is the total energy
+  analysisManager->FillNtupleIColumn(4, nLayers);
+  for( unsigned i=0; i<nLayers; ++i ) {
+    EEShashCalorHit* actHit_i = (*actHC)[i];
+    analysisManager->FillNtupleDColumn(5+i, actHit_i->GetEdep());
+  }
+
+
   analysisManager->AddNtupleRow();  
+
+  
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
