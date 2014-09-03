@@ -98,7 +98,7 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
   // smear gun just like in BTF
-  float x = rand_->Gaus( 12., 4. );
+  float x = rand_->Gaus( 0., 4. );
   float y = rand_->Gaus( 0., 3. );
   G4double xBeam = x*mm;
   G4double yBeam = y*mm;
