@@ -62,6 +62,8 @@ private:
   // data members                   
   G4int  fAbsHCID;
   G4int  fActHCID;
+  G4int  fBgoHCID;
+
 };
                      
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
