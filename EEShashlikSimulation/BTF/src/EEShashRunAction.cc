@@ -70,7 +70,8 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtuple("EEShash", "Edep and TrackL");
   analysisManager->CreateNtupleDColumn("Eabs");
   analysisManager->CreateNtupleDColumn("Eact");
-  analysisManager->CreateNtupleDColumn("Labs");
+  analysisManager->CreateNtupleDColumn("Ebgo");
+  //analysisManager->CreateNtupleDColumn("Labs");
   analysisManager->CreateNtupleDColumn("Lact");
 
 
@@ -78,6 +79,13 @@ EEShashRunAction::EEShashRunAction( )
   // didnt find an easier way to do this
   for( unsigned i=0; i<50; ++i )
     analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
+
+
+  analysisManager->CreateNtupleIColumn("nBGO");
+  for( unsigned i=0; i<8; ++i )
+    analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
+
+
   analysisManager->FinishNtuple();
 
 
