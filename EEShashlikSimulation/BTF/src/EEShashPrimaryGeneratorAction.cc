@@ -102,6 +102,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   float y = rand_->Gaus( 0., 3. );
   G4double xBeam = x*mm;
   G4double yBeam = y*mm;
+  //G4double xBeam = 12.-0.696;
+  //G4double yBeam = 12.-0.696;
   
   // Set gun position
   fParticleGun
