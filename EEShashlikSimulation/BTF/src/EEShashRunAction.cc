@@ -72,19 +72,25 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("Eact");
   analysisManager->CreateNtupleDColumn("Labs");
   analysisManager->CreateNtupleDColumn("Lact");
+
+
+  analysisManager->CreateNtupleIColumn("nLayers");
+  // didnt find an easier way to do this
+  for( unsigned i=0; i<50; ++i )
+    analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
   analysisManager->FinishNtuple();
 
 
-  hitsFile_ = TFile::Open("hits.root", "RECREATE");
-  hitsFile_->cd();
+//hitsFile_ = TFile::Open("hits.root", "RECREATE");
+//hitsFile_->cd();
 
-  // fuck the system, use a simple TTree*
-  hitsTree_ = new TTree("hitsTree", "");
+//// fuck the system, use a simple TTree*
+//hitsTree_ = new TTree("hitsTree", "");
 
-  for( unsigned i=0; i<nLayers_; ++i ) {
-    EactLayer_[i] = -1.;
-    LYLayer_[i] = 1.;
-  }
+//for( unsigned i=0; i<nLayers_; ++i ) {
+//  EactLayer_[i] = 0.;
+//  LYLayer_[i] = 1.;
+//}
   
 
 }
@@ -111,9 +117,9 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
   G4String fileName = "EEShash";
   analysisManager->OpenFile(fileName);
 
-  hitsTree_->Branch( "nLayers", &nLayers_, "nLayers/I" );
-  hitsTree_->Branch( "EactLayer_", EactLayer_, "EactLayer[nLayers]/F" );
-  hitsTree_->Branch( "LYLayer_", LYLayer_, "LYLayer[nLayers]/F" );
+  //hitsTree_->Branch( "nLayers", &nLayers_, "nLayers/I" );
+  //hitsTree_->Branch( "EactLayer_", EactLayer_, "EactLayer[nLayers]/F" );
+  //hitsTree_->Branch( "LYLayer_", LYLayer_, "LYLayer[nLayers]/F" );
 
 
 }
@@ -160,9 +166,9 @@ void EEShashRunAction::EndOfRunAction(const G4Run* /*run*/)
   analysisManager->Write();
   analysisManager->CloseFile();
 
-  hitsFile_->cd();
-  hitsTree_->Write();
-  hitsFile_->Close();
+  //hitsFile_->cd();
+  //hitsTree_->Write();
+  //hitsFile_->Close();
 
 }
 
