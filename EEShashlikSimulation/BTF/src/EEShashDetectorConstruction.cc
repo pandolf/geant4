@@ -383,7 +383,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
     = new G4LogicalVolume(
                  fibreCoreS,             // its solid
                  fibreCoreMaterial,      // its material
-                 "FibreCore");         // its name
+                 "FibreCoreLV");         // its name
 
 
   // fibre clad:
@@ -403,7 +403,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // no rotation
                  G4ThreeVector(), // its position
                  fibreCoreLV,            // its logical volume                         
-                 "FibreCore",            // its name
+                 "FibreCoreLV",            // its name
                  fibreLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
@@ -555,18 +555,25 @@ void EEShashDetectorConstruction::ConstructSDandField()
   //
   // First the actual Shashlik:
   EEShashCalorimeterSD* absSD 
-    = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers);
+    = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers,1);
   SetSensitiveDetector("AbsLV",absSD);
 
   EEShashCalorimeterSD* actSD 
-    = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers);
+    = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers,1);
   SetSensitiveDetector("ActLV",actSD);
 
 
-  //// then the surrounding BGO matrix:
+  // then the surrounding BGO matrix:
   EEShashCalorimeterSD* bgoSD 
-    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", 8);
+    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", 8,0);
   SetSensitiveDetector("BGOLV",bgoSD);
+
+
+  // then the fibres
+  EEShashCalorimeterSD* fibrSD 
+    = new EEShashCalorimeterSD("FibrSD", "FibrHitsCollection", 4,1);
+  SetSensitiveDetector("FibreCoreLV",fibrSD);
+
 
   // 
   // Magnetic field
