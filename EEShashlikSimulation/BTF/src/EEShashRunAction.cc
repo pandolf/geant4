@@ -71,8 +71,9 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("Eabs");
   analysisManager->CreateNtupleDColumn("Eact");
   analysisManager->CreateNtupleDColumn("Ebgo");
+  analysisManager->CreateNtupleDColumn("Efibr");
   //analysisManager->CreateNtupleDColumn("Labs");
-  analysisManager->CreateNtupleDColumn("Lact");
+  //analysisManager->CreateNtupleDColumn("Lact");
 
 
   analysisManager->CreateNtupleIColumn("nLayers");
