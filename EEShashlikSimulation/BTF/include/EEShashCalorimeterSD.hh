@@ -53,7 +53,8 @@ class EEShashCalorimeterSD : public G4VSensitiveDetector
   public:
     EEShashCalorimeterSD(const G4String& name, 
                      const G4String& hitsCollectionName, 
-                     G4int nofCells);
+                     G4int nofCells,
+                     G4int parent);
     virtual ~EEShashCalorimeterSD();
   
     // methods from base class
@@ -64,6 +65,7 @@ class EEShashCalorimeterSD : public G4VSensitiveDetector
   private:
     EEShashCalorHitsCollection* fHitsCollection;
     G4int     fNofCells;
+    G4int     fParent;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

@@ -40,10 +40,12 @@
 EEShashCalorimeterSD::EEShashCalorimeterSD(
                             const G4String& name, 
                             const G4String& hitsCollectionName,
-                            G4int nofCells)
+                            G4int nofCells,
+                            G4int parent)
  : G4VSensitiveDetector(name),
    fHitsCollection(0),
-   fNofCells(nofCells)
+   fNofCells(nofCells),
+   fParent(parent)
 {
   collectionName.insert(hitsCollectionName);
 }
@@ -94,7 +96,7 @@ G4bool EEShashCalorimeterSD::ProcessHits(G4Step* step,
     = (G4TouchableHistory*)(step->GetPreStepPoint()->GetTouchable());
     
   // Get calorimeter cell id 
-  G4int layerNumber = touchable->GetReplicaNumber(1);
+  G4int layerNumber = touchable->GetReplicaNumber(fParent);
   
   // Get hit accounting data for this cell
   EEShashCalorHit* hit = (*fHitsCollection)[layerNumber];
