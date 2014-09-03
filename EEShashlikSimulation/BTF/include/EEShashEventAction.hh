@@ -63,6 +63,7 @@ private:
   G4int  fAbsHCID;
   G4int  fActHCID;
   G4int  fBgoHCID;
+  G4int  fFibrHCID;
 
 };
                      

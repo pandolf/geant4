@@ -47,7 +47,9 @@
 EEShashEventAction::EEShashEventAction()
  : G4UserEventAction(),
    fAbsHCID(-1),
-   fActHCID(-1)
+   fActHCID(-1),
+   fBgoHCID(-1),
+   fFibrHCID(-1)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -110,19 +112,23 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
-    //fBgoHCID 
-    //  = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
+    fBgoHCID 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
+    fFibrHCID 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollection");
   }
 
   // Get hits collections
   EEShashCalorHitsCollection* absHC = GetHitsCollection(fAbsHCID, event);
   EEShashCalorHitsCollection* actHC = GetHitsCollection(fActHCID, event);
-  //EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
+  EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
+  EEShashCalorHitsCollection* fibrHC = GetHitsCollection(fFibrHCID, event);
 
   // Get hit with total values
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
   EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
-  //EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
+  EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
+  EEShashCalorHit* fibrHit = (*fibrHC)[fibrHC->entries()-1];
  
   // Print per event (modulo n)
   //
@@ -151,9 +157,10 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // fill ntuple
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
-  //analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
-  analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
-  analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
+  analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
+  analysisManager->FillNtupleDColumn(3, fibrHit->GetEdep());
+  //analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
+  //analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
   
   int nLayers = actHC->entries()-1; // the last hit is the total energy
   analysisManager->FillNtupleIColumn(4, nLayers);
