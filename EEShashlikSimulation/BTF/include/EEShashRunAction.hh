@@ -66,12 +66,13 @@ class EEShashRunAction : public G4UserRunAction
     virtual void   EndOfRunAction(const G4Run*);
 
   private:
+    
+    //TFile* hitsFile_;    
+    //TTree* hitsTree_;
+    //unsigned int nLayers_;
+    //float EactLayer_[100];
+    //float LYLayer_[100];
 
-    TFile* hitsFile_;    
-    TTree* hitsTree_;
-    unsigned int nLayers_;
-    float EactLayer_[100];
-    float LYLayer_[100];
 
 };
 
