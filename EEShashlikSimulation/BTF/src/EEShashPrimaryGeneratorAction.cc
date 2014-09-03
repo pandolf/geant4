@@ -57,6 +57,9 @@ EEShashPrimaryGeneratorAction::EEShashPrimaryGeneratorAction()
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
   fParticleGun->SetParticleEnergy(50.*MeV);
+
+  rand_ = new TRandom3(13);
+
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -92,10 +95,17 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
     G4Exception("EEShashPrimaryGeneratorAction::GeneratePrimaries()",
       "MyCode0002", JustWarning, msg);
   } 
+
+
+  // smear gun just like in BTF
+  float x = rand_->Gaus( 12., 4. );
+  float y = rand_->Gaus( 0., 3. );
+  G4double xBeam = x*mm;
+  G4double yBeam = y*mm;
   
   // Set gun position
   fParticleGun
-    ->SetParticlePosition(G4ThreeVector(0., 0., -worldZHalfLength));
+    ->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -worldZHalfLength));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }

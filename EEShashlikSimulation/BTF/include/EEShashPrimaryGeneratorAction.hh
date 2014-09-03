@@ -33,6 +33,7 @@
 
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
+#include "TRandom3.h"
 
 class G4ParticleGun;
 class G4Event;
@@ -57,6 +58,7 @@ public:
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
+  TRandom3* rand_;
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
