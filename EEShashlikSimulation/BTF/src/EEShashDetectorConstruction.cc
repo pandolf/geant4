@@ -498,7 +498,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
      = new G4LogicalVolume(
                 bgoS,     // its solid
                 bgoMaterial,  // its material
-                "BGOChannel");   // its name
+                "BGOLV");   // its name
 
   bgoLV->SetVisAttributes(simpleBoxVisAtt);
                                        
@@ -564,7 +564,9 @@ void EEShashDetectorConstruction::ConstructSDandField()
 
 
   //// then the surrounding BGO matrix:
-  //SetSensitiveDetector("bgoLV",bgoSD);
+  EEShashCalorimeterSD* bgoSD 
+    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", 8);
+  SetSensitiveDetector("BGOLV",bgoSD);
 
   // 
   // Magnetic field
