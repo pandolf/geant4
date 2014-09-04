@@ -56,7 +56,7 @@ class G4GlobalMagFieldMessenger;
 class EEShashDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    EEShashDetectorConstruction();
+    EEShashDetectorConstruction( G4double rotation=0., G4double zTras = 0. );
     virtual ~EEShashDetectorConstruction();
 
   public:
@@ -74,8 +74,10 @@ class EEShashDetectorConstruction : public G4VUserDetectorConstruction
     static G4ThreadLocal G4GlobalMagFieldMessenger*  fMagFieldMessenger; 
                                       // magnetic field messenger
 
-    G4bool  fCheckOverlaps; // option to activate checking of volumes overlaps
-    G4int   fNofLayers;     // number of layers
+    G4bool   fCheckOverlaps; // option to activate checking of volumes overlaps
+    G4int    fNofLayers;     // number of layers
+    G4double fRotation;      // rotation of the detector compared to the beam
+    G4double fZtraslation;   // traslation on the Z axis (done *before*) the rotation
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

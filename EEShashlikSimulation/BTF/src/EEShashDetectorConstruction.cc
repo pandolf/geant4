@@ -59,10 +59,12 @@ G4GlobalMagFieldMessenger* EEShashDetectorConstruction::fMagFieldMessenger = 0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EEShashDetectorConstruction::EEShashDetectorConstruction()
+EEShashDetectorConstruction::EEShashDetectorConstruction( G4double rotation, G4double zTras )
  : G4VUserDetectorConstruction(),
    fCheckOverlaps(true),
-   fNofLayers(-1)
+   fNofLayers(-1),
+   fRotation(rotation),
+   fZtraslation(zTras)
 {
 }
 
@@ -164,6 +166,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   G4double layerThickness = absThickness + actThickness;
   G4double calorThickness = fNofLayers * layerThickness;
+  fZtraslation += calorThickness/2.;
 
   // BGO:
   G4double bgoLength = 240.*mm;
@@ -175,8 +178,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
 
   // world:
-  G4double worldSizeXY = 1.2 * (3.*calorSizeXY);
-  G4double worldSizeZ  = 2. * (fibreLength); 
+  G4double worldSizeXY = 10. * (3.*calorSizeXY);
+  G4double worldSizeZ  = 10. * (fibreLength); 
   
   // Get materials
   G4Material* defaultMaterial = G4Material::GetMaterial("Air");
@@ -220,6 +223,32 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
   
+
+
+  G4VSolid* labS 
+    = new G4Box("lab",           // its name
+                 worldSizeXY/4, worldSizeXY/4, worldSizeZ/4); // its size
+                         
+  G4LogicalVolume* labLV
+    = new G4LogicalVolume(
+                 labS,           // its solid
+                 defaultMaterial,  // its material
+                 "lab");         // its name
+
+
+  G4RotationMatrix* rotation = new G4RotationMatrix();
+  rotation->rotateX(fRotation);
+                                   
+  new G4PVPlacement(
+                 rotation,                // no rotation
+                 G4ThreeVector(),  // at (0,0,0)
+                 labLV,          // its logical volume                         
+                 "lab",          // its name
+                 worldLV,                // its mother  volume
+                 false,            // no boolean operation
+                 0,                // copy number
+                 fCheckOverlaps);  // checking overlaps 
+  
   //                               
   // Calorimeter
   //  
@@ -253,10 +282,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                                    
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(),  // at (0,0,0)
+                 G4ThreeVector(0., 0., fZtraslation),  // its position
                  calorLV,          // its logical volume                         
                  "Calorimeter",    // its name
-                 worldLV,          // its mother  volume
+                 labLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
@@ -367,7 +396,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //               G4ThreeVector(),  // at (0,0,0)
   //               fibreLV,          // its logical volume                         
   //               "Fibre",    // its name
-  //               worldLV,          // its mother  volume
+  //               labLV,          // its mother  volume
   //               false,            // no boolean operation
   //               0,                // copy number
   //               fCheckOverlaps);  // checking overlaps 
@@ -401,7 +430,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // place core and clad inside the fibre volume
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(), // its position
+                 G4ThreeVector(0., 0., 0.), // its position
                  fibreCoreLV,            // its logical volume                         
                  "FibreCoreLV",            // its name
                  fibreLV,          // its mother  volume
@@ -411,7 +440,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(), // its position
+                 G4ThreeVector(0., 0., 0.), // its position
                  fibreCladLV,            // its logical volume                         
                  "FibreClad",            // its name
                  fibreLV,          // its mother  volume
@@ -431,10 +460,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.), // its position
+                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation), // its position
                      fibreLV,            // its logical volume                         
                      "Fibre",            // its name
-                     worldLV,          // its mother  volume
+                     labLV,          // its mother  volume
                      false,            // no boolean operation
                      fibreCopy++,                // copy number
                      fCheckOverlaps);  // checking overlaps 
@@ -458,7 +487,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //
   worldLV->SetVisAttributes (G4VisAttributes::Invisible);
   fibreLV->SetVisAttributes (G4VisAttributes::Invisible);
-  //calorLV->SetVisAttributes (G4VisAttributes::Invisible);
+  labLV->SetVisAttributes (G4VisAttributes::Invisible);
 
 
   G4VisAttributes* grayBox= new G4VisAttributes(G4Colour(105,105,105));
@@ -523,10 +552,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos, yPos, zPos),  // at (0,0,0)
+                     G4ThreeVector(xPos, yPos, zPos + fZtraslation),  // at (0,0,0)
                      bgoLV,          // its logical volume                         
                      "BGOChannel",    // its name
-                     worldLV,          // its mother  volume
+                     labLV,          // its mother  volume
                      false,            // no boolean operation
                      copyNumber,                // copy number
                      fCheckOverlaps);  // checking overlaps 
