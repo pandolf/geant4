@@ -75,12 +75,16 @@ int main(int argc,char** argv)
   
   G4String macro;
   G4String session;
+  G4double rotation = 0.;
+  G4double zTras = 0.;
 #ifdef G4MULTITHREADED
   G4int nThreads = 0;
 #endif
   for ( G4int i=1; i<argc; i=i+2 ) {
     if      ( G4String(argv[i]) == "-m" ) macro = argv[i+1];
     else if ( G4String(argv[i]) == "-u" ) session = argv[i+1];
+    else if ( G4String(argv[i]) == "-r" ) rotation = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-z" ) zTras = atof(argv[i+1]);
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
       nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -109,7 +113,7 @@ int main(int argc,char** argv)
 
   // Set mandatory initialization classes
   //
-  EEShashDetectorConstruction* detConstruction = new EEShashDetectorConstruction();
+  EEShashDetectorConstruction* detConstruction = new EEShashDetectorConstruction(rotation, zTras);
   runManager->SetUserInitialization(detConstruction);
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
