@@ -102,7 +102,9 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   float y = rand_->Gaus( 0., 3. );
   G4double xBeam = x*mm;
   G4double yBeam = y*mm;
-  //G4double xBeam = 12.-0.696;
+  //G4double xBeam = 0.;  // 0,0 with no smearing (well, there's still air scattering)
+  //G4double yBeam = 0.;
+  //G4double xBeam = 12.-0.696; // centered on a fibre
   //G4double yBeam = 12.-0.696;
   
   // Set gun position
