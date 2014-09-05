@@ -180,6 +180,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // world:
   G4double worldSizeXY = 10. * (3.*calorSizeXY);
   G4double worldSizeZ  = 10. * (fibreLength); 
+  //G4double worldSizeXY = 1.2 * (3.*calorSizeXY);
+  //G4double worldSizeZ = 2. * (fibreLength); 
   
   // Get materials
   G4Material* defaultMaterial = G4Material::GetMaterial("Air");
@@ -237,7 +239,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
 
   G4RotationMatrix* rotation = new G4RotationMatrix();
-  rotation->rotateX(fRotation);
+  rotation->rotateX(fRotation*3.14159265359/180.);
                                    
   new G4PVPlacement(
                  rotation,                // no rotation

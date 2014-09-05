@@ -56,7 +56,7 @@ class G4GlobalMagFieldMessenger;
 class EEShashDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    EEShashDetectorConstruction( G4double rotation=0., G4double zTras = 0. );
+    EEShashDetectorConstruction( G4double rotation=0., G4double zTras = 0. ); // rotation is in degrees, zTraslation in mm
     virtual ~EEShashDetectorConstruction();
 
   public:
