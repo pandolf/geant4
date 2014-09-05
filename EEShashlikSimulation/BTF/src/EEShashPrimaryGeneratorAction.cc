@@ -56,7 +56,7 @@ EEShashPrimaryGeneratorAction::EEShashPrimaryGeneratorAction()
     = G4ParticleTable::GetParticleTable()->FindParticle("e-");
   fParticleGun->SetParticleDefinition(particleDefinition);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(50.*MeV);
+  fParticleGun->SetParticleEnergy(491.*MeV);
 
   rand_ = new TRandom3(13);
 
@@ -108,8 +108,7 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //G4double yBeam = 12.-0.696;
   
   // Set gun position
-  fParticleGun
-    ->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -worldZHalfLength));
+  fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.5*m));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);
 }
