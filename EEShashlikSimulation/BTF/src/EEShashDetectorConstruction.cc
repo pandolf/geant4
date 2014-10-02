@@ -176,6 +176,11 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // fibres:
   G4double fibreLength = 420.*mm;
 
+  // PMMA scintillator 3x3x0.4cm:
+  G4double scintSizeXY = 30.*mm;
+  G4double scintLength = 4.*mm;
+
+
 
   // world:
   G4double worldSizeXY = 10. * (3.*calorSizeXY);
@@ -192,6 +197,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4Material* bgoMaterial     = G4Material::GetMaterial("BGO");
   G4Material* fibreCoreMaterial  = G4Material::GetMaterial("Polystyrene");
   G4Material* fibreCladMaterial  = G4Material::GetMaterial("PMMA");
+  G4Material* scintMaterial = G4Material::GetMaterial("PMMA");
 
   
   if ( ! defaultMaterial || ! absMaterial || ! actMaterial ) {
@@ -483,6 +489,31 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
          << actThickness/mm << "mm of " << actMaterial->GetName() << " ] " 
          << "\n------------------------------------------------------------\n";
 
+  //
+  //Scintillator 
+  //
+  G4VSolid* ScintS
+    = new G4Box( "Scintillator",            // its name
+		 scintSizeXY/2., scintSizeXY/2., scintLength/2.); //its size
+
+                   
+  G4LogicalVolume* ScintLV 
+     = new G4LogicalVolume(
+                ScintS,     // its solid
+                scintMaterial,  // its material
+                "ScintLV");   // its name
+
+      new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-50+scintLength/2.), // its position
+                     ScintLV,            // its logical volume                         
+                     "Scintillator",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+  
+
 
   //                                        
   // Visualization attributes
@@ -505,6 +536,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   fibreCoreLV->SetVisAttributes(magentaBox);
   fibreCladLV->SetVisAttributes(magentaBox);
 
+  G4VisAttributes* violetBox= new G4VisAttributes(G4Colour(200,0,255));
+  violetBox->SetForceSolid(true);
+  ScintLV->SetVisAttributes(violetBox);
+ 
 
 
   //  
@@ -605,6 +640,12 @@ void EEShashDetectorConstruction::ConstructSDandField()
     = new EEShashCalorimeterSD("FibrSD", "FibrHitsCollection", 4,1);
   SetSensitiveDetector("FibreCoreLV",fibrSD);
 
+  /*
+  // then there is also the Scintillator
+  EEShashCalorimeterSD* scintSD 
+    = new EEShashCalorimeterSD("ScintSD", "ScintHitsCollection", 1,1);
+  SetSensitiveDetector("ScintLV",scintSD);
+  */
 
   // 
   // Magnetic field
