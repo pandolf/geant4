@@ -1,0 +1,6 @@
+/tracking/verbose 0
+/control/verbose 0
+/gun/particle proton
+/gun/energy 491 MeV                                                                             
+/run/printProgress 5000
+/run/beamOn 100000
