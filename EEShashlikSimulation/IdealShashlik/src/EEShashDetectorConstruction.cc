@@ -165,7 +165,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   //  G4double calorSizeXY  = 240.*mm;
-  G4double calorSizeXY  = 72.*mm;
+  G4double calorSizeXY  = 120.*mm;
 
   G4double layerThickness = absThickness + actThickness;
   G4double calorThickness = fNofLayers * layerThickness;
