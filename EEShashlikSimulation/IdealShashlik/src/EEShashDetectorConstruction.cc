@@ -144,6 +144,11 @@ void EEShashDetectorConstruction::DefineMaterials()
   PMMA->AddElement(O , natoms=2);
   PMMA->AddElement(H , natoms=8);
   
+  G4Material* POM = new G4Material("POM", density=1.415*g/cm3, ncomponents=3);
+  POM->AddElement(C , natoms=1);
+  POM->AddElement(O , natoms=1);
+  POM->AddElement(H , natoms=2);
+  
 
   // Vacuum
   new G4Material("Galactic", z=1., a=1.01*g/mole,density= universe_mean_density,
@@ -165,7 +170,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   //  G4double calorSizeXY  = 240.*mm;
-  G4double calorSizeXY  = 120.*mm;
+  G4double calorSizeXY  = 24.*mm;
 
   G4double layerThickness = absThickness + actThickness;
   G4double calorThickness = fNofLayers * layerThickness;
@@ -180,9 +185,18 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // fibres:
   G4double fibreLength = 420.*mm;
 
-  // PMMA scintillator 3x3x0.4cm:
+  // Scintillator 30x30x4mm:
   G4double scintSizeXY = 30.*mm;
-  G4double scintLength = 4.*mm;
+  G4double scintLength = 5.*mm;
+
+  // Hodoscope 8x8x1mm:
+  G4double hodoSizeXY = 8.5*mm;
+  G4double hodoLength = 4.*mm;
+
+  // Weird plastic piece at beginning of shashlik, I shall name it PomPom
+  G4double pompomSizeXY = 24 *mm;
+  G4double pompomLength = 8*mm;
+
 
 
   // world:
@@ -200,7 +214,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // G4Material* bgoMaterial     = G4Material::GetMaterial("BGO");
   G4Material* fibreCoreMaterial  = G4Material::GetMaterial("Polystyrene");
   G4Material* fibreCladMaterial  = G4Material::GetMaterial("PMMA");
-  G4Material* scintMaterial = G4Material::GetMaterial("PMMA");
+  G4Material* scintMaterial   = G4Material::GetMaterial("PMMA");
+  G4Material* hodoMaterial    = G4Material::GetMaterial("PMMA");
+  G4Material* pompomMaterial = G4Material::GetMaterial("POM");
 
   
   if ( ! defaultMaterial || ! absMaterial || ! actMaterial ) {
@@ -291,17 +307,17 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  calorimeterS,     // its solid
                  defaultMaterial,  // its material
                  "Calorimeter");   // its name
-                                   
+                                    
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(0., 0., fZtraslation),  // its position
+                 G4ThreeVector(0., 0., fZtraslation+pompomLength),  // its position
                  calorLV,          // its logical volume                         
                  "Calorimeter",    // its name
                  labLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
-   
+  
   //                                 
   // Layer
   //
@@ -330,7 +346,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  kZAxis,           // axis of replication
                  fNofLayers,        // number of replica
                  layerThickness);  // witdth of replica
-  
+ 
   //                               
   // Absorber
   //
@@ -386,6 +402,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
+  
+
+
 
 
 
@@ -472,7 +491,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation), // its position
+                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation +pompomLength), // its position
                      fibreLV,            // its logical volume                         
                      "Fibre",            // its name
                      labLV,          // its mother  volume
@@ -512,7 +531,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-50+scintLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-150.+scintLength/2.), // its position
                      ScintLV,            // its logical volume                         
                      "Scintillator",            // its name
                      labLV,          // its mother  volume
@@ -520,6 +539,115 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      0,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
+
+  //
+  // Hodoscope 
+  //
+  G4VSolid* HodoS
+    = new G4Box( "Hodoscope",            // its name
+		 hodoSizeXY/2., hodoSizeXY/2., hodoLength/2.); //its size
+
+                   
+  G4LogicalVolume* HodoLV 
+     = new G4LogicalVolume(
+                HodoS,     // its solid
+                hodoMaterial,  // its material
+                "HodoLV");   // its name
+
+      new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-15+hodoLength/2.), // its position
+                     HodoLV,            // its logical volume                         
+                     "Hodoscope",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+
+
+  //
+  // PomPom or Pommie 
+  //
+  G4VSolid* PompomS
+    = new G4Box( "Pompom",            // its name
+		 pompomSizeXY/2., pompomSizeXY/2., pompomLength/2.); //its size
+
+                   
+  G4LogicalVolume* PompomLV
+     = new G4LogicalVolume(
+                PompomS,     // its solid
+                pompomMaterial,  // its material
+                "PompomLV");   // its name
+
+      new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+pompomLength/2.), // its position
+                     PompomLV,            // its logical volume                         
+                     "Pompom",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+
+
+
+
+
+  //  
+  // Shashlik Copies
+  //  
+
+  // create the matrix:
+      
+  int copyNumber = 1;
+  int totalCopies = 25;
+
+
+  for( int ix=-2; ix<=2; ++ix ) {
+
+    for( int iy=-2; iy<=2; ++iy ) {
+
+      if( ix==0 && iy==0 ) continue;  // central channel is the shash
+
+      if( copyNumber>=totalCopies ) {
+        std::cout << "--> ERROR!! Trying to instantiate a number of copies which exceeds totalCopies (=" << totalCopies << std::endl;
+        std::cout << " Exiting." << std::endl;
+        exit(11);
+      }
+
+      G4double miniGap = 1.*mm;
+      G4double xPos = ix*(calorSizeXY + miniGap);
+      G4double yPos = iy*(calorSizeXY + miniGap);
+
+      new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(xPos, yPos, fZtraslation+pompomLength),  // at (0,0,0)
+                     calorLV,          // its logical volume                         
+                     "Calorimeter",    // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     copyNumber,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+
+     new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(xPos, yPos,fZtraslation-calorThickness/2.+pompomLength/2.), // its position
+                     PompomLV,            // its logical volume                         
+                     "Pompom",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+
+
+      copyNumber += 1;
+
+    }
+  }
+      
 
 
   //                                        
@@ -543,11 +671,17 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   fibreCoreLV->SetVisAttributes(magentaBox);
   fibreCladLV->SetVisAttributes(magentaBox);
 
-
   G4VisAttributes* violetBox= new G4VisAttributes(G4Colour(200,0,255));
   violetBox->SetForceSolid(true);
   ScintLV->SetVisAttributes(violetBox);
 
+  G4VisAttributes* violet2Box= new G4VisAttributes(G4Colour(150,0,255));
+  violet2Box->SetForceSolid(true);
+  HodoLV->SetVisAttributes(violet2Box);
+
+  G4VisAttributes* pomBox= new G4VisAttributes(G4Colour(0,0,255));
+  pomBox->SetForceSolid(true);
+  PompomLV->SetVisAttributes(pomBox);
 
   /*
   //  
@@ -629,19 +763,12 @@ void EEShashDetectorConstruction::ConstructSDandField()
   //
   // First the actual Shashlik:
   EEShashCalorimeterSD* absSD 
-    = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers,1);
+    = new EEShashCalorimeterSD("AbsSD", "AbsHitsCollection", fNofLayers*9,1);
   SetSensitiveDetector("AbsLV",absSD);
 
   EEShashCalorimeterSD* actSD 
-    = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers,1);
+    = new EEShashCalorimeterSD("ActSD", "ActHitsCollection", fNofLayers*9,1);
   SetSensitiveDetector("ActLV",actSD);
-
-  /*
-  // then the surrounding BGO matrix:
-  EEShashCalorimeterSD* bgoSD 
-    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", 8,0);
-  SetSensitiveDetector("BGOLV",bgoSD);
-  */
 
   // then the fibres
   EEShashCalorimeterSD* fibrSD 
@@ -652,6 +779,24 @@ void EEShashDetectorConstruction::ConstructSDandField()
   EEShashCalorimeterSD* scintSD 
     = new EEShashCalorimeterSD("ScintSD", "ScintHitsCollection", 1,1);
   SetSensitiveDetector("ScintLV",scintSD);
+
+  // and now also the HODOR
+  EEShashCalorimeterSD* hodoSD 
+    = new EEShashCalorimeterSD("HodoSD", "HodoHitsCollection", 1,1);
+  SetSensitiveDetector("HodoLV",hodoSD);
+
+  // and finally (?) POMMMELS:
+  EEShashCalorimeterSD* pompomSD 
+    = new EEShashCalorimeterSD("PompomSD", "PompomHitsCollection", 1,1);
+  SetSensitiveDetector("PompomLV",pompomSD);
+
+
+  /*
+  // then the surrounding BGO matrix:
+  EEShashCalorimeterSD* bgoSD 
+    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", 8,0);
+  SetSensitiveDetector("BGOLV",bgoSD);
+  */
 
 
   // 

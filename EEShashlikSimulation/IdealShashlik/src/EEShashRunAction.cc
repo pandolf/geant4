@@ -70,22 +70,19 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtuple("EEShash", "Edep and TrackL");
   analysisManager->CreateNtupleDColumn("Eabs");
   analysisManager->CreateNtupleDColumn("Eact");
-  analysisManager->CreateNtupleDColumn("Ebgo");
   analysisManager->CreateNtupleDColumn("Efibr");
+  analysisManager->CreateNtupleDColumn("Escint");
+  analysisManager->CreateNtupleDColumn("Ehodo");
+
+  //  analysisManager->CreateNtupleDColumn("Ebgo");
   //analysisManager->CreateNtupleDColumn("Labs");
   //analysisManager->CreateNtupleDColumn("Lact");
-  //  analysisManager->CreateNtupleDColumn("Escint");
 
 
   analysisManager->CreateNtupleIColumn("nLayers");
   // didnt find an easier way to do this
-  for( unsigned i=0; i<50; ++i )
+  for( unsigned i=0; i<90; ++i )
     analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
-
-
-  analysisManager->CreateNtupleIColumn("nBGO");
-  for( unsigned i=0; i<8; ++i )
-    analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
 
 
   analysisManager->FinishNtuple();
@@ -133,6 +130,7 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
 
 
 }
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 

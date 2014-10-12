@@ -98,16 +98,21 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
 
 
   // smear gun just like in BTF
-  float x = rand_->Gaus( 0., 4. );
-  float y = rand_->Gaus( 0., 3. );
+  float x = rand_->Gaus( 0, 4  );
+  float y = rand_->Gaus( 0., 3  );
   G4double xBeam = x*mm;
   G4double yBeam = y*mm;
   //G4double xBeam = 0.;  // 0,0 with no smearing (well, there's still air scattering)
   //G4double yBeam = 0.;
   //G4double xBeam = 12.-0.696; // centered on a fibre
   //G4double yBeam = 12.-0.696;
-  
-  // Set gun position
+
+
+  //G4double energy = 147.*MeV;
+ //G4double sigmaE = 5.*MeV;
+  //energy = rand_->Gaus(energy, sigmaE);
+    //fParticleGun->SetParticleEnergy(energy );
+
   fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.5*m));
 
   fParticleGun->GeneratePrimaryVertex(anEvent);

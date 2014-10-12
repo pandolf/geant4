@@ -62,9 +62,9 @@ private:
   // data members                   
   G4int  fAbsHCID;
   G4int  fActHCID;
-  G4int  fBgoHCID;
   G4int  fFibrHCID;
   G4int  fScintHCID;
+  G4int  fHodoHCID;
 
 };
                      

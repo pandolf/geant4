@@ -72,18 +72,20 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("Eact");
   analysisManager->CreateNtupleDColumn("Ebgo");
   analysisManager->CreateNtupleDColumn("Efibr");
+  analysisManager->CreateNtupleDColumn("Escint");
+  analysisManager->CreateNtupleDColumn("Ehodo");
   //analysisManager->CreateNtupleDColumn("Labs");
   //analysisManager->CreateNtupleDColumn("Lact");
 
 
   analysisManager->CreateNtupleIColumn("nLayers");
   // didnt find an easier way to do this
-  for( unsigned i=0; i<50; ++i )
+  for( unsigned i=0; i<90; ++i )
     analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
 
 
-  analysisManager->CreateNtupleIColumn("nBGO");
-  for( unsigned i=0; i<8; ++i )
+    analysisManager->CreateNtupleIColumn("nBGO");
+   for( unsigned i=0; i<8; ++i )
     analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
 
 
