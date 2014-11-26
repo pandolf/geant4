@@ -1,0 +1,15 @@
+mkdir cmake
+cd cmake
+cmake ..
+make
+./runEEShashlik
+
+
+
+// Adding Material: Change the following files:
+
+/src/EEShashRunAction.cc
+/src/EEShashDetectorConstruction.cc
+/src/EEShashEventAction.cc
+/include/EventAction.hh
+
