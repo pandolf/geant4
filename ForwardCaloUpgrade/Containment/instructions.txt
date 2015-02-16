@@ -1,0 +1,10 @@
+mkdir cmake
+cd cmake
+cmake ..
+make
+./runEEShashlik
+
+or 
+./runEEShashlik -m macroname.mac (eg run.mac)
+
+
