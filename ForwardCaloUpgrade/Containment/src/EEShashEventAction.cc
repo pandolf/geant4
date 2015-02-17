@@ -110,13 +110,13 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 {  
 
   fRunAct->FillPerEvent();  
+
   // Get hits collections IDs (only once)
   if ( fAbsHCID == -1 ) {
     fAbsHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
- 
   }
 
   // Get hits collections
@@ -153,8 +153,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillH1(3, absHit->GetTrackLength());
   analysisManager->FillH1(4, actHit->GetTrackLength());
 
-  analysisManager->FillH1(5, 5);
-  
+
   // fill ntuple
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
