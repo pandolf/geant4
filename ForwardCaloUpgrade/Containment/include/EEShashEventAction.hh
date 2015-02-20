@@ -57,6 +57,9 @@ public:
 
   virtual void  BeginOfEventAction(const G4Event* event);
   virtual void    EndOfEventAction(const G4Event* event);
+
+  void fillEcalStep(G4double dEstep, G4int Lbin, G4int Rbin); 
+
     
 private:
   // methods
@@ -69,6 +72,11 @@ private:
   G4int  fAbsHCID;
   G4int  fActHCID;
   EEShashRunAction* fRunAct;
+
+  G4int  nRtot;
+  G4double dRbin;
+  G4double *dEdR;
+
 
 };
                      
