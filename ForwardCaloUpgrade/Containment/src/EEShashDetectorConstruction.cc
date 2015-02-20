@@ -163,9 +163,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // Shashlik:
   fNofLayers = 28;
-  G4double absThickness = 1.5*mm;
+  G4double absThickness = 2.5*mm;
   //  G4double absThickness = 3.1*mm;
-  G4double actThickness = 2.5*mm;
+  G4double actThickness = 1.5*mm;
   //  G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 2000.*mm;
 
