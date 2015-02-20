@@ -337,7 +337,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  actMaterial,      // its material
                  "ActLV");         // its name
                                    
-  new G4PVPlacement(
+  ecalVolume = new G4PVPlacement(
                  0,                // no rotation
                  G4ThreeVector(0., 0., absThickness/2), // its position
                  actLV,            // its logical volume                         

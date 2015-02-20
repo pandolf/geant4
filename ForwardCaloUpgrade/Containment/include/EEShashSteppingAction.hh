@@ -23,59 +23,37 @@
 // * acceptance of all terms of the Geant4 Software license.          *
 // ********************************************************************
 //
-/// \file electromagnetic/TestEm2/src/SteppingAction.cc
-/// \brief Implementation of the SteppingAction class
+/// \file electromagnetic/TestEm2/include/EEShashSteppingAction.hh
+/// \brief Definition of the EEShashSteppingAction class
 //
-// $Id: SteppingAction.cc 76259 2013-11-08 11:37:28Z gcosmo $
+// $Id: EEShashSteppingAction.hh 76259 2013-11-08 11:37:28Z gcosmo $
 //
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-#include "SteppingAction.hh"
-#include "EEShashDetectorConstruction.hh"
-#include "EEShashRunAction.hh"
+#ifndef EEShashSteppingAction_h
+#define EEShashSteppingAction_h 1
 
-#include "G4RunManager.hh"
-#include "G4SteppingManager.hh"
-#include "Randomize.hh"
+#include "G4UserSteppingAction.hh"
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-SteppingAction::SteppingAction(EEShashDetectorConstruction* det, EEShashRunAction* runAct)
-  :G4UserSteppingAction(),fDetector(det), fRunAct(runAct)
-{}
+class EEShashDetectorConstruction;
+class EEShashEventAction;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-SteppingAction::~SteppingAction()
-{}
+class EEShashSteppingAction : public G4UserSteppingAction
+{
+public:
+  EEShashSteppingAction(EEShashDetectorConstruction*, EEShashEventAction*);
+  virtual ~EEShashSteppingAction();
 
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-void SteppingAction::UserSteppingAction(const G4Step* step)
-{ 
+  virtual void UserSteppingAction(const G4Step*);
   
-  // energy deposit
-  //
-  G4double dEStep = step->GetTotalEnergyDeposit();
-
-  
-  if (dEStep > 0.) {
-    G4ThreeVector prePoint  = step->GetPreStepPoint()->GetPosition();
-    G4ThreeVector delta = step->GetPostStepPoint()->GetPosition() - prePoint;
-    prePoint += G4UniformRand()*delta;
-    G4double x = prePoint.x(), y = prePoint.y(), z = prePoint.z();
-    G4double radius = std::sqrt(x*x + y*y);
-    //   G4double offset = 0.5*fDetector->GetfullLength();
-    G4double offset = 0.;
-     G4int SlideNb = 1;
-    //   G4int SlideNb = G4int((z + offset)/fDetector->GetdLlength());
-    G4int RingNb  = 1;        
-    //    G4int RingNb  = G4int(radius/fDetector->GetdRlength());        
-   
-    fRunAct->FillPerStep(dEStep,SlideNb,RingNb);
-    }
- 
-}
+private:
+  EEShashDetectorConstruction* fDetector;
+  EEShashEventAction* fEvAct;
+};
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+#endif

@@ -32,7 +32,7 @@
 #include "EEShashPrimaryGeneratorAction.hh"
 #include "EEShashRunAction.hh"
 #include "EEShashEventAction.hh"
-#include "SteppingAction.hh"
+#include "EEShashSteppingAction.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -59,9 +59,11 @@ void EEShashActionInitialization::Build() const
 {
   SetUserAction(new EEShashPrimaryGeneratorAction);
   EEShashRunAction* fRunAct = new EEShashRunAction(fDetector);
+  EEShashEventAction* fEvAct = new EEShashEventAction(fRunAct);
   SetUserAction(fRunAct);
-  SetUserAction(new EEShashEventAction(fRunAct));
-  SetUserAction(new SteppingAction(fDetector, fRunAct));
+  SetUserAction(fEvAct);
+  //SetUserAction(new EEShashEventAction(fRunAct));
+  SetUserAction(new EEShashSteppingAction(fDetector, fEvAct));
 }  
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

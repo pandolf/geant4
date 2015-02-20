@@ -30,6 +30,9 @@
 
 #include "EEShashDetectorConstruction.hh"
 #include "EEShashActionInitialization.hh"
+#include "EEShashRunAction.hh"
+#include "EEShashEventAction.hh"
+#include "EEShashSteppingAction.hh"
 
 #ifdef G4MULTITHREADED
 #include "G4MTRunManager.hh"
@@ -119,9 +122,18 @@ int main(int argc,char** argv)
   G4VModularPhysicsList* physicsList = new FTFP_BERT;
   runManager->SetUserInitialization(physicsList);
     
-  EEShashActionInitialization* actionInitialization
-    = new EEShashActionInitialization(detConstruction);
+  EEShashActionInitialization* actionInitialization = new EEShashActionInitialization(detConstruction);
   runManager->SetUserInitialization(actionInitialization);
+
+
+  EEShashRunAction* run_action = new EEShashRunAction(detConstruction);
+  runManager->SetUserAction(run_action);
+
+  EEShashEventAction* event_action = new EEShashEventAction(run_action);
+  runManager->SetUserAction(event_action);
+
+  G4UserSteppingAction* stepping_action = new EEShashSteppingAction(detConstruction, event_action);
+  runManager->SetUserAction(stepping_action);
 
   // Initialize G4 kernel
   //

@@ -76,6 +76,10 @@ class EEShashDetectorConstruction : public G4VUserDetectorConstruction
   G4double GetfullLength()     {return fEcalLength;};
   G4double GetfullRadius()     {return fEcalRadius;};
 
+  const G4VPhysicalVolume* GetEcal() {return ecalVolume;};
+
+  G4int GetNbOfEcalLayers() {return fNofLayers;};
+
   private:
     // methods
     //
@@ -88,6 +92,8 @@ class EEShashDetectorConstruction : public G4VUserDetectorConstruction
   G4int    fNLtot,    fNRtot;       // nb of bins: longitudinal and radial
   G4double fDLradl,   fDRradl;      // bin thickness (in radl unit)
   G4double fDLlength, fDRlength;    // bin thickness (in length unit)
+
+  G4VPhysicalVolume* ecalVolume;
 
 
     // data members

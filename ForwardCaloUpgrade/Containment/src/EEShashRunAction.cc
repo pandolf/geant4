@@ -75,7 +75,7 @@ EEShashRunAction::EEShashRunAction( EEShashDetectorConstruction* det)
   analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 50*cm);
 
 
-  analysisManager->CreateH1( "h5","longit energy profile (% of E inc)",nLbin,0.,nLbin*dLradl);
+  analysisManager->CreateH1( "Rmoliere","Moliere Radius",50,0.,50.);
                                     
   analysisManager->CreateH1( "h6","rms on longit Edep (% of E inc)", nLbin,0.,nLbin*dLradl);
   G4double Zmin=0.5*dLradl, Zmax=Zmin+nLbin*dLradl;
