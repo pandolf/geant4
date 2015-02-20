@@ -162,10 +162,12 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // Geometry parameters
 
   // Shashlik:
-  fNofLayers = 10;
-  G4double absThickness = 3.1*mm;
-  G4double actThickness = 10.*mm;
-  G4double calorSizeXY  = 240.*mm;
+  fNofLayers = 28;
+  G4double absThickness = 1.5*mm;
+  //  G4double absThickness = 3.1*mm;
+  G4double actThickness = 2.5*mm;
+  //  G4double actThickness = 10.*mm;
+  G4double calorSizeXY  = 2000.*mm;
 
   G4double layerThickness = absThickness + actThickness;
   G4double calorThickness = fNofLayers * layerThickness;

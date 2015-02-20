@@ -235,7 +235,7 @@ void EEShashRunAction::FillPerEvent()
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EEShashRunAction::EndOfRunAction(const G4Run* run)
+void EEShashRunAction::EndOfRunAction(const G4Run* /* run*/)
 {
   // print histogram statistics
   //
@@ -277,7 +277,7 @@ void EEShashRunAction::EndOfRunAction(const G4Run* run)
 
 
 
-  
+  /*
   G4int NbOfEvents = run->GetNumberOfEvent();
 
   G4double kinEnergy = 5*GeV;
@@ -311,8 +311,8 @@ void EEShashRunAction::EndOfRunAction(const G4Run* run)
     rmsELongitCumul[i] = norme*std::sqrt(std::abs(NbOfEvents*
       fSumE2LongitCumul[i] - fSumELongitCumul[i]*fSumELongitCumul[i]));
     G4double bin = (i+0.5)*dLradl;
-    analysisManager->FillH1(5, bin,MeanELongit[i]/dLradl);
-    analysisManager->FillH1(6, bin, rmsELongit[i]/dLradl);      
+    //   analysisManager->FillH1(5, bin,MeanELongit[i]/dLradl);
+    // analysisManager->FillH1(6, bin, rmsELongit[i]/dLradl);      
     bin = (i+1)*dLradl;
     analysisManager->FillH1(7, bin,MeanELongitCumul[i]);
     analysisManager->FillH1(8, bin, rmsELongitCumul[i]);
@@ -390,7 +390,7 @@ void EEShashRunAction::EndOfRunAction(const G4Run* run)
            << RMoliere1 << " radl  ("
            << G4BestUnit( RMoliere2, "Length") << ")" << "\n" << G4endl;
   }    
-
+  */
 
   // save histograms & ntuple
   //

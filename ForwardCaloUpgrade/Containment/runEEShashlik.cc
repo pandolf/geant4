@@ -125,7 +125,7 @@ int main(int argc,char** argv)
   EEShashActionInitialization* actionInitialization = new EEShashActionInitialization(detConstruction);
   runManager->SetUserInitialization(actionInitialization);
 
-
+  /*
   EEShashRunAction* run_action = new EEShashRunAction(detConstruction);
   runManager->SetUserAction(run_action);
 
@@ -134,7 +134,7 @@ int main(int argc,char** argv)
 
   G4UserSteppingAction* stepping_action = new EEShashSteppingAction(detConstruction, event_action);
   runManager->SetUserAction(stepping_action);
-
+  */
   // Initialize G4 kernel
   //
   runManager->Initialize();
