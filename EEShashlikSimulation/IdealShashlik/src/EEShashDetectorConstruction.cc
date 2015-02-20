@@ -193,15 +193,18 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4double hodoSizeXY = 8.5*mm;
   G4double hodoLength = 4.*mm;
 
+  G4double hodoDistance = 15.*mm;
+
   // Weird plastic piece at beginning of shashlik, I shall name it PomPom
   G4double pompomSizeXY = 24 *mm;
   G4double pompomLength = 8*mm;
 
 
 
+
   // world:
-  G4double worldSizeXY = 10. * (3.*calorSizeXY);
-  G4double worldSizeZ  = 10. * (fibreLength); 
+  G4double worldSizeXY = 20. * (3.*calorSizeXY);
+  G4double worldSizeZ  = 20. * (fibreLength); 
   //G4double worldSizeXY = 1.2 * (3.*calorSizeXY);
   //G4double worldSizeZ = 2. * (fibreLength); 
   
@@ -254,7 +257,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   G4VSolid* labS 
     = new G4Box("lab",           // its name
-                 worldSizeXY/4, worldSizeXY/4, worldSizeZ/4); // its size
+                 worldSizeXY/8, worldSizeXY/8, worldSizeZ/8); // its size
                          
   G4LogicalVolume* labLV
     = new G4LogicalVolume(
@@ -310,7 +313,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                                     
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(0., 0., fZtraslation+pompomLength),  // its position
+                 G4ThreeVector(0., 0., fZtraslation+pompomLength+hodoDistance),  // its position
                  calorLV,          // its logical volume                         
                  "Calorimeter",    // its name
                  labLV,          // its mother  volume
@@ -491,7 +494,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation +pompomLength), // its position
+                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation +pompomLength+hodoDistance), // its position
                      fibreLV,            // its logical volume                         
                      "Fibre",            // its name
                      labLV,          // its mother  volume
@@ -531,7 +534,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-150.+scintLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-150.+scintLength/2. +hodoDistance), // its position
                      ScintLV,            // its logical volume                         
                      "Scintillator",            // its name
                      labLV,          // its mother  volume
@@ -556,7 +559,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-15+hodoLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+hodoLength/2.), // its position
                      HodoLV,            // its logical volume                         
                      "Hodoscope",            // its name
                      labLV,          // its mother  volume
@@ -582,7 +585,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+pompomLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+pompomLength/2.+hodoDistance), // its position
                      PompomLV,            // its logical volume                         
                      "Pompom",            // its name
                      labLV,          // its mother  volume
@@ -623,7 +626,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos, yPos, fZtraslation+pompomLength),  // at (0,0,0)
+                     G4ThreeVector(xPos, yPos, fZtraslation+pompomLength+hodoDistance),  // at (0,0,0)
                      calorLV,          // its logical volume                         
                      "Calorimeter",    // its name
                      labLV,          // its mother  volume
@@ -634,7 +637,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
      new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos, yPos,fZtraslation-calorThickness/2.+pompomLength/2.), // its position
+                     G4ThreeVector(xPos, yPos,fZtraslation-calorThickness/2.+pompomLength/2.+hodoDistance), // its position
                      PompomLV,            // its logical volume                         
                      "Pompom",            // its name
                      labLV,          // its mother  volume
@@ -683,6 +686,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   pomBox->SetForceSolid(true);
   PompomLV->SetVisAttributes(pomBox);
 
+
+ PompomLV->SetVisAttributes (G4VisAttributes::Invisible);
+ HodoLV->SetVisAttributes (G4VisAttributes::Invisible);
+ ScintLV->SetVisAttributes (G4VisAttributes::Invisible);
   /*
   //  
   // BGO

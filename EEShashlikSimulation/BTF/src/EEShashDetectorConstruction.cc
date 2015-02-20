@@ -192,6 +192,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //G4double hodoSizeXY = 10.*mm;
   G4double hodoLength = 4.*mm;
 
+  G4double hodoDistance = 15.*mm;
+
   //  G4double hodoSizeXY = 8.*mm;
   //  G4double hodoLength = 1.*mm;
 
@@ -199,6 +201,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // Weird plastic piece at beginning of shashlik, I shall name it PomPom
   G4double pompomSizeXY = 24 *mm;
   G4double pompomLength = 8*mm;
+
 
 
   // world:
@@ -266,8 +269,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  "lab");         // its name
 
 
+
+
+
   G4RotationMatrix* rotation = new G4RotationMatrix();
   rotation->rotateX(fRotation*3.14159265359/180.);
+
+  G4RotationMatrix* rotationNeg = new G4RotationMatrix();
+  rotationNeg->rotateX(-fRotation*3.14159265359/180.);
                                    
   new G4PVPlacement(
                  rotation,                // no rotation
@@ -278,7 +287,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  false,            // no boolean operation
                  0,                // copy number
                  fCheckOverlaps);  // checking overlaps 
-  
+
+
   //                               
   // Calorimeter
   //  
@@ -312,7 +322,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                                    
   new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(0., 0., fZtraslation+pompomLength),  // its position
+                 G4ThreeVector(0., 0., fZtraslation+pompomLength+hodoDistance),  // its position
                  calorLV,          // its logical volume                         
                  "Calorimeter",    // its name
                  labLV,          // its mother  volume
@@ -346,7 +356,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  layerLV,          // its logical volume
                  calorLV,          // its mother
                  kZAxis,           // axis of replication
-                 fNofLayers,        // number of replica
+                 fNofLayers,       // number of replica
                  layerThickness);  // witdth of replica
  
   //                               
@@ -492,7 +502,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation +pompomLength), // its position
+                     G4ThreeVector(xPos,yPos,(fibreLength-calorThickness)/2.+fZtraslation +pompomLength+hodoDistance), // its position
                      fibreLV,            // its logical volume                         
                      "Fibre",            // its name
                      labLV,          // its mother  volume
@@ -513,6 +523,33 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
          << actThickness/mm << "mm of " << actMaterial->GetName() << " ] " 
          << "\n------------------------------------------------------------\n";
 
+   /*
+  //
+  //Scintillator Rotating With Beam 
+  //
+  G4VSolid* ScintS
+    = new G4Box( "Scintillator",            // its name
+		 scintSizeXY/2., scintSizeXY/2., scintLength/2.); //its size
+
+                   
+  G4LogicalVolume* ScintLV 
+     = new G4LogicalVolume(
+                ScintS,     // its solid
+                scintMaterial,  // its material
+                "ScintLV");   // its name
+
+      new G4PVPlacement(
+                     rotationNeg,                // no rotation
+                     G4ThreeVector(150,  (150.-scintLength/2.)* sin(fRotation*3.14159265359/180.),fZtraslation-calorThickness/2.-150+hodoDistance+scintLength/2.), // its position
+                     ScintLV,            // its logical volume                         
+                     "Scintillator",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+ 
+  */
+
   //
   //Scintillator 
   //
@@ -529,7 +566,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-150+scintLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-150+scintLength/2.+hodoDistance), // its position
                      ScintLV,            // its logical volume                         
                      "Scintillator",            // its name
                      labLV,          // its mother  volume
@@ -537,6 +574,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      0,                // copy number
                      fCheckOverlaps);  // checking overlaps 
   
+    
+
+      
   //
   // Hodoscope 
   //
@@ -550,16 +590,32 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                 HodoS,     // its solid
                 hodoMaterial,  // its material
                 "HodoLV");   // its name
-
+  
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.-15.+hodoLength/2.), // its position
+                     G4ThreeVector( 2.0 ,0.,fZtraslation-calorThickness/2.+hodoLength/2.), // its position
                      HodoLV,            // its logical volume                         
                      "Hodoscope",            // its name
                      labLV,          // its mother  volume
                      false,            // no boolean operation
                      0,                // copy number
                      fCheckOverlaps);  // checking overlaps 
+
+/*
+
+      new G4PVPlacement(
+                     0,                // no rotation
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+hodoLength/2.-15.), // its position
+                     HodoLV,            // its logical volume                         
+                     "Hodoscope",            // its name
+                     labLV,          // its mother  volume
+                     false,            // no boolean operation
+                     0,                // copy number
+                     fCheckOverlaps);  // checking overlaps 
+  */
+     
+      
+
 
   //
   // PomPom or Pommie 
@@ -577,7 +633,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+pompomLength/2.), // its position
+                     G4ThreeVector(0.,0.,fZtraslation-calorThickness/2.+pompomLength/2.+hodoDistance), // its position
                      PompomLV,            // its logical volume                         
                      "Pompom",            // its name
                      labLV,          // its mother  volume
@@ -629,7 +685,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // BGO
   //  
 
-   G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(1.0,1.0,1.0));
+  G4VisAttributes* simpleBoxVisAtt= new G4VisAttributes(G4Colour(0,0,0));
    simpleBoxVisAtt->SetVisibility(true);
 
   //matrixLV->SetVisAttributes(simpleBoxVisAtt);
@@ -673,7 +729,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
       new G4PVPlacement(
                      0,                // no rotation
-                     G4ThreeVector(xPos, yPos, zPos + fZtraslation),  // at (0,0,0)
+                     G4ThreeVector(xPos, yPos, zPos + fZtraslation+hodoDistance),  // at (0,0,0)
                      bgoLV,          // its logical volume                         
                      "BGOChannel",    // its name
                      labLV,          // its mother  volume
@@ -728,7 +784,7 @@ void EEShashDetectorConstruction::ConstructSDandField()
   SetSensitiveDetector("ScintLV",scintSD);
 
   // and now also the HODOR
-  EEShashCalorimeterSD* hodoSD 
+    EEShashCalorimeterSD* hodoSD 
     = new EEShashCalorimeterSD("HodoSD", "HodoHitsCollection", 1,1);
   SetSensitiveDetector("HodoLV",hodoSD);
 
