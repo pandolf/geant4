@@ -69,13 +69,13 @@ EEShashRunAction::EEShashRunAction( EEShashDetectorConstruction* det)
   //
   
   // Creating histograms
-  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 50*GeV);
-  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 50*GeV);
+  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 5*GeV);
+  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 5*GeV);
   analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 2*m);
   analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 2*m);
 
 
-  analysisManager->CreateH1( "Rmoliere","Moliere Radius",50,0.,50.);
+  analysisManager->CreateH1( "Rmoliere","Moliere Radius",500,0.,50.);
                                     
   analysisManager->CreateH1( "h6","rms on longit Edep (% of E inc)", nLbin,0.,nLbin*dLradl);
   G4double Zmin=0.5*dLradl, Zmax=Zmin+nLbin*dLradl;

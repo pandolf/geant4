@@ -107,8 +107,10 @@ void EEShashSteppingAction::UserSteppingAction(const G4Step* step)
        if( SlideNb > 200 ) SlideNb = 200;
        if( fDetector->GetNbOfEcalLayers() !=1) SlideNb = nEcalLayer; 
 
-       G4int RingNb  = int( radius / 2. );
+       G4int RingNb  = int( radius / 0.2 );
+       //       G4int RingNb  = int( radius / 2. );
        if( RingNb > 200 ) RingNb = 200;
+       //       if( RingNb > 200 ) RingNb = 200;
 
        G4double response = edep;
        //G4double* birks = detector->GetEcalBirksConstant();
@@ -124,7 +126,7 @@ void EEShashSteppingAction::UserSteppingAction(const G4Step* step)
        //}
 
        fEvAct->fillEcalStep(response,SlideNb,RingNb);
-       //eventaction->AddEcal(response);
+      //eventaction->AddEcal(response);
 
      }
 

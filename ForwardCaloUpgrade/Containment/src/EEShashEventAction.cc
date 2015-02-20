@@ -102,16 +102,16 @@ void EEShashEventAction::PrintEventStatistics(
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-void EEShashEventAction::BeginOfEventAction(const G4Event* event)
+void EEShashEventAction::BeginOfEventAction(const G4Event* /* event*/)
 {
 
- nRtot = 200;
- dRbin = 2.;
+ nRtot = 2000;
+ dRbin = 0.2 ;
  dEdR     = new G4double[nRtot];
 
  for (G4int j=0; j<nRtot; ++j)    { dEdR[j] = 0.; }
 
- fRunAct->InitializePerEvent();
+ // fRunAct->InitializePerEvent();
 }
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -122,7 +122,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   fRunAct->FillPerEvent();  
 
   // Get hits collections IDs (only once)
-  if ( fAbsHCID == -1 ) {
+  if ( fAbsHCID == -1 && fActHCID== -1 ) {
     fAbsHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
@@ -148,7 +148,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 
     PrintEventStatistics(
       absHit->GetEdep(), absHit->GetTrackLength(),
-      actHit->GetEdep(), actHit->GetTrackLength());
+      actHit->GetEdep(), actHit->GetTrackLength()
+			 );
   }  
   
   // Fill histograms, ntuple
@@ -181,11 +182,11 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
     G4double xMolier = 0.0;
     for(G4int jtr=0; jtr<nRtot; jtr++) {
        G4double xrbin = dRbin*jtr + 0.5*dRbin;
+       //       G4double xrbin = dRbin*jtr + 0.5*dRbin;
        EdepTemp += dEdR[jtr];
-       if( EdepTemp/EdepEcalRad < 0.90) rMoliere = xrbin;
+       if( EdepTemp/EdepEcalRad < 0.90) rMoliere = xrbin; //new rMolier = 
     }
     analysisManager->FillH1(5, rMoliere);
-
   }
 
   
@@ -216,6 +217,7 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 void EEShashEventAction::fillEcalStep(G4double dEstep, G4int Lbin, G4int Rbin) {
 
   dEdR[Rbin] += dEstep; 
+
 
 }
 
