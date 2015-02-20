@@ -120,13 +120,13 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 {  
 
   fRunAct->FillPerEvent();  
+
   // Get hits collections IDs (only once)
   if ( fAbsHCID == -1 ) {
     fAbsHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("AbsHitsCollection");
     fActHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
- 
   }
 
   // Get hits collections

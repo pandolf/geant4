@@ -1,4 +1,19 @@
+## C/C++ ##
 *.o
-*.root
+*.so
+*.d
+*.a
+## Python ##
 *.pyc
+## Vim ##
 ~*
+## Emacs ##
+*~
+## Root/Binary ##
+*.root
+## Images/PDF ##
+*.pdf
+*.png
+*.eps
+
+.#*
