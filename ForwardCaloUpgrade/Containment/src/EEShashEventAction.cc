@@ -50,7 +50,10 @@ EEShashEventAction::EEShashEventAction(EEShashRunAction* runAct )
    fAbsHCID(-1),
    fActHCID(-1),
    fRunAct(runAct)
-{}
+{
+
+}
+
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -101,6 +104,13 @@ void EEShashEventAction::PrintEventStatistics(
 
 void EEShashEventAction::BeginOfEventAction(const G4Event* event)
 {
+
+ nRtot = 200;
+ dRbin = 2.;
+ dEdR     = new G4double[nRtot];
+
+ for (G4int j=0; j<nRtot; ++j)    { dEdR[j] = 0.; }
+
  fRunAct->InitializePerEvent();
 }
 
@@ -144,8 +154,12 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // Fill histograms, ntuple
   //
 
+
+
   // get analysis manager
   G4AnalysisManager* analysisManager = G4AnalysisManager::Instance();
+
+
  
   // fill histograms
   analysisManager->FillH1(1, absHit->GetEdep());
@@ -153,7 +167,27 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillH1(3, absHit->GetTrackLength());
   analysisManager->FillH1(4, actHit->GetTrackLength());
 
-  analysisManager->FillH1(5, 5);
+
+
+  // moliere radius:
+  
+  float EdepEcalRad = 0.;
+  float rMoliere = 0.;
+  for(G4int itr=0; itr<nRtot; itr++) {
+    EdepEcalRad += dEdR[itr];
+  }
+  if( EdepEcalRad > 0. ) {
+    G4double EdepTemp = 0.0;
+    G4double xMolier = 0.0;
+    for(G4int jtr=0; jtr<nRtot; jtr++) {
+       G4double xrbin = dRbin*jtr + 0.5*dRbin;
+       EdepTemp += dEdR[jtr];
+       if( EdepTemp/EdepEcalRad < 0.90) rMoliere = xrbin;
+    }
+    analysisManager->FillH1(5, rMoliere);
+
+  }
+
   
   // fill ntuple
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
@@ -173,7 +207,16 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
 
   analysisManager->AddNtupleRow();  
 
+
+  delete dEdR;
   
 }  
+
+
+void EEShashEventAction::fillEcalStep(G4double dEstep, G4int Lbin, G4int Rbin) {
+
+  dEdR[Rbin] += dEstep; 
+
+}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
