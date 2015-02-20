@@ -69,10 +69,10 @@ EEShashRunAction::EEShashRunAction( EEShashDetectorConstruction* det)
   //
   
   // Creating histograms
-  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 800*MeV);
-  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 100*MeV);
-  analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 1*m);
-  analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 50*cm);
+  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 50*GeV);
+  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 50*GeV);
+  analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 2*m);
+  analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 2*m);
 
 
   analysisManager->CreateH1( "Rmoliere","Moliere Radius",50,0.,50.);
