@@ -80,6 +80,10 @@ int main(int argc,char** argv)
   G4String session;
   G4double rotation = 0.;
   G4double zTras = 0.;
+  G4double nLayers = 10;
+  G4double actThickness = 1.; // in mm
+  G4double absThickness = 5.; // in mm
+  std::string actType = "CeF3";
 #ifdef G4MULTITHREADED
   G4int nThreads = 0;
 #endif
@@ -88,6 +92,10 @@ int main(int argc,char** argv)
     else if ( G4String(argv[i]) == "-u" ) session = argv[i+1];
     else if ( G4String(argv[i]) == "-r" ) rotation = atof(argv[i+1]);  // in degrees
     else if ( G4String(argv[i]) == "-z" ) zTras = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-n" ) nLayers = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-act" ) actThickness = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-abs" ) absThickness = atof(argv[i+1]);
+    else if ( G4String(argv[i]) == "-actType" ) actType = argv[i+1];
 #ifdef G4MULTITHREADED
     else if ( G4String(argv[i]) == "-t" ) {
       nThreads = G4UIcommand::ConvertToInt(argv[i+1]);
@@ -98,6 +106,7 @@ int main(int argc,char** argv)
       return 1;
     }
   }  
+
   
   // Choose the Random engine
   //
@@ -116,7 +125,7 @@ int main(int argc,char** argv)
 
   // Set mandatory initialization classes
   //
-  EEShashDetectorConstruction* detConstruction = new EEShashDetectorConstruction(rotation, zTras);
+  EEShashDetectorConstruction* detConstruction = new EEShashDetectorConstruction(nLayers, actType, actThickness, absThickness, rotation, zTras);
   runManager->SetUserInitialization(detConstruction);
 
   G4VModularPhysicsList* physicsList = new FTFP_BERT;

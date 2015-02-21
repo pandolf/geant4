@@ -59,12 +59,15 @@ G4GlobalMagFieldMessenger* EEShashDetectorConstruction::fMagFieldMessenger = 0;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-EEShashDetectorConstruction::EEShashDetectorConstruction( G4double rotation, G4double zTras )
+EEShashDetectorConstruction::EEShashDetectorConstruction( G4int nLayers, std::string actType, G4double actThickness, G4double absThickness, G4double rotation, G4double zTras )
  : G4VUserDetectorConstruction(),
    fCheckOverlaps(true),
-   fNofLayers(-1),
+   fNofLayers(nLayers),
    fRotation(rotation),
    fZtraslation(zTras),
+   fActThickness(actThickness*mm),
+   fAbsThickness(absThickness*mm),
+   fActType(actType),
  fNLtot(40),fNRtot(50),fDLradl(0.5),fDRradl(0.1),
  fDLlength(0.),fDRlength(0.),
  fEcalLength(0.),fEcalRadius(0.)
@@ -162,14 +165,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // Geometry parameters
 
   // Shashlik:
-  fNofLayers = 28;
-  G4double absThickness = 2.5*mm;
-  //  G4double absThickness = 3.1*mm;
-  G4double actThickness = 1.5*mm;
-  //  G4double actThickness = 10.*mm;
+  //fNofLayers = 28;
+  //G4double absThickness = 2.5*mm;
+  ////  G4double absThickness = 3.1*mm;
+  //G4double actThickness = 1.5*mm;
+  ////  G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 2000.*mm;
 
-  G4double layerThickness = absThickness + actThickness;
+  G4double layerThickness = fAbsThickness + fActThickness;
   G4double calorThickness = fNofLayers * layerThickness;
   fZtraslation += calorThickness/2.;
 
@@ -187,7 +190,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4Material* defaultMaterial = G4Material::GetMaterial("Galactic");
   //G4Material* absMaterial     = G4Material::GetMaterial("Lead");
   G4Material* absMaterial     = G4Material::GetMaterial("Tungsten");
-  G4Material* actMaterial     = G4Material::GetMaterial("LYSO");
+  G4Material* actMaterial     = G4Material::GetMaterial(fActType);
+  //G4Material* actMaterial     = G4Material::GetMaterial("LYSO");
   //  G4Material* actMaterial     = G4Material::GetMaterial("CeF3");
 
 
@@ -307,7 +311,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //
   G4VSolid* absS 
     = new G4Box( "Abs",            // its name
-		 calorSizeXY/2., calorSizeXY/2.,       absThickness/2. );
+		 calorSizeXY/2., calorSizeXY/2.,       fAbsThickness/2. );
                   
   G4LogicalVolume* absLV
     = new G4LogicalVolume(
@@ -317,7 +321,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                                    
    new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(0., 0., -actThickness/2), // its position
+                 G4ThreeVector(0., 0., -fActThickness/2), // its position
                  absLV,       // its logical volume                         
                  "Abs",           // its name
                  layerLV,          // its mother  volume
@@ -330,7 +334,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //
   G4VSolid* actS 
     = new G4Box( "Act",            // its name
-		 calorSizeXY/2., calorSizeXY/2.,  actThickness/2.);
+		 calorSizeXY/2., calorSizeXY/2.,  fActThickness/2.);
 
                       
   G4LogicalVolume* actLV
@@ -341,7 +345,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                                    
   ecalVolume = new G4PVPlacement(
                  0,                // no rotation
-                 G4ThreeVector(0., 0., absThickness/2), // its position
+                 G4ThreeVector(0., 0., fAbsThickness/2), // its position
                  actLV,            // its logical volume                         
                  "Act",            // its name
                  layerLV,          // its mother  volume
@@ -362,9 +366,9 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //
   G4cout << "\n------------------------------------------------------------"
          << "\n---> The calorimeter is " << fNofLayers << " layers of: [ "
-         << absThickness/mm << "mm of " << absMaterial->GetName() 
+         << fAbsThickness/mm << "mm of " << absMaterial->GetName() 
          << " + "
-         << actThickness/mm << "mm of " << actMaterial->GetName() << " ] " 
+         << fActThickness/mm << "mm of " << actMaterial->GetName() << " ] " 
          << "\n------------------------------------------------------------\n";
              
 

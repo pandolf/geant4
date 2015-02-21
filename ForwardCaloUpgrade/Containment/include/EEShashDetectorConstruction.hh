@@ -58,7 +58,7 @@ const G4int MaxBin = 500;
 class EEShashDetectorConstruction : public G4VUserDetectorConstruction
 {
   public:
-    EEShashDetectorConstruction( G4double rotation=0., G4double zTras = 0. ); // rotation is in degrees, zTraslation in mm
+    EEShashDetectorConstruction( G4int nLayers, std::string actType, G4double actThickness, G4double absThickness, G4double rotation=0., G4double zTras = 0. ); // rotation is in degrees, zTraslation in mm
     virtual ~EEShashDetectorConstruction();
 
   public:
@@ -105,6 +105,11 @@ class EEShashDetectorConstruction : public G4VUserDetectorConstruction
     G4int    fNofLayers;     // number of layers
     G4double fRotation;      // rotation of the detector compared to the beam
     G4double fZtraslation;   // traslation on the Z axis (done *before*) the rotation
+
+    G4double    fActThickness;
+    G4double    fAbsThickness;
+    std::string fActType;
+
 };
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
