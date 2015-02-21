@@ -22,10 +22,12 @@ detectorLength = 0.
 
 cef3_thickness = 5. # in mm, fixed
 
-tung_thickness = 0.5
+tung_thickness = 0.
 
 
 while tung_thickness<8. :
+
+  tung_thickness += 0.5 
 
   X0_tung_singleLayer = tung_thickness/X0_tung
   X0_cef3_singleLayer = cef3_thickness/X0_cef3
@@ -34,8 +36,9 @@ while tung_thickness<8. :
   X0_eff = nLayers*X0_cef3_singleLayer + nLayers*X0_tung_singleLayer
   detectorLength = nLayers*cef3_thickness + nLayers*tung_thickness
 
+  if detectorLength>225.: continue # actually should be 220, but there's a configuration of 221mm so i want to check it
+
   print "./runEEShashlik -m run20GeV.mac -actType CeF3 -n " + str(int(nLayers)) + " -act " + str(cef3_thickness) + " -abs " + str(tung_thickness) 
   print "mv EEShash.root EEShash_CeF3_nLayers" + str(int(nLayers)) + "_tung" + str(int(10.*tung_thickness)) + ".root"
 
-  tung_thickness += 0.5 
   
