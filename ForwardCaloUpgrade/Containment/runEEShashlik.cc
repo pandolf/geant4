@@ -71,10 +71,6 @@ int main(int argc,char** argv)
 {
   // Evaluate arguments
   //
-  if ( argc > 7 ) {
-    PrintUsage();
-    return 1;
-  }
   
   G4String macro;
   G4String session;
