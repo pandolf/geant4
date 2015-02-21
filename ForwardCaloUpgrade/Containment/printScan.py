@@ -4,7 +4,7 @@ import math
 
 
 # first print the lyso line
-print "./runEEShash -m run20GeV.mac -actType LYSO -n 28 -act 1.5 -abs 2.5"
+print "./runEEShashlik -m run20GeV.mac -actType LYSO -n 28 -act 1.5 -abs 2.5"
 print "mv EEShash.root EEShash_LYSO.root"
 
 
@@ -34,7 +34,7 @@ while tung_thickness<8. :
   X0_eff = nLayers*X0_cef3_singleLayer + nLayers*X0_tung_singleLayer
   detectorLength = nLayers*cef3_thickness + nLayers*tung_thickness
 
-  print "./runEEShash -m run20GeV.mac -actType CeF3 -n " + str(int(nLayers)) + " -act " + str(cef3_thickness) + " -abs " + str(tung_thickness) 
+  print "./runEEShashlik -m run20GeV.mac -actType CeF3 -n " + str(int(nLayers)) + " -act " + str(cef3_thickness) + " -abs " + str(tung_thickness) 
   print "mv EEShash.root EEShash_CeF3_nLayers" + str(int(nLayers)) + "_tung" + str(int(10.*tung_thickness)) + ".root"
 
   tung_thickness += 0.5 
