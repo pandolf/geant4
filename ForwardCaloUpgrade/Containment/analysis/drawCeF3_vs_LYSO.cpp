@@ -190,15 +190,15 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
     float rmsErr = h1_resp->GetRMSError();
 
     float reso = rms/mean;
-    float pePerMev = 25.;
+    float pePerMev = 1.;
     float nPhotoElectrons = mean/pePerMev;
     float photoStat_reso = 1./sqrt(nPhotoElectrons);
-    Double_t reso_tot = sqrt( reso*reso + photoStat_reso*photoStat_reso );
+    Double_t reso_tot = (i>0) ? sqrt( reso*reso + photoStat_reso*photoStat_reso ) : sqrt( reso*reso ); // add photostat only to cef3
 
     Double_t reso_err = sqrt( rmsErr*rmsErr/(mean*mean) + rms*rms*meanErr*meanErr/(mean*mean*mean*mean) );
 
     gr_resp_reso.second->SetPoint(i,x,reso_tot);
-    gr_resp_reso.second->SetPoint(i,x,reso_err);
+    gr_resp_reso.second->SetPointError(i,0.,reso_err);
 
     delete h1_resp;
     delete h1_sf;
