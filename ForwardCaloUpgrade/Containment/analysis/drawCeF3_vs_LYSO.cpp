@@ -39,6 +39,7 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles );
 TGraphErrors* getRatioGraph( TGraphErrors* graph );
 std::string chopUnits( std::string title );
 void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph );
+void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
 TPaveText* getLabelTop();
 
 
@@ -52,21 +53,21 @@ int main() {
 
   std::vector<DataFile> dataFiles; 
 
-  dataFiles.push_back(DataFile("EEShash_LYSO_nLayers28_tung25.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers34_tung15.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers28_tung20.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers24_tung25.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers21_tung30.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers19_tung35.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers17_tung40.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers16_tung45.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers14_tung50.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers13_tung55.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers12_tung65.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers12_tung60.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers11_tung70.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers10_tung80.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_nLayers10_tung75.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_LYSO_tung25_nLayers28.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung15_nLayers34.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung20_nLayers28.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung25_nLayers24.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers21.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers19.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers17.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers16.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers14.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers13.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers12.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers11.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers10.root", dataDir) );
+  dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
 
 
   TGraphErrors* gr_mol = getMoliereGraph( dataFiles );
@@ -102,10 +103,10 @@ DataFile::DataFile( const std::string& fileName, const std::string& dataDir ) {
   // name should be EEShash_[actType]_nLayers[n]_tung[a*10].root
   actType = parts[1];
 
-  sscanf( parts[2].c_str(), "nLayers%d", &nLayers );
   int absThickness_x10;
-  sscanf( parts[3].c_str(), "tung%d", &absThickness_x10);
+  sscanf( parts[2].c_str(), "tung%d", &absThickness_x10);
   absThickness = (float)absThickness_x10/10.;
+  sscanf( parts[3].c_str(), "nLayers%d", &nLayers );
 
   file = TFile::Open( Form("%s/%s", dataDir.c_str(), fileName.c_str() ) );
 
@@ -170,19 +171,27 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
+    TH1D* h1_resp = new TH1D("resp", "", 1000, 0., 20000. );
+    TH1D* h1_sf = new TH1D("sf", "", 1000, 0., 1. );
+    TTree* tree = (TTree*)(dataFiles[i].file->Get("EEShash"));
+    tree->Project( "resp", "Eact" );
+    tree->Project( "sf", "Eact/(Eact+Eabs)" );
+
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
-    float mean = ((TH1D*)(dataFiles[i].file->Get("edep_act")))->GetMean();
-    float meanErr = ((TH1D*)(dataFiles[i].file->Get("edep_act")))->GetMeanError();
+    gr_resp_reso.first->SetPoint(i,x,h1_sf->GetMean());
+    gr_resp_reso.first->SetPointError(i,0.,h1_sf->GetMeanError());
 
-    float rms = ((TH1D*)(dataFiles[i].file->Get("edep_act")))->GetRMS();
-    float rmsErr = ((TH1D*)(dataFiles[i].file->Get("edep_act")))->GetRMSError();
 
-    gr_resp_reso.first->SetPoint(i,x,mean/20000.); // 20 GeV beam
-    gr_resp_reso.first->SetPointError(i,0.,meanErr/20000.); // 20 GeV beam
+    float mean = h1_resp->GetMean();
+    float meanErr = h1_resp->GetMeanError();
+
+    float rms = h1_resp->GetRMS();
+    float rmsErr = h1_resp->GetRMSError();
 
     float reso = rms/mean;
-    float nPhotoElectrons = mean/30.;
+    float pePerMev = 25.;
+    float nPhotoElectrons = mean/pePerMev;
     float photoStat_reso = 1./sqrt(nPhotoElectrons);
     Double_t reso_tot = sqrt( reso*reso + photoStat_reso*photoStat_reso );
 
@@ -191,6 +200,9 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
     gr_resp_reso.second->SetPoint(i,x,reso_tot);
     gr_resp_reso.second->SetPoint(i,x,reso_err);
 
+    delete h1_resp;
+    delete h1_sf;
+
   }
 
   gr_resp_reso.first->SetName( "sfrac" );
@@ -198,6 +210,7 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
   gr_resp_reso.first->SetTitle( "Sampling Fraction" );
   gr_resp_reso.second->SetTitle( "Energy Resolution [%]" );
+
 
   return gr_resp_reso;
 
@@ -210,9 +223,75 @@ void drawCompare( const std::string& outputdir, std::vector<TGraphErrors*> graph
   for( unsigned i=0; i<graphs.size(); ++i ) 
     drawSingleGraph( outputdir, graphs[i] ); 
 
-  //drawCompareAll( outputdir, graphs );
+  drawCompareAll( outputdir, graphs );
 
 }
+
+
+
+
+void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> graphs ) {
+
+
+  TCanvas* c1 = new TCanvas("c1", "", 600, 600);
+  c1->cd();
+
+  std::vector<int> colors;
+  colors.push_back( 46 );
+  colors.push_back( 29 );
+  colors.push_back( 38 );
+  colors.push_back( 42 ); 
+
+  float xMin = 1.;
+  float xMax = 8.;
+  TH2D* h2_axes = new TH2D("axes", "", 10, xMin, xMax, 10, 0., 3.5 );
+  h2_axes->SetYTitle( "Ratio to LYSO Calorimeter" );
+  h2_axes->SetXTitle( "Tungsten Thickness [mm]" );
+  h2_axes->Draw();
+
+  TLine* lineOne = new TLine(xMin, 1., xMax, 1.);
+  lineOne->Draw("same");
+
+  TLine* linePlus20 = new TLine(xMin, 1.2, xMax, 1.2);
+  linePlus20->SetLineStyle(2);
+  linePlus20->Draw("same");
+
+  TLine* lineMinus20 = new TLine(xMin, 0.8, xMax, 0.8);
+  lineMinus20->SetLineStyle(2);
+  lineMinus20->Draw("same");
+
+  TLegend* legend = new TLegend( 0.53, 0.63, 0.9, 0.9 );
+  legend->SetFillColor(0);
+  legend->SetTextSize( 0.035 );
+
+  for( unsigned i=0; i<graphs.size(); ++i ) {
+ 
+    TGraphErrors* gr_ratio = getRatioGraph( graphs[i] );
+    gr_ratio->SetLineColor( colors[i] );
+    gr_ratio->SetLineWidth( 2 );
+    gr_ratio->Draw("l same");
+
+    std::string legendName = chopUnits(graphs[i]->GetTitle());
+    legend->AddEntry( gr_ratio, legendName.c_str(), "L" );
+
+  }
+
+  legend->Draw("same");
+
+  TPaveText* labelTop = getLabelTop();
+  labelTop->Draw("same");
+
+  gPad->RedrawAxis();
+
+  c1->SaveAs( Form( "%s/CeF3_vs_LYSO.eps", outputdir.c_str() ) );
+  c1->SaveAs( Form( "%s/CeF3_vs_LYSO.png", outputdir.c_str() ) );
+  c1->SaveAs( Form( "%s/CeF3_vs_LYSO.pdf", outputdir.c_str() ) );
+
+  delete c1;
+  delete h2_axes;
+
+}
+
 
 
 
@@ -221,6 +300,8 @@ void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph ) {
   TCanvas* c1 = new TCanvas( "c1", "", 600, 600 );
   c1->cd();
 
+  float xMin = 1.;
+  float xMax = 8.;
   float yMax = 0.;
   for( unsigned i =1; i<graph->GetN(); ++i ) {
     Double_t x, y;
@@ -229,7 +310,7 @@ void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph ) {
   }
   yMax *= 1.2;
 
-  TH2D* h2_axes = new TH2D("axes", "", 10, 0., 8., 10, 0., yMax );
+  TH2D* h2_axes = new TH2D("axes", "", 10, xMin, xMax, 10, 0., yMax );
   h2_axes->SetYTitle( graph->GetTitle() );
   h2_axes->SetXTitle( "Tungsten Thickness [mm]" );
   h2_axes->Draw();
@@ -253,10 +334,14 @@ void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph ) {
 
   std::string title_chop = chopUnits( graph->GetTitle() );
 
-  TH2D* h2_axes_ratio = new TH2D( "axes_ratio", "", 10, 0., 8., 10, 0., 2. );
+
+  TH2D* h2_axes_ratio = new TH2D( "axes_ratio", "", 10, xMin, xMax, 10, 0., 2. );
   h2_axes_ratio->SetXTitle( "Tungsten Thickness [mm]" );
   h2_axes_ratio->SetYTitle( Form("%s Ratio", title_chop.c_str()) ); 
   h2_axes_ratio->Draw();
+
+  TLine* lineOne = new TLine(xMin, 1., xMax, 1.);
+  lineOne->Draw("same");
 
   TGraphErrors* gr_ratio = getRatioGraph( graph );
 
@@ -307,7 +392,7 @@ std::string chopUnits( std::string title ) {
   std::stringstream ss(title);
   std::vector<std::string> parts;
   std::string item;
-  while(std::getline(ss, item, '_')) {
+  while(std::getline(ss, item, ' ')) {
     parts.push_back(item);
   }  
 
