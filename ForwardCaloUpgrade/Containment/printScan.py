@@ -39,6 +39,6 @@ while tung_thickness<8. :
   if detectorLength>225.: continue # actually should be 220, but there's a configuration of 221mm so i want to check it
 
   print "./runEEShashlik -m run20GeV.mac -actType CeF3 -n " + str(int(nLayers)) + " -act " + str(cef3_thickness) + " -abs " + str(tung_thickness) 
-  print "mv EEShash.root EEShash_CeF3_nLayers" + str(int(nLayers)) + "_tung" + str(int(10.*tung_thickness)) + ".root"
+  print "mv EEShash.root EEShash_CeF3_tung" + str(int(10.*tung_thickness)) + "_nLayers" + str(int(nLayers)) + ".root"
 
   
