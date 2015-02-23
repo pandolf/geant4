@@ -32,7 +32,6 @@ class DataFile {
 
 
 void setStyle();
-void drawCompare( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
 TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles );
 std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile> dataFiles );
 TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles );
@@ -82,7 +81,14 @@ int main() {
 
   std::string outputdir = "Plots_CeF3_vs_LYSO";
   system( Form("mkdir -p %s", outputdir.c_str()) );
-  drawCompare( outputdir, graphs );
+
+
+  for( unsigned i=0; i<graphs.size(); ++i ) 
+    drawSingleGraph( outputdir, graphs[i] ); 
+
+  drawCompareAll( outputdir, graphs );
+
+
 
   return 0;
 
@@ -223,14 +229,6 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
 
 
-void drawCompare( const std::string& outputdir, std::vector<TGraphErrors*> graphs ) {
-
-  for( unsigned i=0; i<graphs.size(); ++i ) 
-    drawSingleGraph( outputdir, graphs[i] ); 
-
-  drawCompareAll( outputdir, graphs );
-
-}
 
 
 
