@@ -69,17 +69,17 @@ EEShashRunAction::EEShashRunAction( EEShashDetectorConstruction* det)
   //
   
   // Creating histograms
-  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 5*GeV);
-  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 5*GeV);
-  analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 2*m);
-  analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 2*m);
+  analysisManager->CreateH1("edep_abs","Edep in absorber", 100, 0., 20*GeV);
+  analysisManager->CreateH1("edep_act","Edep in active", 100, 0., 20*GeV);
+  analysisManager->CreateH1("trkl_abs","trackL in absorber", 100, 0., 10*m);
+  analysisManager->CreateH1("trkl_act","trackL in active", 100, 0., 10*m);
 
 
   analysisManager->CreateH1( "Rmoliere","Moliere Radius",500,0.,50.);
                                     
-  analysisManager->CreateH1( "h6","rms on longit Edep (% of E inc)", nLbin,0.,nLbin*dLradl);
+  analysisManager->CreateH1( "Rmoliere2","2*Molier Radius", 500,0.,50.);
   G4double Zmin=0.5*dLradl, Zmax=Zmin+nLbin*dLradl;
-  analysisManager->CreateH1( "h7","cumul longit energy dep (% of E inc)", nLbin,Zmin,Zmax);
+  analysisManager->CreateH1( "Rmoliere3","99% radial containment", 500,0.,50.);
                                     
   analysisManager->CreateH1( "h8","rms on cumul longit Edep (% of E inc)", nLbin,Zmin,Zmax);
 

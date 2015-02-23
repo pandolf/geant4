@@ -174,6 +174,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   
   float EdepEcalRad = 0.;
   float rMoliere = 0.;
+  float rMoliere2 = 0.;
+  float rMoliere3 = 0.;
   for(G4int itr=0; itr<nRtot; itr++) {
     EdepEcalRad += dEdR[itr];
   }
@@ -184,9 +186,13 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
        G4double xrbin = dRbin*jtr + 0.5*dRbin;
        //       G4double xrbin = dRbin*jtr + 0.5*dRbin;
        EdepTemp += dEdR[jtr];
-       if( EdepTemp/EdepEcalRad < 0.90) rMoliere = xrbin; //new rMolier = 
+       if( EdepTemp/EdepEcalRad < 0.90) rMoliere = xrbin; //90% containment
+       if( EdepTemp/EdepEcalRad < 0.95) rMoliere2 = xrbin; //95% containment
+       if( EdepTemp/EdepEcalRad < 0.99) rMoliere3 = xrbin; //99% containment
     }
     analysisManager->FillH1(5, rMoliere);
+    analysisManager->FillH1(6, rMoliere2);
+    analysisManager->FillH1(7, rMoliere3);
   }
 
   
