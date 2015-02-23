@@ -128,6 +128,8 @@ TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles ) {
     graph->SetPoint(i, x, y);
     graph->SetPointError(i, 0, yerr);
 
+    if( i==0 ) std::cout << "LYSO Moliere radius: " << y << std::endl;
+
   }
 
   graph->SetName( "mol" );
@@ -199,6 +201,9 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
     gr_resp_reso.second->SetPoint(i,x,reso_tot);
     gr_resp_reso.second->SetPointError(i,0.,reso_err);
+
+    if( i==0 ) std::cout << "LYSO Sampling Fraction: " << h1_sf->GetMean() << std::endl;
+    if( i==0 ) std::cout << "LYSO Energy Resolution: " << reso_tot*100. << std::endl;
 
     delete h1_resp;
     delete h1_sf;
