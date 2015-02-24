@@ -15,6 +15,10 @@
 
 
 
+int energy = 20; // in GeV
+
+
+
 class DataFile {
 
  public:
@@ -39,16 +43,23 @@ TGraphErrors* getRatioGraph( TGraphErrors* graph );
 std::string chopUnits( std::string title );
 void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph );
 void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
-TPaveText* getLabelTop();
+TPaveText* getLabelTop( int energy );
 
 
 
-int main() {
 
+
+
+int main( int argc, char* argv[] ) {
+
+
+  if( argc > 1 ) {
+    energy = atoi(argv[1]);
+  }
 
   setStyle();
 
-  std::string dataDir = "../data";
+  std::string dataDir(Form("../data_%dGeV", energy));
 
   std::vector<DataFile> dataFiles; 
 
@@ -79,7 +90,7 @@ int main() {
   graphs.push_back( gr_resp_reso.first );
   graphs.push_back( gr_resp_reso.second );
 
-  std::string outputdir = "Plots_CeF3_vs_LYSO";
+  std::string outputdir(Form("Plots_CeF3_vs_LYSO_%dGeV", energy));
   system( Form("mkdir -p %s", outputdir.c_str()) );
 
 
@@ -126,6 +137,8 @@ TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles ) {
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
+    if( dataFiles[i].file==0 ) continue;
+
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
     Double_t y = ((TH1D*)(dataFiles[i].file->Get("Rmoliere")))->GetMean();
@@ -153,6 +166,8 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles ) {
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
+    if( dataFiles[i].file==0 ) continue;
+
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
     float actThickness = (dataFiles[i].actType=="LYSO") ? 1.5 : 5.;
@@ -179,7 +194,9 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
-    TH1D* h1_resp = new TH1D("resp", "", 1000, 0., 20000. );
+    if( dataFiles[i].file==0 ) continue;
+
+    TH1D* h1_resp = new TH1D("resp", "", 1000, 0., 1000.*energy );
     TH1D* h1_sf = new TH1D("sf", "", 1000, 0., 1. );
     TTree* tree = (TTree*)(dataFiles[i].file->Get("EEShash"));
     tree->Project( "resp", "Eact" );
@@ -281,7 +298,7 @@ void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> gr
 
   legend->Draw("same");
 
-  TPaveText* labelTop = getLabelTop();
+  TPaveText* labelTop = getLabelTop(energy);
   labelTop->Draw("same");
 
   gPad->RedrawAxis();
@@ -323,7 +340,7 @@ void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph ) {
   graph->SetMarkerColor( 29 );
   graph->Draw("p same");
 
-  TPaveText* labelTop = getLabelTop();
+  TPaveText* labelTop = getLabelTop(energy);
   labelTop->Draw("same");
 
   gPad->RedrawAxis();
@@ -376,12 +393,19 @@ TGraphErrors* getRatioGraph( TGraphErrors* graph ) {
   Double_t y_ref, x_ref;
   graph->GetPoint(0, x_ref, y_ref );
 
+  int iPoint=0;
+
   for( unsigned i =1; i<graph->GetN(); ++i ) {
 
     Double_t x, y;
     graph->GetPoint(i, x, y );
 
-    gr_ratio->SetPoint( i-1, x, y/y_ref );
+    if( x<=1 ) continue;
+    if( y<=0.0001 ) continue;
+    if( y/y_ref>5. ) continue;
+
+    gr_ratio->SetPoint( iPoint, x, y/y_ref );
+    iPoint++;
 
   }
 
@@ -484,14 +508,14 @@ void setStyle() {
 }
 
 
-TPaveText* getLabelTop() {
+TPaveText* getLabelTop( int energy ) {
 
   TPaveText* label_top = new TPaveText(0.4,0.953,0.975,0.975, "brNDC");
   label_top->SetFillColor(kWhite);
   label_top->SetTextSize(0.038);
   label_top->SetTextAlign(31); // align right
   label_top->SetTextFont(62);
-  label_top->AddText("20 GeV Electron Gun");
+  label_top->AddText(Form("%d GeV Electron Gun", energy));
   return label_top;
 
 }
