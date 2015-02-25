@@ -10,6 +10,7 @@
 #include "TH2D.h"
 #include "TLegend.h"
 #include "TH1D.h"
+#include "TF1.h"
 #include "TPaveText.h"
 #include "TStyle.h"
 
@@ -37,13 +38,14 @@ class DataFile {
 
 void setStyle();
 TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles );
-std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile> dataFiles );
+std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( const std::string& outputdir, std::vector<DataFile> dataFiles );
 TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles );
 TGraphErrors* getRatioGraph( TGraphErrors* graph );
 std::string chopUnits( std::string title );
 void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph );
 void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
 TPaveText* getLabelTop( int energy );
+TF1* fitHistoWithGaussian( const std::string& outputdir, const std::string& name, TH1D* h1 );
 
 
 
@@ -80,18 +82,19 @@ int main( int argc, char* argv[] ) {
   dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
 
 
+  std::string outputdir(Form("Plots_CeF3_vs_LYSO_%dGeV", energy));
+  system( Form("mkdir -p %s", outputdir.c_str()) );
+
+
   TGraphErrors* gr_mol = getMoliereGraph( dataFiles );
   TGraphErrors* gr_vol = getVolumeGraph( dataFiles );
-  std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso = getResponseGraphs( dataFiles );
+  std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso = getResponseGraphs( outputdir, dataFiles );
 
   std::vector< TGraphErrors* > graphs;
   graphs.push_back( gr_mol );
   graphs.push_back( gr_vol );
   graphs.push_back( gr_resp_reso.first );
   graphs.push_back( gr_resp_reso.second );
-
-  std::string outputdir(Form("Plots_CeF3_vs_LYSO_%dGeV", energy));
-  system( Form("mkdir -p %s", outputdir.c_str()) );
 
 
   for( unsigned i=0; i<graphs.size(); ++i ) 
@@ -186,7 +189,7 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles ) {
 
 
 
-std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile> dataFiles ) {
+std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( const std::string& outputdir, std::vector<DataFile> dataFiles ) {
 
   std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso;
   gr_resp_reso.first  = new TGraphErrors(0); // sampling fraction
@@ -196,7 +199,9 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
     if( dataFiles[i].file==0 ) continue;
 
-    TH1D* h1_resp = new TH1D("resp", "", 1000, 0., 1000.*energy );
+    float eMin = energy*100.;
+    float eMax = energy*600.;
+    TH1D* h1_resp = new TH1D("resp", "", 1000, eMin, eMax );
     TH1D* h1_sf = new TH1D("sf", "", 1000, 0., 1. );
     TTree* tree = (TTree*)(dataFiles[i].file->Get("EEShash"));
     tree->Project( "resp", "Eact" );
@@ -208,16 +213,32 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
     gr_resp_reso.first->SetPointError(i,0.,h1_sf->GetMeanError());
 
 
-    float mean = h1_resp->GetMean();
-    float meanErr = h1_resp->GetMeanError();
+    TF1* gaus = fitHistoWithGaussian( outputdir, Form("%s_tung%d", dataFiles[i].actType.c_str(), (int)(10.*dataFiles[i].absThickness) ), h1_resp );
+  //if( i==7 ) {
+  //TFile* file = TFile::Open("prova.root", "recreate");
+  //file->cd();
+  //h1_resp->Write();
+  //file->Close();
+  //exit(1);
+  //}
 
-    float rms = h1_resp->GetRMS();
-    float rmsErr = h1_resp->GetRMSError();
+    float mean = gaus->GetParameter(1);
+    float meanErr = gaus->GetParError(1);
+
+    float rms = gaus->GetParameter(2);
+    float rmsErr = gaus->GetParError(2);
+
+    //float mean = h1_resp->GetMean();
+    //float meanErr = h1_resp->GetMeanError();
+
+    //float rms = h1_resp->GetRMS();
+    //float rmsErr = h1_resp->GetRMSError();
 
     float reso = rms/mean;
     float pePerMev = 1.;
     float nPhotoElectrons = mean/pePerMev;
     float photoStat_reso = 1./sqrt(nPhotoElectrons);
+    //Double_t reso_tot = reso;
     Double_t reso_tot = (i>0) ? sqrt( reso*reso + photoStat_reso*photoStat_reso ) : sqrt( reso*reso ); // add photostat only to cef3
 
     Double_t reso_err = sqrt( rmsErr*rmsErr/(mean*mean) + rms*rms*meanErr*meanErr/(mean*mean*mean*mean) );
@@ -430,6 +451,52 @@ std::string chopUnits( std::string title ) {
 
 }
 
+
+
+
+TF1* fitHistoWithGaussian( const std::string& outputdir, const std::string& name, TH1D* h1 ) {
+
+  std::string dir = outputdir + "/fits";
+  system( Form("mkdir -p %s", dir.c_str() ) );
+
+
+  TCanvas* c1 = new TCanvas( "c1", "", 600, 600 );
+  c1->cd();
+
+
+  TF1* f1 = new TF1("gaus_tot", "gaus", h1->GetXaxis()->GetXmin(), h1->GetXaxis()->GetXmax());
+  f1->SetParameter( 1, h1->GetMean() );
+  f1->SetParameter( 2, h1->GetRMS() );
+  f1->SetLineColor(kBlue);
+
+  h1->Fit( f1, "RQN" );
+
+  int niter = 5;
+  float nSigma =1.0 ;
+  for( int iter=0; iter<niter; iter++ ) {
+    float mean = f1->GetParameter(1);
+    float sigma = f1->GetParameter(2);
+    float fitMin = mean - nSigma*sigma;
+    float fitMax = mean + nSigma*sigma*2.5;
+    f1->SetRange( fitMin, fitMax );
+    if( iter==(niter-1) )
+      h1->Fit( f1, "RQN" );
+    else
+      h1->Fit( f1, "RQ+" );
+  }
+
+  h1->SetLineColor(kRed); 
+  h1->Draw(); 
+
+  //c1->SaveAs(Form("%s/%s.eps", dir.c_str(), name.c_str()));
+  c1->SaveAs(Form("%s/%s.png", dir.c_str(), name.c_str()));
+  //c1->SaveAs(Form("%s/%s.pdf", dir.c_str(), name.c_str()));
+
+  delete c1;
+
+  return f1;
+
+}
 
 
 void setStyle() {
