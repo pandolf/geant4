@@ -17,6 +17,7 @@
 
 
 int energy = 20; // in GeV
+float cef3_thickness = 3.;
 
 
 
@@ -62,27 +63,46 @@ int main( int argc, char* argv[] ) {
   setStyle();
 
   std::string dataDir(Form("../data_%dGeV", energy));
+  if( cef3_thickness==3. ) 
+    dataDir = std::string(Form("../data_3mm_%dGeV", energy));
 
   std::vector<DataFile> dataFiles; 
 
   dataFiles.push_back(DataFile("EEShash_LYSO_tung25_nLayers28.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung15_nLayers34.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung20_nLayers28.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung25_nLayers24.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers21.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers19.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers17.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers16.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers14.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers13.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers12.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers11.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers10.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+
+  if( cef3_thickness==5. ) {
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung15_nLayers34.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung20_nLayers28.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung25_nLayers24.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers21.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers19.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers17.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers16.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers14.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers13.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers11.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers10.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+  } else if( cef3_thickness==3. ) {
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers24.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers21.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers19.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers17.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers15.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers14.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers13.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers11.root", dataDir) );
+    //dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+  }
 
 
   std::string outputdir(Form("Plots_CeF3_vs_LYSO_%dGeV", energy));
+  if( cef3_thickness!=5. )
+    outputdir = std::string(Form("Plots_CeF3_vs_LYSO_%dGeV_%.0fmm", energy, cef3_thickness));
   system( Form("mkdir -p %s", outputdir.c_str()) );
 
 
@@ -129,6 +149,7 @@ DataFile::DataFile( const std::string& fileName, const std::string& dataDir ) {
   sscanf( parts[3].c_str(), "nLayers%d", &nLayers );
 
   file = TFile::Open( Form("%s/%s", dataDir.c_str(), fileName.c_str() ) );
+  if( file!=0 ) std::cout << "-> Added " << fileName << std::endl;
 
 }
 
@@ -173,7 +194,7 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles ) {
 
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
-    float actThickness = (dataFiles[i].actType=="LYSO") ? 1.5 : 5.;
+    float actThickness = (dataFiles[i].actType=="LYSO") ? 1.5 : cef3_thickness;
     Double_t y = actThickness*dataFiles[i].nLayers;
 
     graph->SetPoint(i,x,y);
