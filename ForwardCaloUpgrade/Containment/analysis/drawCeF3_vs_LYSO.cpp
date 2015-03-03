@@ -10,8 +10,14 @@
 #include "TH2D.h"
 #include "TLegend.h"
 #include "TH1D.h"
+#include "TF1.h"
 #include "TPaveText.h"
 #include "TStyle.h"
+
+
+
+int energy = 20; // in GeV
+float cef3_thickness = 3.;
 
 
 
@@ -32,47 +38,77 @@ class DataFile {
 
 
 void setStyle();
-void drawCompare( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
 TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles );
-std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile> dataFiles );
+std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( const std::string& outputdir, std::vector<DataFile> dataFiles );
 TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles );
 TGraphErrors* getRatioGraph( TGraphErrors* graph );
 std::string chopUnits( std::string title );
 void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph );
 void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> graphs );
-TPaveText* getLabelTop();
+TPaveText* getLabelTop( int energy );
+TF1* fitHistoWithGaussian( const std::string& outputdir, const std::string& name, TH1D* h1 );
 
 
 
-int main() {
 
+
+
+int main( int argc, char* argv[] ) {
+
+
+  if( argc > 1 ) {
+    energy = atoi(argv[1]);
+  }
 
   setStyle();
 
-  std::string dataDir = "../data";
+  std::string dataDir(Form("../data_%dGeV", energy));
+  if( cef3_thickness==3. ) 
+    dataDir = std::string(Form("../data_3mm_%dGeV", energy));
 
   std::vector<DataFile> dataFiles; 
 
   dataFiles.push_back(DataFile("EEShash_LYSO_tung25_nLayers28.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung15_nLayers34.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung20_nLayers28.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung25_nLayers24.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers21.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers19.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers17.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers16.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers14.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers13.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers12.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers11.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers10.root", dataDir) );
-  dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+
+  if( cef3_thickness==5. ) {
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung15_nLayers34.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung20_nLayers28.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung25_nLayers24.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers21.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers19.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers17.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers16.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers14.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers13.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers11.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers10.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+  } else if( cef3_thickness==3. ) {
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung30_nLayers24.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung35_nLayers21.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung40_nLayers19.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung45_nLayers17.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung50_nLayers15.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung55_nLayers14.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung60_nLayers13.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung65_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung70_nLayers12.root", dataDir) );
+    dataFiles.push_back(DataFile("EEShash_CeF3_tung75_nLayers11.root", dataDir) );
+    //dataFiles.push_back(DataFile("EEShash_CeF3_tung80_nLayers10.root", dataDir) );
+  }
+
+
+  std::string outputdir(Form("Plots_CeF3_vs_LYSO_%dGeV", energy));
+  if( cef3_thickness!=5. )
+    outputdir = std::string(Form("Plots_CeF3_vs_LYSO_%dGeV_%.0fmm", energy, cef3_thickness));
+  system( Form("mkdir -p %s", outputdir.c_str()) );
 
 
   TGraphErrors* gr_mol = getMoliereGraph( dataFiles );
   TGraphErrors* gr_vol = getVolumeGraph( dataFiles );
-  std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso = getResponseGraphs( dataFiles );
+  std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso = getResponseGraphs( outputdir, dataFiles );
 
   std::vector< TGraphErrors* > graphs;
   graphs.push_back( gr_mol );
@@ -80,9 +116,13 @@ int main() {
   graphs.push_back( gr_resp_reso.first );
   graphs.push_back( gr_resp_reso.second );
 
-  std::string outputdir = "Plots_CeF3_vs_LYSO";
-  system( Form("mkdir -p %s", outputdir.c_str()) );
-  drawCompare( outputdir, graphs );
+
+  for( unsigned i=0; i<graphs.size(); ++i ) 
+    drawSingleGraph( outputdir, graphs[i] ); 
+
+  drawCompareAll( outputdir, graphs );
+
+
 
   return 0;
 
@@ -109,6 +149,7 @@ DataFile::DataFile( const std::string& fileName, const std::string& dataDir ) {
   sscanf( parts[3].c_str(), "nLayers%d", &nLayers );
 
   file = TFile::Open( Form("%s/%s", dataDir.c_str(), fileName.c_str() ) );
+  if( file!=0 ) std::cout << "-> Added " << fileName << std::endl;
 
 }
 
@@ -119,6 +160,8 @@ TGraphErrors* getMoliereGraph( std::vector<DataFile> dataFiles ) {
   TGraphErrors* graph = new TGraphErrors(0);
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
+
+    if( dataFiles[i].file==0 ) continue;
 
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
@@ -147,9 +190,11 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles ) {
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
+    if( dataFiles[i].file==0 ) continue;
+
     Double_t x = (i==0) ? -1 : dataFiles[i].absThickness;
 
-    float actThickness = (dataFiles[i].actType=="LYSO") ? 1.5 : 5.;
+    float actThickness = (dataFiles[i].actType=="LYSO") ? 1.5 : cef3_thickness;
     Double_t y = actThickness*dataFiles[i].nLayers;
 
     graph->SetPoint(i,x,y);
@@ -165,7 +210,7 @@ TGraphErrors* getVolumeGraph( std::vector<DataFile> dataFiles ) {
 
 
 
-std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile> dataFiles ) {
+std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( const std::string& outputdir, std::vector<DataFile> dataFiles ) {
 
   std::pair<TGraphErrors*, TGraphErrors*> gr_resp_reso;
   gr_resp_reso.first  = new TGraphErrors(0); // sampling fraction
@@ -173,7 +218,11 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
   for( unsigned i=0; i<dataFiles.size(); ++i ) {
 
-    TH1D* h1_resp = new TH1D("resp", "", 1000, 0., 20000. );
+    if( dataFiles[i].file==0 ) continue;
+
+    float eMin = energy*100.;
+    float eMax = energy*600.;
+    TH1D* h1_resp = new TH1D("resp", "", 1000, eMin, eMax );
     TH1D* h1_sf = new TH1D("sf", "", 1000, 0., 1. );
     TTree* tree = (TTree*)(dataFiles[i].file->Get("EEShash"));
     tree->Project( "resp", "Eact" );
@@ -185,16 +234,32 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
     gr_resp_reso.first->SetPointError(i,0.,h1_sf->GetMeanError());
 
 
-    float mean = h1_resp->GetMean();
-    float meanErr = h1_resp->GetMeanError();
+    TF1* gaus = fitHistoWithGaussian( outputdir, Form("%s_tung%d", dataFiles[i].actType.c_str(), (int)(10.*dataFiles[i].absThickness) ), h1_resp );
+  //if( i==7 ) {
+  //TFile* file = TFile::Open("prova.root", "recreate");
+  //file->cd();
+  //h1_resp->Write();
+  //file->Close();
+  //exit(1);
+  //}
 
-    float rms = h1_resp->GetRMS();
-    float rmsErr = h1_resp->GetRMSError();
+    float mean = gaus->GetParameter(1);
+    float meanErr = gaus->GetParError(1);
+
+    float rms = gaus->GetParameter(2);
+    float rmsErr = gaus->GetParError(2);
+
+    //float mean = h1_resp->GetMean();
+    //float meanErr = h1_resp->GetMeanError();
+
+    //float rms = h1_resp->GetRMS();
+    //float rmsErr = h1_resp->GetRMSError();
 
     float reso = rms/mean;
     float pePerMev = 1.;
     float nPhotoElectrons = mean/pePerMev;
     float photoStat_reso = 1./sqrt(nPhotoElectrons);
+    //Double_t reso_tot = reso;
     Double_t reso_tot = (i>0) ? sqrt( reso*reso + photoStat_reso*photoStat_reso ) : sqrt( reso*reso ); // add photostat only to cef3
 
     Double_t reso_err = sqrt( rmsErr*rmsErr/(mean*mean) + rms*rms*meanErr*meanErr/(mean*mean*mean*mean) );
@@ -223,14 +288,6 @@ std::pair<TGraphErrors*, TGraphErrors*> getResponseGraphs( std::vector<DataFile>
 
 
 
-void drawCompare( const std::string& outputdir, std::vector<TGraphErrors*> graphs ) {
-
-  for( unsigned i=0; i<graphs.size(); ++i ) 
-    drawSingleGraph( outputdir, graphs[i] ); 
-
-  drawCompareAll( outputdir, graphs );
-
-}
 
 
 
@@ -283,7 +340,7 @@ void drawCompareAll( const std::string& outputdir, std::vector<TGraphErrors*> gr
 
   legend->Draw("same");
 
-  TPaveText* labelTop = getLabelTop();
+  TPaveText* labelTop = getLabelTop(energy);
   labelTop->Draw("same");
 
   gPad->RedrawAxis();
@@ -325,7 +382,7 @@ void drawSingleGraph( const std::string& outputdir, TGraphErrors* graph ) {
   graph->SetMarkerColor( 29 );
   graph->Draw("p same");
 
-  TPaveText* labelTop = getLabelTop();
+  TPaveText* labelTop = getLabelTop(energy);
   labelTop->Draw("same");
 
   gPad->RedrawAxis();
@@ -378,12 +435,19 @@ TGraphErrors* getRatioGraph( TGraphErrors* graph ) {
   Double_t y_ref, x_ref;
   graph->GetPoint(0, x_ref, y_ref );
 
+  int iPoint=0;
+
   for( unsigned i =1; i<graph->GetN(); ++i ) {
 
     Double_t x, y;
     graph->GetPoint(i, x, y );
 
-    gr_ratio->SetPoint( i-1, x, y/y_ref );
+    if( x<=1 ) continue;
+    if( y<=0.0001 ) continue;
+    if( y/y_ref>5. ) continue;
+
+    gr_ratio->SetPoint( iPoint, x, y/y_ref );
+    iPoint++;
 
   }
 
@@ -408,6 +472,52 @@ std::string chopUnits( std::string title ) {
 
 }
 
+
+
+
+TF1* fitHistoWithGaussian( const std::string& outputdir, const std::string& name, TH1D* h1 ) {
+
+  std::string dir = outputdir + "/fits";
+  system( Form("mkdir -p %s", dir.c_str() ) );
+
+
+  TCanvas* c1 = new TCanvas( "c1", "", 600, 600 );
+  c1->cd();
+
+
+  TF1* f1 = new TF1("gaus_tot", "gaus", h1->GetXaxis()->GetXmin(), h1->GetXaxis()->GetXmax());
+  f1->SetParameter( 1, h1->GetMean() );
+  f1->SetParameter( 2, h1->GetRMS() );
+  f1->SetLineColor(kBlue);
+
+  h1->Fit( f1, "RQN" );
+
+  int niter = 5;
+  float nSigma =1.0 ;
+  for( int iter=0; iter<niter; iter++ ) {
+    float mean = f1->GetParameter(1);
+    float sigma = f1->GetParameter(2);
+    float fitMin = mean - nSigma*sigma;
+    float fitMax = mean + nSigma*sigma*2.5;
+    f1->SetRange( fitMin, fitMax );
+    if( iter==(niter-1) )
+      h1->Fit( f1, "RQN" );
+    else
+      h1->Fit( f1, "RQ+" );
+  }
+
+  h1->SetLineColor(kRed); 
+  h1->Draw(); 
+
+  //c1->SaveAs(Form("%s/%s.eps", dir.c_str(), name.c_str()));
+  c1->SaveAs(Form("%s/%s.png", dir.c_str(), name.c_str()));
+  //c1->SaveAs(Form("%s/%s.pdf", dir.c_str(), name.c_str()));
+
+  delete c1;
+
+  return f1;
+
+}
 
 
 void setStyle() {
@@ -486,14 +596,14 @@ void setStyle() {
 }
 
 
-TPaveText* getLabelTop() {
+TPaveText* getLabelTop( int energy ) {
 
   TPaveText* label_top = new TPaveText(0.4,0.953,0.975,0.975, "brNDC");
   label_top->SetFillColor(kWhite);
   label_top->SetTextSize(0.038);
   label_top->SetTextAlign(31); // align right
   label_top->SetTextFont(62);
-  label_top->AddText("20 GeV Electron Gun");
+  label_top->AddText(Form("%d GeV Electron Gun", energy));
   return label_top;
 
 }
