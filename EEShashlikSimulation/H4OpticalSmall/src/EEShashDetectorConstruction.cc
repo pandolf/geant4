@@ -99,13 +99,11 @@ G4VPhysicalVolume* EEShashDetectorConstruction::Construct()
 
 void EEShashDetectorConstruction::DefineMaterials()
 { 
-
   G4double a;  // mass of a mole;
   G4double z;  // z=mean number of protons;  
   G4double density; 
   G4int ncomponents, natoms;
   G4double fractionmass;
-
   G4String symbol;
 
   G4Element* F  = new G4Element("Fluor" ,symbol="F" , z=9.,  a=18.998*g/mole);
@@ -148,9 +146,6 @@ void EEShashDetectorConstruction::DefineMaterials()
   pAir->AddElement(N, fractionmass=0.7);
   pAir->AddElement(O, fractionmass=0.3);
 
-
-
-
   //optical grease
   G4Material* grease = new G4Material("Grease", density=1.0*g/cm3,3);
   grease->AddElement(C,1);
@@ -188,7 +183,6 @@ void EEShashDetectorConstruction::DefineMaterials()
   POM->AddElement(O , natoms=1);
   POM->AddElement(H , natoms=2);
 
-
   //For Tyvek, first try, high density polyethylene (HDPE)
   G4Material* HDPE = new G4Material("HDPE", density=0.95*g/cm3, ncomponents=2);
   HDPE->AddElement(C , natoms=2);
@@ -222,7 +216,7 @@ void EEShashDetectorConstruction::DefineMaterials()
 
   //Polystyrene (Fibre core)//////////////////////////////////////////
   G4double photonEnergy[] =
-    {0.001*eV, 2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV,   2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
+    {0.1*eV, 2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV,2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
      2.30*eV,2.33*eV,2.36*eV,2.39*eV,2.42*eV,     2.45*eV,2.48*eV,2.51*eV,2.54*eV,2.57*eV,
      2.60*eV,2.63*eV,2.66*eV,2.69*eV,2.72*eV,    2.75*eV,2.78*eV,2.81*eV,2.84*eV,2.87*eV,
      2.90*eV,2.93*eV,2.96*eV,2.99*eV,3.02*eV,     3.05*eV,3.08*eV,3.11*eV,3.14*eV,3.17*eV,
@@ -299,18 +293,6 @@ void EEShashDetectorConstruction::DefineMaterials()
     2.52566 *eV, 2.5336 *eV, 2.54964 *eV, 2.56485 *eV, 2.58369 *eV  };
 
   G4double emissionPS [] = {
-    0.000740953*100000. , 0.0007897*100000. , 0.000896943*100000. , 0.00114068*100000. , 0.00132592*100000. , 0.0015209*100000. , 0.00184263*100000. , 
-    0.00194013*100000. , 0.00194988*100000. , 0.00201812*100000. , 0.00213511*100000. , 0.00232035*100000. , 0.00256409*100000. , 0.00272983,
-    0.00285657*100000. , 0.00296381*100000. , 0.0031978*100000. , 0.00349028*100000. , 0.00379251*100000. , 0.00410449*100000. , 0.00430923,
-    0.00435797*100000. , 0.00472845*100000. , 0.00545965*100000. , 0.00590812*100000. , 0.00636634*100000. , 0.0071073*100000. , 0.00802374,
-    0.00885244*100000. , 0.0094569*100000. , 0.00979812*100000. , 0.0101589*100000. , 0.0104611*100000. , 0.0107633*100000. , 0.0111143*100000. , 0.0113385*100000. , 
-    0.0116603*100000. , 0.0119625*100000. , 0.0126937*100000. , 0.0132494*100000. , 0.0137954*100000. , 0.0142243*100000. , 0.0146436*100000. , 0.0148093,
-    0.0148483*100000. , 0.0148093*100000. , 0.0140489*100000. , 0.0132494*100000. , 0.011982*100000. , 0.0102466*100000. , 0.00811148*100000. , 0.0070098*100000. , 
-    0.00621035*100000. , 0.00540116*100000. , 0.00466995*100000. , 0.00382176*100000. , 0.00309055*100000. , 0.00224236*100000. , 0.00177439,
-    0.00141366*100000. , 0.00116993*100000. , 0.000994437*100000. , 0.000750702*100000. , 0.000428973*100000. , 0.000263233*100000. , 0.000165739*100000. , 
-    9.74938e-05*100000. ,  4.87469e-05  *100000. };
-
-  /*  G4double emissionPS [] = {
     0.000740953, 0.0007897, 0.000896943, 0.00114068, 0.00132592, 0.0015209, 0.00184263, 
     0.00194013, 0.00194988, 0.00201812, 0.00213511, 0.00232035, 0.00256409, 0.00272983,
     0.00285657, 0.00296381, 0.0031978, 0.00349028, 0.00379251, 0.00410449, 0.00430923,
@@ -320,7 +302,11 @@ void EEShashDetectorConstruction::DefineMaterials()
     0.0148483, 0.0148093, 0.0140489, 0.0132494, 0.011982, 0.0102466, 0.00811148, 0.0070098, 
     0.00621035, 0.00540116, 0.00466995, 0.00382176, 0.00309055, 0.00224236, 0.00177439,
     0.00141366, 0.00116993, 0.000994437, 0.000750702, 0.000428973, 0.000263233, 0.000165739, 
-    9.74938e-05, 4.87469e-05   }; */
+    9.74938e-05, 4.87469e-05   };
+
+  //  for(int k=0; k<sizeof(emissionPS);k++)
+  //    emissionPS[k]= 100*emissionPS[k];  
+
   assert(sizeof(photonEnergy_emis) == sizeof(emissionPS));
   const G4int nEntries_emis = sizeof(photonEnergy_emis)/sizeof(G4double);
 
@@ -329,7 +315,7 @@ void EEShashDetectorConstruction::DefineMaterials()
   G4MaterialPropertiesTable* mptPolystyrene = new G4MaterialPropertiesTable();
   mptPolystyrene->AddProperty("RINDEX",photonEnergy,refractiveIndexPS,nEntries);
   mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
-  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",10./keV);
+  mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",10./keV);//10/keV nominally
   //  mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
   mptPolystyrene->AddProperty("WLSCOMPONENT",photonEnergy_emis,emissionPS,nEntries_emis);
   mptPolystyrene->AddConstProperty("WLSTIMECONSTANT", 7.0*ns);
@@ -380,8 +366,7 @@ void EEShashDetectorConstruction::DefineMaterials()
   //  mptWLSfiber->AddProperty("WLSABSLENGTH",photonEnergy,absWLSfiber,nEntries);
   //  mptWLSfiber->AddProperty("WLSCOMPONENT",photonEnergy,emissionFib,nEntries);
   //  mptWLSfiber->AddConstProperty("WLSTIMECONSTANT", 0.5*ns);
- 
-  PMMA->SetMaterialPropertiesTable(mptWLSfiber);
+   PMMA->SetMaterialPropertiesTable(mptWLSfiber);
 
 
 
@@ -399,14 +384,10 @@ void EEShashDetectorConstruction::DefineMaterials()
       3.545*eV, 3.649*eV, 3.760*eV, 3.877*eV,
       4.002*eV, 4.136*eV, 6.260*eV };
   G4double RefractiveIndex_grease[nEntries_grease] =
-    { 1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
-      1.403, 1.403, 1.403, 1.403,
+    { 1.403, 1.403, 1.403, 1.403,      1.403, 1.403, 1.403, 1.403,
+      1.403, 1.403, 1.403, 1.403,      1.403, 1.403, 1.403, 1.403,
+      1.403, 1.403, 1.403, 1.403,      1.403, 1.403, 1.403, 1.403,
+      1.403, 1.403, 1.403, 1.403,      1.403, 1.403, 1.403, 1.403,
       1.403, 1.403, 1.403 };
   G4MaterialPropertiesTable* mptGrease = new G4MaterialPropertiesTable();
   mptGrease->AddProperty("RINDEX", PhotonEnergy_grease, RefractiveIndex_grease, nEntries_grease);
@@ -422,7 +403,7 @@ void EEShashDetectorConstruction::DefineMaterials()
       1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
       1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
       1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68,
-      1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68    , 1.68};
+      1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68, 1.68  , 1.68};
   assert(sizeof(refractiveIndex_CeF3) == sizeof(photonEnergy));
   
 
@@ -499,7 +480,8 @@ void EEShashDetectorConstruction::DefineMaterials()
  
  G4MaterialPropertiesTable* mptCeF = new G4MaterialPropertiesTable();
  mptCeF->AddProperty ("FASTCOMPONENT", PhotonEnergy_CeF, Emission_CeF, nEntries_CeF);
- mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI)->SetSpline(true);
+ mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI);
+ // mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI)->SetSpline(true);
  //mptCeF->AddProperty ("ABSLENGTH", PhotonEnergy_ABS, Absorption, nEntries_ABS);
  
  mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 1000./MeV);
@@ -886,17 +868,6 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  fibreS,     // its solid
                  defaultMaterial,  // its material
                  "Fibre");   // its name
-                                   
-  //new G4PVPlacement(
-  //               0,                // no rotation
-  //               G4ThreeVector(),  // at (0,0,0)
-  //               fibreLV,          // its logical volume                         
-  //               "Fibre",    // its name
-  //               labLV,          // its mother  volume
-  //               false,            // no boolean operation
-  //               0,                // copy number
-  //               fCheckOverlaps);  // checking overlaps 
-
 
 
   // fibre core:
@@ -953,6 +924,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   for( int ix=-1; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
 
+      //sin and cos for the rotation
       G4double xPos = ix*(calorSizeXY/2.-0.696);
       G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos) ;
 
@@ -960,13 +932,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      rotation,                // no rotation
                      G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
                      fibreLV,            // its logical volume                         
-                     "Fibre",            // its name
+                     "FibrePV",            // its name
                      labLV,          // its mother  volume
                      false,            // no boolean operation
                      fibreCopy++,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
 
+    
       G4double yPosGrease = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2. +greaseThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2. +greaseThickness/2.) + xPos*xPos) ;
     G4VPhysicalVolume* GreasePV =  new G4PVPlacement(
                      rotation,                // no rotation
@@ -1102,14 +1075,15 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //ACTIVE MATERIAL
   const G4int NUM = 2;
   
-  G4double pp[NUM] = {0.05*eV, 5.7*eV};
+  G4double pp[NUM] = {0.9*eV, 5.1*eV};
   //  G4double rindex[NUM] = {1.59, 1.59};
-  G4double reflectivity[NUM] = {0.1, 0.1};
-  G4double efficiency[NUM] = {0.9, 0.9};
+  G4double reflectivity[NUM] = {0.9, 0.9};
+  G4double reflectivity_Fib[NUM] = {0.9, 0.9};
+  G4double efficiency[NUM] = {0.9 , 0.9};
   
   G4MaterialPropertiesTable *OpSurfacePropertyCef3 = new G4MaterialPropertiesTable();
-  OpSurfacePropertyCef3 -> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
-  OpSurfacePropertyCef3 -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
+  // OpSurfacePropertyCef3 -> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
+  //  OpSurfacePropertyCef3 -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   
   
   G4OpticalSurface* SurfCef3Tyvek = new G4OpticalSurface("SurfCef3Tyvek");
@@ -1122,13 +1096,13 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   
   
   G4LogicalBorderSurface* CeF3TyvekLayer1Surf = 
-    new G4LogicalBorderSurface("CeF3TyvekLayer1Surf", ActPV , TyvekLayerPV1,  SurfCef3Tyvek);
+    new G4LogicalBorderSurface("CeF3TyvekLayer1Surf", ActPV, TyvekLayerPV1, SurfCef3Tyvek);
   
   G4LogicalBorderSurface* CeF3TyvekLayer2Surf = 
-    new G4LogicalBorderSurface("CeF3TyvekLayer2Surf", ActPV , TyvekLayerPV2,  SurfCef3Tyvek);
+    new G4LogicalBorderSurface("CeF3TyvekLayer2Surf", ActPV, TyvekLayerPV2, SurfCef3Tyvek);
   
   G4LogicalBorderSurface* CeF3TyvekCover = 
-    new G4LogicalBorderSurface("CeF3TyvekCover", ActPV, TyvekCoverPV,  SurfCef3Tyvek );
+    new G4LogicalBorderSurface("CeF3TyvekCover", ActPV, TyvekCoverPV, SurfCef3Tyvek );
   
   
   
@@ -1144,10 +1118,10 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4LogicalBorderSurface* CeF3Air = new G4LogicalBorderSurface("CeF3Air", ActPV , labPV,  SurfCef3Air);   
   
    
-  /*
+ 
   G4MaterialPropertiesTable *fibre_surf_mt = new G4MaterialPropertiesTable();
-  fibre_surf_mt-> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
-  fibre_surf_mt-> AddProperty("EFFICIENCY",pp,efficiency,NUM);
+  //fibre_surf_mt-> AddProperty("REFLECTIVITY",pp,reflectivity_Fib,NUM);
+  // fibre_surf_mt-> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   
   
   G4OpticalSurface* OpSurfaceFibre = new G4OpticalSurface("OpSurfaceFibre");
@@ -1155,7 +1129,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   OpSurfaceFibre -> SetType(dielectric_metal);
   OpSurfaceFibre -> SetFinish(polished);
   OpSurfaceFibre -> SetModel(glisur);
-  OpSurfaceFibre->SetPolish(1.0);
+  OpSurfaceFibre -> SetPolish(1.0);
   
   // G4OpticalSurface* OpSurfaceFibre = new G4OpticalSurface("OpSurfaceFibre", glisur, polished, dielectric_metal);
   
@@ -1163,7 +1137,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   
   
   G4LogicalSkinSurface* SurfaceFibre = new G4LogicalSkinSurface("OpSurfaceFibre", fibreLV, OpSurfaceFibre);
-  */
+ 
+ 
   
       /*
       G4double ephoton[] = {7.0*eV, 7.14*eV};

@@ -4,10 +4,10 @@
 using namespace std;
 using namespace CLHEP;
 
-G4double fibre0;
-G4double fibre1;
-G4double fibre2;
-G4double fibre3;
+G4double fibre0=0;
+G4double fibre1=0;
+G4double fibre2=0;
+G4double fibre3=0;
 
 int to_int (string name)
 {
@@ -73,7 +73,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	{
 	  //	  CreateTree::Instance()->tot_phot_sci += 1;
 	  //	  if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	  fibre0 += 1;
+	  fibre0 += 1; 
+
 
 	}
  
@@ -95,7 +96,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
 
 
-      if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Fibre") ) &&	  (thePrePVName.contains("Fibre")) && (thePostPVName.contains("GreaseLV")) )
+      if(  (thePrePVName.contains("Core")) && (thePostPVName.contains("GreaseLV")) )
 	{
 	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	  // if you do not want to kill a photon once it exits the fiber, comment here below
@@ -104,44 +105,46 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	  fibre1 += 1;
 	}
 
-      if(  theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Core") ||
-	    theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Clad")  )
+      if(  thePostPVName.contains("Core") ||
+	    thePostPVName.contains("Clad")  )
 	{
 	  fibre2 += 1;
-	  std::cout << theTrack->GetLogicalVolumeAtVertex()->GetName() << std::endl;
+	  //	  std::cout << std::endl; 
+	  //	  std::cout << "Events in fiber, core or cladding " << std::endl;
+	  //	  std::cout << theTrack->GetLogicalVolumeAtVertex()->GetName() << std::endl;
 	  //  CreateTree::Instance()->tot_gap_phot_cer += 1;
 	  // if you do not want to kill a photon once it exits the fiber, comment here below
 	  //   theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
       //------------------------------
       // count photons at the detector
-      if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Fibre") || 	  (thePrePVName.contains("Grease")) && (thePostPVName.contains("boroSil")) ) &&	  (processName == "Scintillation")   )
+      if(  (thePostPVName.contains("Grease")) )  
 	{
-
-	  std::cout << "SHIT IS NOT HAPPENING" << std::endl;
-
+	  std::cout << "THIS IS THE (simplified) SHIT WE NEED, so where is it??" << std::endl;
 	  fibre3 += 1;
-	  //  CreateTree::Instance()->tot_det_phot_sci += 1;
 	  // if you do not want to kill a photon once it enters the detector, comment here below
 	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
-      if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("core") ||
-	    theTrack->GetLogicalVolumeAtVertex()->GetName().contains("act") ||
-	    theTrack->GetLogicalVolumeAtVertex()->GetName().contains("clad") ) &&
-	  (processName == "Cerenkov") &&
-	  (thePrePVName == "detLayerPV") && (thePostPVName == "detPV") )
-	{
-	  //  CreateTree::Instance()->tot_det_phot_cer += 1;
-	  // if you do not want to kill a photon once it enters the detector, comment here below
-	  //	  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
+
 
       //-----------------------------------------------
       // kill photons escaping from the lateral surface
-      if( (thePrePVName == "claddingPV") && (thePostPVName == "worldPV") )
+      /*
+      if( (thePrePVName.contains("Grease"))  )
 	{
+	  std::cout << "If pre is Grease, the post is:" << std::endl;
+	  std::cout << thePostPVName << std::endl;
 	  //	  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
+      */
+         if( (thePrePVName.contains("Core"))  )
+	{
+	  //	  std::cout << "If pre is Core, the post is:" << std::endl;
+	  //	  std::cout << "Vertex LV = " << theTrack->GetLogicalVolumeAtVertex()->GetName() << std::endl;
+	  //	  std::cout << "The post PV name" << thePostPVName << std::endl;
+	}
+
+
       /*
 	if( (theTrack->GetLogicalVolumeAtVertex()->GetName().contains("core")) && (nStep == 1) )
 	{
@@ -176,6 +179,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   // non optical photon
   else
     {
+      /*
       //G4cout << ">>> begin non optical photon" << G4endl;
       G4double energy = theStep->GetTotalEnergyDeposit() - theStep->GetNonIonizingEnergyDeposit();
       if ( energy == 0. ) return;
@@ -197,6 +201,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	  //	  CreateTree::Instance() -> depositedEnergyWorld += energy/GeV;
 	}
       //G4cout << ">>> end non optical photon" << G4endl;
+      */
     } // non optical photon
   return ;
 }
