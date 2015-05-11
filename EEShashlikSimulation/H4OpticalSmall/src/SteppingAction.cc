@@ -4,10 +4,10 @@
 using namespace std;
 using namespace CLHEP;
 
-G4double fibre0=0;
-G4double fibre1=0;
-G4double fibre2=0;
-G4double fibre3=0;
+G4double fibre0;
+G4double fibre1;
+G4double fibre2;
+G4double fibre3;
 
 int to_int (string name)
 {
@@ -42,6 +42,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   TrackInformation* theTrackInfo = (TrackInformation*)(theTrack->GetUserInformation());
   G4ParticleDefinition* particleType = theTrack->GetDefinition () ;
 
+  //Pre point = first step in a volume
+  //PostStep point identifies step out of volume
   G4StepPoint * thePrePoint = theStep->GetPreStepPoint () ;
   G4StepPoint * thePostPoint = theStep->GetPostStepPoint () ;
   const G4ThreeVector & thePrePosition = thePrePoint->GetPosition () ;
@@ -54,6 +56,13 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
   G4int nStep = theTrack -> GetCurrentStepNumber();
 
+
+  G4TouchableHandle theTouchable = thePrePoint->GetTouchableHandle();
+  G4int copyNo = theTouchable->GetCopyNumber();
+  G4int motherCopyNo = theTouchable->GetCopyNumber(1);
+
+
+
   //-------------
   // get position
   G4double global_x = thePrePosition.x()/mm;
@@ -64,6 +73,10 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   // optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
+      //FUCK IT Let's just kill them before they bounce that much...
+      if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act"))
+	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+
       G4String processName = theTrack->GetCreatorProcess()->GetProcessName();
 
       //----------------------------
@@ -71,22 +84,15 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act") ) &&
 	  (nStep == 1) && (processName == "Scintillation") )
 	{
-	  //	  CreateTree::Instance()->tot_phot_sci += 1;
-	  //	  if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	  // CreateTree::Instance()->tot_phot_sci += 1;
+	  // if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	  fibre0 += 1; 
-
-
 	}
  
 
       //----------------------------
       // count photons at fiber exit
-      if(  theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Core") ||
-	   theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Clad") ||
-	   theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Fibre")||
-	   theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Air")     )
-	{
-	  std::cout << "SHIT IS NOT HAPPENING" << std::endl;
+      if(  thePrePVName.contains("Grease")&& motherCopyNo==1 )	{
 	  fibre1 += 1;
 	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	  // if you do not want to kill a photon once it exits the fiber, comment here below
@@ -94,54 +100,17 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	}
 
 
-
-
-      if(  (thePrePVName.contains("Core")) && (thePostPVName.contains("GreaseLV")) )
-	{
-	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	  std::cout << "SHIT IS NOT HAPPENING" << std::endl;
-	  fibre1 += 1;
-	}
-
-      if(  thePostPVName.contains("Core") ||
-	    thePostPVName.contains("Clad")  )
+      if(  thePrePVName.contains("Grease") )
 	{
 	  fibre2 += 1;
-	  //	  std::cout << std::endl; 
-	  //	  std::cout << "Events in fiber, core or cladding " << std::endl;
-	  //	  std::cout << theTrack->GetLogicalVolumeAtVertex()->GetName() << std::endl;
-	  //  CreateTree::Instance()->tot_gap_phot_cer += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //   theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
       //------------------------------
       // count photons at the detector
-      if(  (thePostPVName.contains("Grease")) )  
+      if(   thePrePVName.contains("Grease")&& motherCopyNo ==3 )  //same as if with the prePV == Fibre
 	{
-	  std::cout << "THIS IS THE (simplified) SHIT WE NEED, so where is it??" << std::endl;
 	  fibre3 += 1;
 	  // if you do not want to kill a photon once it enters the detector, comment here below
 	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
-
-
-      //-----------------------------------------------
-      // kill photons escaping from the lateral surface
-      /*
-      if( (thePrePVName.contains("Grease"))  )
-	{
-	  std::cout << "If pre is Grease, the post is:" << std::endl;
-	  std::cout << thePostPVName << std::endl;
-	  //	  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
-      */
-         if( (thePrePVName.contains("Core"))  )
-	{
-	  //	  std::cout << "If pre is Core, the post is:" << std::endl;
-	  //	  std::cout << "Vertex LV = " << theTrack->GetLogicalVolumeAtVertex()->GetName() << std::endl;
-	  //	  std::cout << "The post PV name" << thePostPVName << std::endl;
 	}
 
 

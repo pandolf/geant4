@@ -78,6 +78,9 @@ void G4EmUserPhysics::ConstructParticle()
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 void G4EmUserPhysics::ConstructProcess()
 {
+  theWLSProcess = new G4OpWLS();
+  //  fWLSProcess = new G4OpWLS();
+
   theCerenkovProcess = new G4Cerenkov("Cerenkov");
   theScintillationProcess = new G4Scintillation("Scintillation");
   theAbsorptionProcess = new G4OpAbsorption();
@@ -127,6 +130,9 @@ void G4EmUserPhysics::ConstructProcess()
 	  pmanager->AddDiscreteProcess(theRayleighScatteringProcess);
 	  pmanager->AddDiscreteProcess(theMieHGScatteringProcess);
 	  pmanager->AddDiscreteProcess(theBoundaryProcess);
+
+	  pmanager->AddDiscreteProcess(theWLSProcess);
+
 	}
     }
 }

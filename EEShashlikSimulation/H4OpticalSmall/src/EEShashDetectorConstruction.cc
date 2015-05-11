@@ -59,6 +59,11 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4LogicalBorderSurface.hh"
 
+#include <iostream>
+#include <vector>
+#include <string>
+#include <cmath>
+
 using namespace CLHEP;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -216,7 +221,7 @@ void EEShashDetectorConstruction::DefineMaterials()
 
   //Polystyrene (Fibre core)//////////////////////////////////////////
   G4double photonEnergy[] =
-    {0.1*eV, 2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV,2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
+    {0.9*eV, 2.00*eV,2.03*eV,2.06*eV,2.09*eV,2.12*eV,2.15*eV,2.18*eV,2.21*eV,2.24*eV,2.27*eV,
      2.30*eV,2.33*eV,2.36*eV,2.39*eV,2.42*eV,     2.45*eV,2.48*eV,2.51*eV,2.54*eV,2.57*eV,
      2.60*eV,2.63*eV,2.66*eV,2.69*eV,2.72*eV,    2.75*eV,2.78*eV,2.81*eV,2.84*eV,2.87*eV,
      2.90*eV,2.93*eV,2.96*eV,2.99*eV,3.02*eV,     3.05*eV,3.08*eV,3.11*eV,3.14*eV,3.17*eV,
@@ -233,7 +238,7 @@ void EEShashDetectorConstruction::DefineMaterials()
       1.59, 1.59, 1.59, 1.59, 1.59, 1.59, 1.59, 1.59, 1.59, 1.59, 1.59};
   assert(sizeof(refractiveIndexPS) == sizeof(photonEnergy));
   
-
+ 
 
   //Polystyren absorption length (for different wavelengths)
   G4double photonEnergy_PS_abs[] ={
@@ -310,11 +315,20 @@ void EEShashDetectorConstruction::DefineMaterials()
   assert(sizeof(photonEnergy_emis) == sizeof(emissionPS));
   const G4int nEntries_emis = sizeof(photonEnergy_emis)/sizeof(G4double);
 
+  G4double photonEnergy_WLS_abs[] = { 1*eV, 2*eV,3*eV, 6*eV};
+  G4double WLS_abs[]= { 10*m, 4*m, 0.1*mm, 0.1*mm};
+  const G4int nEntries_WLS_abs = sizeof(photonEnergy_WLS_abs)/sizeof(G4double);
+
 
   // Add entries into properties table
   G4MaterialPropertiesTable* mptPolystyrene = new G4MaterialPropertiesTable();
   mptPolystyrene->AddProperty("RINDEX",photonEnergy,refractiveIndexPS,nEntries);
-  mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
+
+  // mptPolystyrene->AddProperty("ABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
+
+  mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_WLS_abs,WLS_abs,nEntries_WLS_abs);
+
+  //  mptPolystyrene->AddProperty("WLSABSLENGTH",photonEnergy_PS_abs,absPS,nEntries_PS_abs);
   mptPolystyrene->AddConstProperty("SCINTILLATIONYIELD",10./keV);//10/keV nominally
   //  mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
   mptPolystyrene->AddProperty("WLSCOMPONENT",photonEnergy_emis,emissionPS,nEntries_emis);
@@ -506,8 +520,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // Geometry parameters
 
   // Shashlik:
-  fNofLayers = 10;
-  //  fNofLayers = 15;
+  //fNofLayers = 10;
+  fNofLayers = 15;
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 24.*mm;
@@ -656,8 +670,37 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //  
 
   std::vector<G4TwoVector> octagonFace;
-  G4double chamferLength = 2.1*mm;
-  octagonFace.push_back( G4TwoVector(-calorSizeXY/2.                ,+calorSizeXY/2. - chamferLength) );// start from top left corner
+  G4double chamferLength = 2.0*mm;
+  //  G4double chamferLength = 2.1*mm;
+  G4double roundy = 0.05*mm; //to avoid the "sharp" 45° angle at the chamfers, as the photons get stuck too often there
+
+
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2.                ,+calorSizeXY/2. - chamferLength - roundy*4) );// start from top left corner
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + roundy ,+calorSizeXY/2.  -chamferLength -roundy              ) );
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + roundy + chamferLength ,+calorSizeXY/2.  - roundy             ) );
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + chamferLength +  roundy*4,+calorSizeXY/2.                ) );
+  //end of first chamfer//
+  //second corner
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2. - chamferLength - roundy*4   ,+calorSizeXY/2.                ) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2. - chamferLength - roundy     ,+calorSizeXY/2.   -roundy             ) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2.  - roundy                    ,+calorSizeXY/2.   -roundy   - chamferLength  ) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2.   ,+calorSizeXY/2.   - chamferLength    - roundy*4    ) );
+
+
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2.                ,-calorSizeXY/2. + chamferLength + roundy *4) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2. -roundy               ,-calorSizeXY/2. + chamferLength + roundy  ) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2. -roundy -chamferLength    ,-calorSizeXY/2. + roundy  ) );
+  octagonFace.push_back( G4TwoVector(+calorSizeXY/2.  -chamferLength - roundy*4    ,-calorSizeXY/2.   ) );
+
+
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + chamferLength + roundy *4. ,-calorSizeXY/2.                ) );
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + chamferLength + roundy  ,-calorSizeXY/2. +roundy                ) );
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + roundy  ,-calorSizeXY/2. +roundy  + chamferLength           ) );
+  octagonFace.push_back( G4TwoVector(-calorSizeXY/2.,-calorSizeXY/2. + chamferLength   + roundy*4          ) );
+ 
+
+
+  /*  octagonFace.push_back( G4TwoVector(-calorSizeXY/2.                ,+calorSizeXY/2. - chamferLength) );// start from top left corner
   octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + chamferLength,+calorSizeXY/2.                ) );
   octagonFace.push_back( G4TwoVector(+calorSizeXY/2. - chamferLength,+calorSizeXY/2.                ) );
   octagonFace.push_back( G4TwoVector(+calorSizeXY/2.                ,+calorSizeXY/2. - chamferLength) );
@@ -665,7 +708,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   octagonFace.push_back( G4TwoVector(+calorSizeXY/2. - chamferLength,-calorSizeXY/2.                ) );
   octagonFace.push_back( G4TwoVector(-calorSizeXY/2. + chamferLength,-calorSizeXY/2.                ) );
   octagonFace.push_back( G4TwoVector(-calorSizeXY/2.                ,-calorSizeXY/2. + chamferLength) );
-
+  */
   
 
   G4VSolid* calorimeterS
@@ -899,7 +942,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // no rotation
                  G4ThreeVector(0., 0., 0.), // its position
                  fibreCoreLV,            // its logical volume                         
-                 "FibreCoreLV",            // its name
+                 "FibreCorePV",            // its name
                  fibreLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
@@ -909,7 +952,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                  0,                // no rotation
                  G4ThreeVector(0., 0., 0.), // its position
                  fibreCladLV,            // its logical volume                         
-                 "FibreClad",            // its name
+                 "FibreCladPV",            // its name
                  fibreLV,          // its mother  volume
                  false,            // no boolean operation
                  0,                // copy number
@@ -921,35 +964,39 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   int greaseCopy=0;
   int borosilCopy=0;
   int cathodeCopy = 0;
+
+  
+
   for( int ix=-1; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
 
       //sin and cos for the rotation
       G4double xPos = ix*(calorSizeXY/2.-0.696);
-      G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos) ;
+      G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos);
 
-     G4VPhysicalVolume* FibrePV =  new G4PVPlacement(
-                     rotation,                // no rotation
-                     G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
-                     fibreLV,            // its logical volume                         
-                     "FibrePV",            // its name
-                     labLV,          // its mother  volume
-                     false,            // no boolean operation
-                     fibreCopy++,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
+
+      G4VPhysicalVolume* FibrePV =  new G4PVPlacement(
+						      rotation,                // no rotation
+						      G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696)) ), // its position
+						      fibreLV,            // its logical volume  
+						      "FibrePV",   // its name
+						      labLV,          // its mother  volume
+						      false,            // no boolean operation
+						      fibreCopy++,      // copy number
+						      fCheckOverlaps);  // checking overlaps 
 
 
     
       G4double yPosGrease = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2. +greaseThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2. +greaseThickness/2.) + xPos*xPos) ;
-    G4VPhysicalVolume* GreasePV =  new G4PVPlacement(
-                     rotation,                // no rotation
-                     G4ThreeVector(xPos,yPosGrease,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2. +greaseThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
-                     greaseLV,            // its logical volume                         
-                     "Grease",            // its name
-                     labLV,          // its mother  volume
-                     false,            // no boolean operation
-                     greaseCopy++,                // copy number
-                     fCheckOverlaps);  // checking overlaps 
+      G4VPhysicalVolume* GreasePV =  new G4PVPlacement(
+						       rotation,                // no rotation
+						       G4ThreeVector(xPos,yPosGrease,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2. + fibreLength/2. +greaseThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696))    ), // its position
+						       greaseLV,            // its logical volume  
+						       "Grease",            // its name
+						       labLV,          // its mother  volume
+						       false,            // no boolean operation
+						       greaseCopy++,                // copy number
+						       fCheckOverlaps);  // checking overlaps 
 
 
       G4double yPosBoroSil = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2.+greaseThickness +borosilThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2.+greaseThickness +borosilThickness/2.) + xPos*xPos) ;
@@ -1075,14 +1122,14 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   //ACTIVE MATERIAL
   const G4int NUM = 2;
   
-  G4double pp[NUM] = {0.9*eV, 5.1*eV};
+  G4double pp[NUM] = {1.5*eV, 5.1*eV};
   //  G4double rindex[NUM] = {1.59, 1.59};
-  G4double reflectivity[NUM] = {0.9, 0.9};
+  G4double reflectivity[NUM] = {0.5, 0.5};
   G4double reflectivity_Fib[NUM] = {0.9, 0.9};
   G4double efficiency[NUM] = {0.9 , 0.9};
   
   G4MaterialPropertiesTable *OpSurfacePropertyCef3 = new G4MaterialPropertiesTable();
-  // OpSurfacePropertyCef3 -> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
+  OpSurfacePropertyCef3 -> AddProperty("REFLECTIVITY",pp,reflectivity,NUM);
   //  OpSurfacePropertyCef3 -> AddProperty("EFFICIENCY",pp,efficiency,NUM);
   
   
