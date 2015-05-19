@@ -22,7 +22,7 @@ then toggle in the configuration and:
 
  set the install dir where you want
  turn on data
- turn on qt
+ turn on qt (you should download qt4 before, with qt5 (last version) some problems)
  turn on opengl
  whatever else you want
 
