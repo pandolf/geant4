@@ -54,6 +54,7 @@ class G4OpAbsorption;
 class G4OpRayleigh;
 class G4OpMieHG;
 class G4OpBoundaryProcess;
+class G4OpWLS;
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -73,6 +74,7 @@ private:
   G4int switchOnCerenkov;
   
   G4Cerenkov * theCerenkovProcess;
+  G4OpWLS * theWLSProcess;
   G4Scintillation * theScintillationProcess;
   G4OpAbsorption * theAbsorptionProcess;
   G4OpRayleigh * theRayleighScatteringProcess;
