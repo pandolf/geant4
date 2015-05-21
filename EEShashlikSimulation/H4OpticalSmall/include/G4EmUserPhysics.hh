@@ -46,6 +46,7 @@
 
 #include "G4VPhysicsConstructor.hh"
 #include "globals.hh"
+#include "G4OpWLS.hh"
 
 
 class G4Cerenkov;
@@ -72,6 +73,7 @@ private:
   G4int switchOnScintillation;
   G4int switchOnCerenkov;
   
+G4OpWLS* theWLSProcess;
   G4Cerenkov * theCerenkovProcess;
   G4Scintillation * theScintillationProcess;
   G4OpAbsorption * theAbsorptionProcess;

@@ -149,11 +149,15 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   G4int eventID = event->GetEventID();
   G4int printModulo = G4RunManager::GetRunManager()->GetPrintProgress();
   if ( ( printModulo > 0 ) && ( eventID % printModulo == 0 ) ) {
+    G4cout << "------------------------------------" << G4endl;     
+    G4cout << "------------------------------------" << G4endl;     
     G4cout << "---> End of event: " << eventID << G4endl;     
 
     PrintEventStatistics(
       absHit->GetEdep(), absHit->GetTrackLength(),
       actHit->GetEdep(), actHit->GetTrackLength());
+    G4cout << "------------------------------------" << G4endl;     
+ 
   }  
   
   // Fill histograms, ntuple
@@ -195,6 +199,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
    analysisManager->FillNtupleDColumn(90, fibre1  );
    analysisManager->FillNtupleDColumn(91, fibre2  );
    analysisManager->FillNtupleDColumn(92, fibre3  );
+
+   fibre0 = 0;   fibre1 = 0;   fibre2 = 0;   fibre3 = 0;
    //  std::cout << "xPos = " << xBeamPos << std::endl;
    //   std::cout << "yPos = " << yBeamPos << std::endl;
   
