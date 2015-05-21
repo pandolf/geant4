@@ -54,14 +54,14 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   G4String thePostPVName = "" ; 
   if ( thePostPV ) thePostPVName = thePostPV -> GetName () ;
 
+
   G4int nStep = theTrack -> GetCurrentStepNumber();
 
-
   G4TouchableHandle theTouchable = thePrePoint->GetTouchableHandle();
+
   G4int copyNo = theTouchable->GetCopyNumber();
-  G4int motherCopyNo = theTouchable->GetCopyNumber(1);
-
-
+  G4int motherCopyNo=1;
+  //  G4int motherCopyNo = theTouchable->GetCopyNumber(1);
 
   //-------------
   // get position

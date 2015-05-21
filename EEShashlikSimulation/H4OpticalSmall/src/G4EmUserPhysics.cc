@@ -52,6 +52,7 @@
 #include "G4SystemOfUnits.hh"
 
 #include "G4Cerenkov.hh"
+#include "G4OpWLS.hh"
 #include "G4Scintillation.hh"
 #include "G4OpAbsorption.hh"
 #include "G4OpRayleigh.hh"
