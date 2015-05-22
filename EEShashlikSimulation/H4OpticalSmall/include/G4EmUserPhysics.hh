@@ -74,7 +74,6 @@ private:
   G4int switchOnScintillation;
   G4int switchOnCerenkov;
   
-G4OpWLS* theWLSProcess;
   G4Cerenkov * theCerenkovProcess;
   G4OpWLS * theWLSProcess;
   G4Scintillation * theScintillationProcess;

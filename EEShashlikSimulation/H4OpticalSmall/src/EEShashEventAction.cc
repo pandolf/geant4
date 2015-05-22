@@ -233,18 +233,6 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
    //  std::cout << "beam pos y = " << yBeamPos << std::endl;
    analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
 
-<<<<<<< HEAD
-=======
-   analysisManager->FillNtupleDColumn(89, fibre0  );
-   analysisManager->FillNtupleDColumn(90, fibre1  );
-   analysisManager->FillNtupleDColumn(91, fibre2  );
-   analysisManager->FillNtupleDColumn(92, fibre3  );
-
-   fibre0 = 0;   fibre1 = 0;   fibre2 = 0;   fibre3 = 0;
-   //  std::cout << "xPos = " << xBeamPos << std::endl;
-   //   std::cout << "yPos = " << yBeamPos << std::endl;
->>>>>>> c6504a883912b5d7b8669fe150a60da4b59d6cee
-  
    
   //int nBGO = bgoHC->entries()-1; // the last hit is the total energy
 //   int nBGO = 24; // the last hit is the total energy
