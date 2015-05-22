@@ -498,7 +498,7 @@ void EEShashDetectorConstruction::DefineMaterials()
  // mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI)->SetSpline(true);
  //mptCeF->AddProperty ("ABSLENGTH", PhotonEnergy_ABS, Absorption, nEntries_ABS);
  
- mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 1000./MeV);
+ mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 100./MeV);//this should be 1000./MeV
  mptCeF->AddConstProperty ("RESOLUTIONSCALE", 1);
  // mptCeF->AddConstProperty ("RESOLUTIONSCALE", 2.58);
  mptCeF->AddConstProperty ("FASTTIMECONSTANT", 32.5 *ns);
@@ -521,7 +521,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 
   // Shashlik:
   //fNofLayers = 10;
-  fNofLayers = 15;
+  fNofLayers = 1;
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 24.*mm;
@@ -965,7 +965,6 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   int borosilCopy=0;
   int cathodeCopy = 0;
 
-  
 
   for( int ix=-1; ix<=1; ix+=2 ) {
     for( int iy=-1; iy<=1; iy+=2 ) {
@@ -982,9 +981,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 						      "FibrePV",   // its name
 						      labLV,          // its mother  volume
 						      false,            // no boolean operation
-						      fibreCopy++,      // copy number
+						      fibreCopy,      // copy number
 						      fCheckOverlaps);  // checking overlaps 
-
 
     
       G4double yPosGrease = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.+ fibreLength/2. +greaseThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2+ fibreLength/2. +greaseThickness/2.) + xPos*xPos) ;
@@ -995,7 +993,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
 						       "Grease",            // its name
 						       labLV,          // its mother  volume
 						       false,            // no boolean operation
-						       greaseCopy++,                // copy number
+						       greaseCopy,                // copy number
 						       fCheckOverlaps);  // checking overlaps 
 
 
@@ -1007,7 +1005,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      "BoroSil",            // its name
                      labLV,          // its mother  volume
                      false,            // no boolean operation
-                     borosilCopy++,                // copy number
+                     borosilCopy,                // copy number
                      fCheckOverlaps);  // checking overlaps 
 
 
@@ -1019,8 +1017,15 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
                      "Cathode",            // its name
                      labLV,          // its mother  volume
                      false,            // no boolean operation
-                     cathodeCopy++,                // copy number
+                     cathodeCopy,                // copy number
                      fCheckOverlaps);  // checking overlaps 
+
+      fibreCopy++;
+      greaseCopy++;
+      borosilCopy++;
+      cathodeCopy++;
+  
+
 
     }
   }

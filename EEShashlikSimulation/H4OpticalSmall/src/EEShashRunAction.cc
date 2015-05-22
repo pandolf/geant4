@@ -36,6 +36,10 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
+#define nLayers 1
+#define nBGOs 24
+#define nFibers 4
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EEShashRunAction::EEShashRunAction( )
@@ -81,22 +85,27 @@ EEShashRunAction::EEShashRunAction( )
 
   analysisManager->CreateNtupleIColumn("nLayers");
   // didnt find an easier way to do this
-  for( unsigned i=0; i<31; ++i )
+  for( unsigned i=0; i<nLayers; ++i )
     analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
 
 
-  analysisManager->CreateNtupleIColumn("nBGO");
-  for( unsigned i=0; i<50; ++i )
+  analysisManager->CreateNtupleIColumn("nBGOs");
+  for( unsigned i=0; i<nBGOs; ++i ){
     analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
+  }
+  analysisManager->CreateNtupleIColumn("nFiber");
+  for( unsigned i=0; i<nFibers; ++i )
+    analysisManager->CreateNtupleDColumn(Form("EFiber_%d", i));
+
+  analysisManager->CreateNtupleDColumn("Fibre0");
+  analysisManager->CreateNtupleDColumn("Fibre1");
+  analysisManager->CreateNtupleDColumn("Fibre2");
+  analysisManager->CreateNtupleDColumn("Fibre3");
 
 
   analysisManager->CreateNtupleDColumn("xPosition");
   analysisManager->CreateNtupleDColumn("yPosition");
  
-  analysisManager->CreateNtupleDColumn("Fibre0");
-  analysisManager->CreateNtupleDColumn("Fibre1");
-  analysisManager->CreateNtupleDColumn("Fibre2");
-  analysisManager->CreateNtupleDColumn("Fibre3");
   
   
   analysisManager->FinishNtuple();

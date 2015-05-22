@@ -58,7 +58,8 @@ private:
   EEShashCalorHitsCollection* GetHitsCollection(G4int hcID,
                                             const G4Event* event) const;
   void PrintEventStatistics(G4double absEdep, G4double absTrackLength,
-                            G4double actEdep, G4double actTrackLength) const;
+                            G4double actEdep, G4double actTrackLength,
+			    G4double bgoEdep, G4double bgoTrackLength) const;
   
   // data members                   
   G4int  fAbsHCID;

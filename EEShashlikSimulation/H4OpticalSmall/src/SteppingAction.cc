@@ -45,24 +45,20 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   //Pre point = first step in a volume
   //PostStep point identifies step out of volume
   G4StepPoint * thePrePoint = theStep->GetPreStepPoint () ;
-  G4StepPoint * thePostPoint = theStep->GetPostStepPoint () ;
+  //  G4StepPoint * thePostPoint = theStep->GetPostStepPoint () ;
   const G4ThreeVector & thePrePosition = thePrePoint->GetPosition () ;
   G4VPhysicalVolume * thePrePV = thePrePoint->GetPhysicalVolume () ;
-  G4VPhysicalVolume * thePostPV = thePostPoint->GetPhysicalVolume () ;
+  //  G4VPhysicalVolume * thePostPV = thePostPoint->GetPhysicalVolume () ;
   G4String thePrePVName = "" ; 
   if ( thePrePV ) thePrePVName = thePrePV -> GetName () ;
-  G4String thePostPVName = "" ; 
-  if ( thePostPV ) thePostPVName = thePostPV -> GetName () ;
+  //  G4String thePostPVName = "" ; 
+  //  if ( thePostPV ) thePostPVName = thePostPV -> GetName () ;
 
-
+  
   G4int nStep = theTrack -> GetCurrentStepNumber();
-
+  
   G4TouchableHandle theTouchable = thePrePoint->GetTouchableHandle();
-
-  G4int copyNo = theTouchable->GetCopyNumber();
-  G4int motherCopyNo=1;
-  //  G4int motherCopyNo = theTouchable->GetCopyNumber(1);
-
+    
   //-------------
   // get position
   G4double global_x = thePrePosition.x()/mm;
@@ -73,6 +69,10 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   // optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
+
+    G4int copyNo = theTouchable->GetCopyNumber();
+    G4int motherCopyNo = theTouchable->GetCopyNumber(1);
+
       //FUCK IT Let's just kill them before they bounce that much...
       if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act"))
 	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
@@ -86,29 +86,51 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	{
 	  // CreateTree::Instance()->tot_phot_sci += 1;
 	  // if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	  fibre0 += 1; 
+	  //  fibre0 += 1; 
 	}
  
 
       //----------------------------
       // count photons at fiber exit
-      if(  thePrePVName.contains("Grease")&& motherCopyNo==1 )	{
+      if(  thePrePVName.contains("Grease")&& copyNo==0 )	{
+	  fibre0 += 1;
+	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	  // if you do not want to kill a photon once it exits the fiber, comment here below
+	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	}
+
+      if(  thePrePVName.contains("Grease")&& copyNo==1 )	{
 	  fibre1 += 1;
 	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	  // if you do not want to kill a photon once it exits the fiber, comment here below
 	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
 
+      if(  thePrePVName.contains("Grease")&& copyNo==2 )	{
+	  fibre2 += 1;
+	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	  // if you do not want to kill a photon once it exits the fiber, comment here below
+	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	}
+
+      if(  thePrePVName.contains("Grease")&& copyNo==3 )	{
+	  fibre3 += 1;
+	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	  // if you do not want to kill a photon once it exits the fiber, comment here below
+	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	}
+
+
 
       if(  thePrePVName.contains("Grease") )
 	{
-	  fibre2 += 1;
+	  //	  fibre2 += 1;
 	}
       //------------------------------
       // count photons at the detector
       if(   thePrePVName.contains("Grease")&& motherCopyNo ==3 )  //same as if with the prePV == Fibre
 	{
-	  fibre3 += 1;
+	  //	  fibre3 += 1;
 	  // if you do not want to kill a photon once it enters the detector, comment here below
 	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
