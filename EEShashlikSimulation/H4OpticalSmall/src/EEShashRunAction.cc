@@ -75,7 +75,8 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("Eabs");
   analysisManager->CreateNtupleDColumn("Eact");
   analysisManager->CreateNtupleDColumn("Ebgo");
-  analysisManager->CreateNtupleDColumn("Efibr");
+  analysisManager->CreateNtupleDColumn("EfibrCore");
+  analysisManager->CreateNtupleDColumn("EfibrClad");
   //  analysisManager->CreateNtupleDColumn("Escint1");
   // analysisManager->CreateNtupleDColumn("Ehodo11");
   // analysisManager->CreateNtupleDColumn("Ehodo12");
@@ -102,11 +103,13 @@ EEShashRunAction::EEShashRunAction( )
   analysisManager->CreateNtupleDColumn("Fibre2");
   analysisManager->CreateNtupleDColumn("Fibre3");
 
-
   analysisManager->CreateNtupleDColumn("xPosition");
   analysisManager->CreateNtupleDColumn("yPosition");
  
-  
+  analysisManager->CreateNtupleDColumn("EOpt_0");
+  analysisManager->CreateNtupleDColumn("EOpt_1");
+  analysisManager->CreateNtupleDColumn("EOpt_2");
+  analysisManager->CreateNtupleDColumn("EOpt_3");  
   
   analysisManager->FinishNtuple();
 

@@ -59,13 +59,16 @@ private:
                                             const G4Event* event) const;
   void PrintEventStatistics(G4double absEdep, G4double absTrackLength,
                             G4double actEdep, G4double actTrackLength,
-			    G4double bgoEdep, G4double bgoTrackLength) const;
+			    G4double bgoEdep, G4double bgoTrackLength,
+			    G4double fibrEdepCore, G4double fibrTrackLengthCore,
+			    G4double fibrEdepClad, G4double fibrTrackLengthClad) const;
   
   // data members                   
   G4int  fAbsHCID;
   G4int  fActHCID;
   G4int  fBgoHCID;
-  G4int  fFibrHCID;
+  G4int  fFibrHCIDCore;
+  G4int  fFibrHCIDClad;
   G4int  fScint1HCID;
   G4int  fHodo11HCID;
   G4int  fHodo12HCID;

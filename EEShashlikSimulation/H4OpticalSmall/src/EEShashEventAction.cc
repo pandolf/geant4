@@ -50,7 +50,8 @@ EEShashEventAction::EEShashEventAction()
    fAbsHCID(-1),
    fActHCID(-1),
    fBgoHCID(-1),
-   fFibrHCID(-1)
+   fFibrHCIDCore(-1),
+   fFibrHCIDClad(-1)
 {}
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -83,7 +84,9 @@ EEShashEventAction::GetHitsCollection(G4int hcID,
 void EEShashEventAction::PrintEventStatistics(
                               G4double absEdep, G4double absTrackLength,
                               G4double actEdep, G4double actTrackLength,
-			      G4double bgoEdep, G4double bgoTrackLength) const
+			      G4double bgoEdep, G4double bgoTrackLength,
+			      G4double fibrEdepCore, G4double fibrTrackLengthCore,
+			      G4double fibrEdepClad, G4double fibrTrackLengthClad) const
 {
   // print event statistics
   G4cout
@@ -101,7 +104,18 @@ void EEShashEventAction::PrintEventStatistics(
      << std::setw(7) << G4BestUnit(bgoEdep, "Energy")
      << "       total track length: " 
      << std::setw(7) << G4BestUnit(bgoTrackLength, "Length")
+     << G4endl
+     << "        fibr core: total energy: " 
+     << std::setw(7) << G4BestUnit(fibrEdepCore, "Energy")
+     << "       total track length: " 
+     << std::setw(7) << G4BestUnit(fibrTrackLengthCore, "Length")
+     << G4endl
+     << "        fibr clad: total energy: " 
+     << std::setw(7) << G4BestUnit(fibrEdepClad, "Energy")
+     << "       total track length: " 
+     << std::setw(7) << G4BestUnit(fibrTrackLengthClad, "Length")
      << G4endl;
+
 
 }
 
@@ -122,8 +136,11 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
       = G4SDManager::GetSDMpointer()->GetCollectionID("ActHitsCollection");
     fBgoHCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("BgoHitsCollection");
-    fFibrHCID 
-      = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollection");
+    fFibrHCIDCore 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollectionCore");
+    fFibrHCIDClad 
+      = G4SDManager::GetSDMpointer()->GetCollectionID("FibrHitsCollectionClad");
+
     /*    fScint1HCID 
       = G4SDManager::GetSDMpointer()->GetCollectionID("Scint1HitsCollection");
     fHodo11HCID 
@@ -137,7 +154,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   EEShashCalorHitsCollection* absHC = GetHitsCollection(fAbsHCID, event);
   EEShashCalorHitsCollection* actHC = GetHitsCollection(fActHCID, event);
   EEShashCalorHitsCollection* bgoHC = GetHitsCollection(fBgoHCID, event);
-  EEShashCalorHitsCollection* fibrHC = GetHitsCollection(fFibrHCID, event);
+  EEShashCalorHitsCollection* fibrHCCore = GetHitsCollection(fFibrHCIDCore, event);
+  EEShashCalorHitsCollection* fibrHCClad = GetHitsCollection(fFibrHCIDClad, event);
   // EEShashCalorHitsCollection* scint1HC = GetHitsCollection(fScint1HCID, event);
   // EEShashCalorHitsCollection* hodo11HC = GetHitsCollection(fHodo11HCID, event);
   //  EEShashCalorHitsCollection* hodo12HC = GetHitsCollection(fHodo12HCID, event);
@@ -146,7 +164,8 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   EEShashCalorHit* absHit = (*absHC)[absHC->entries()-1];
   EEShashCalorHit* actHit = (*actHC)[actHC->entries()-1];
   EEShashCalorHit* bgoHit = (*bgoHC)[bgoHC->entries()-1];
-  EEShashCalorHit* fibrHit = (*fibrHC)[fibrHC->entries()-1];
+  EEShashCalorHit* fibrHitCore = (*fibrHCCore)[fibrHCCore->entries()-1];
+  EEShashCalorHit* fibrHitClad = (*fibrHCClad)[fibrHCClad->entries()-1];
   // EEShashCalorHit* scint1Hit = (*scint1HC)[scint1HC->entries()-1];
   // EEShashCalorHit* hodo11Hit = (*hodo11HC)[hodo11HC->entries()-1];
   // EEShashCalorHit* hodo12Hit = (*hodo12HC)[hodo11HC->entries()-1];
@@ -163,7 +182,9 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
     PrintEventStatistics(
       absHit->GetEdep(), absHit->GetTrackLength(),
       actHit->GetEdep(), actHit->GetTrackLength(),
-      bgoHit->GetEdep(), bgoHit->GetTrackLength());
+      bgoHit->GetEdep(), bgoHit->GetTrackLength(),
+      fibrHitCore->GetEdep(), fibrHitCore->GetTrackLength(),
+      fibrHitClad->GetEdep(), fibrHitClad->GetTrackLength());
     G4cout << "------------------------------------" << G4endl;     
  
   }  
@@ -183,15 +204,21 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // fill ntuple
   int placeHolder=0;
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
+  std::cout<<"abs pl:"<<placeHolder<<" "<<absHit->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
+  std::cout<<"act pl:"<<placeHolder<<" "<<actHit->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
-  analysisManager->FillNtupleDColumn(3, fibrHit->GetEdep());
+  std::cout<<"bgo pl:"<<placeHolder<<" "<<bgoHit->GetEdep()<<std::endl;
+  analysisManager->FillNtupleDColumn(3, fibrHitCore->GetEdep());
+  std::cout<<"fibrcore pl:"<<placeHolder<<" "<<fibrHitCore->GetEdep()<<std::endl;
+  analysisManager->FillNtupleDColumn(4, fibrHitClad->GetEdep());  
+  std::cout<<"fibrclad pl:"<<placeHolder<<" "<<fibrHitClad->GetEdep()<<std::endl;
   // analysisManager->FillNtupleDColumn(4, scint1Hit->GetEdep());
   // analysisManager->FillNtupleDColumn(5, hodo11Hit->GetEdep());
   // analysisManager->FillNtupleDColumn(6, hodo12Hit->GetEdep());
   //analysisManager->FillNtupleDColumn(2, absHit->GetTrackLength());
   //analysisManager->FillNtupleDColumn(3, actHit->GetTrackLength());
-  placeHolder=4;  
+  placeHolder=5;  
 
   int nLayers = actHC->entries()-1; // the last hit is the total energy
   analysisManager->FillNtupleIColumn(placeHolder, nLayers);
@@ -211,28 +238,32 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   }
   placeHolder=placeHolder+nBGOs;
 
-  int nfibrs = fibrHC->entries()-1; // the last hit is the total energy
+  int nfibrs = fibrHCCore->entries()-1; // the last hit is the total energy
   analysisManager->FillNtupleIColumn(placeHolder, nfibrs);
   placeHolder++;
   for( unsigned i=0; i<nfibrs; ++i ) {
-    EEShashCalorHit* fibrHit_i = (*fibrHC)[i];
-    analysisManager->FillNtupleDColumn(placeHolder+i, fibrHit_i->GetEdep());
+    EEShashCalorHit* fibrHitCore_i = (*fibrHCCore)[i];
+    analysisManager->FillNtupleDColumn(placeHolder+i, fibrHitCore_i->GetEdep());
   }
   placeHolder=placeHolder+nfibrs;
-
-   analysisManager->FillNtupleDColumn(placeHolder++, fibre0  );
-   analysisManager->FillNtupleDColumn(placeHolder++, fibre1  );
-   analysisManager->FillNtupleDColumn(placeHolder++, fibre2  );
-   analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
-
+  
+  analysisManager->FillNtupleDColumn(placeHolder++, fibre0  );
+  analysisManager->FillNtupleDColumn(placeHolder++, fibre1  );
+  analysisManager->FillNtupleDColumn(placeHolder++, fibre2  );
+  analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
+   
 
    //    std::cout << "beam pos x = " << xBeamPos << std::endl;
-   analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
-   //    std::cout << "beam pos y = " << yBeamPos << std::endl;
-   analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
+  analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
+  //    std::cout << "beam pos y = " << yBeamPos << std::endl;
+  analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
 
-   
-  
+  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_0  );
+  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_1  );
+  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_2  );
+  analysisManager->FillNtupleDColumn(placeHolder++, EOpt_3  );
+
+
 
   analysisManager->AddNtupleRow();  
 

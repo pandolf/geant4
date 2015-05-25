@@ -45,6 +45,16 @@
 
 G4double xBeamPos;
 G4double yBeamPos;
+G4double fibre0;
+G4double fibre1;
+G4double fibre2;
+G4double fibre3;
+G4double EOpt_0;
+G4double EOpt_1;
+G4double EOpt_2;
+G4double EOpt_3;
+
+
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 EEShashPrimaryGeneratorAction::EEShashPrimaryGeneratorAction()
@@ -120,6 +130,14 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   //G4double yBeam = 0.;
   //G4double xBeam = 12.-0.696; // centered on a fibre
   //G4double yBeam = 12.-0.696;
+  fibre0=0;
+  fibre1=0;
+  fibre2=0;
+  fibre3=0;
+  EOpt_0=0;
+  EOpt_1=0;
+  EOpt_2=0;
+  EOpt_3=0;
   
   // Set gun position
   fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.587*m));

@@ -4,10 +4,10 @@
 using namespace std;
 using namespace CLHEP;
 
-G4double fibre0;
-G4double fibre1;
-G4double fibre2;
-G4double fibre3;
+//G4double fibre0;
+//G4double fibre1;
+//G4double fibre2;
+//G4double fibre3;
 
 int to_int (string name)
 {
@@ -65,20 +65,20 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   G4double global_y = thePrePosition.y()/mm;
   G4double global_z = thePrePosition.z()/mm;
 
-
+  
   // optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
-
-    G4int copyNo = theTouchable->GetCopyNumber();
-    G4int motherCopyNo = theTouchable->GetCopyNumber(1);
-
+      
+      G4int copyNo = theTouchable->GetCopyNumber();
+      G4int motherCopyNo = theTouchable->GetCopyNumber(1);
+      
       //FUCK IT Let's just kill them before they bounce that much...
       if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act"))
 	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 
       G4String processName = theTrack->GetCreatorProcess()->GetProcessName();
-
+      
       //----------------------------
       // count photons at production
       if( ( theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act") ) &&
@@ -88,40 +88,44 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	  // if( !propagateScintillation ) theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	  //  fibre0 += 1; 
 	}
- 
-
+      
+      
       //----------------------------
       // count photons at fiber exit
       if(  thePrePVName.contains("Grease")&& copyNo==0 )	{
-	  fibre0 += 1;
-	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
-
+	EOpt_0+=theTrack->GetTotalEnergy()/eV;
+	fibre0 += 1;
+	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	// if you do not want to kill a photon once it exits the fiber, comment here below
+	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      }
+      
       if(  thePrePVName.contains("Grease")&& copyNo==1 )	{
-	  fibre1 += 1;
-	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
-
+	EOpt_1+=theTrack->GetTotalEnergy()/eV;
+	fibre1 += 1;
+	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	// if you do not want to kill a photon once it exits the fiber, comment here below
+	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      }
+      
       if(  thePrePVName.contains("Grease")&& copyNo==2 )	{
-	  fibre2 += 1;
-	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
+	EOpt_2+=theTrack->GetTotalEnergy()/eV;
+	fibre2 += 1;
+	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	// if you do not want to kill a photon once it exits the fiber, comment here below
+	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      }
 
       if(  thePrePVName.contains("Grease")&& copyNo==3 )	{
-	  fibre3 += 1;
-	  //	  CreateTree::Instance()->tot_gap_phot_sci += 1;
-	  // if you do not want to kill a photon once it exits the fiber, comment here below
-	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
-	}
-
-
-
+	EOpt_3+=theTrack->GetTotalEnergy()/eV;
+	fibre3 += 1;
+	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
+	// if you do not want to kill a photon once it exits the fiber, comment here below
+	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      }
+      
+      
+      
       if(  thePrePVName.contains("Grease") )
 	{
 	  //	  fibre2 += 1;
@@ -134,8 +138,8 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 	  // if you do not want to kill a photon once it enters the detector, comment here below
 	  //  theTrack->SetTrackStatus(fKillTrackAndSecondaries);
 	}
-
-
+      
+      
       /*
 	if( (theTrack->GetLogicalVolumeAtVertex()->GetName().contains("core")) && (nStep == 1) )
 	{
@@ -170,6 +174,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   // non optical photon
   else
     {
+
       /*
       //G4cout << ">>> begin non optical photon" << G4endl;
       G4double energy = theStep->GetTotalEnergyDeposit() - theStep->GetNonIonizingEnergyDeposit();

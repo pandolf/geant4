@@ -934,7 +934,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
     = new G4LogicalVolume(
                  fibreCladS,             // its solid
                  fibreCladMaterial,      // its material
-                 "FibreClad");         // its name
+                 "FibreCladLV");         // its name
 
 
   // place core and clad inside the fibre volume
@@ -1604,9 +1604,14 @@ void EEShashDetectorConstruction::ConstructSDandField()
   SetSensitiveDetector("BGOLV",bgoSD);
 
   // then the fibres
-  EEShashCalorimeterSD* fibrSD 
-    = new EEShashCalorimeterSD("FibrSD", "FibrHitsCollection", 4,1);
-  SetSensitiveDetector("FibreCoreLV",fibrSD);
+  EEShashCalorimeterSD* fibrSDCore 
+    = new EEShashCalorimeterSD("FibrSDCore", "FibrHitsCollectionCore", 4,1);
+  SetSensitiveDetector("FibreCoreLV",fibrSDCore);
+
+  EEShashCalorimeterSD* fibrSDClad 
+    = new EEShashCalorimeterSD("FibrSDClad", "FibrHitsCollectionClad", 4,1);
+  SetSensitiveDetector("FibreCladLV",fibrSDClad);
+
 
   /*
   // and  POMMMELS:
