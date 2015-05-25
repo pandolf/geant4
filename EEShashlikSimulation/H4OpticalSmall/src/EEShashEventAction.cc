@@ -220,27 +220,18 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   }
   placeHolder=placeHolder+nfibrs;
 
-   analysisManager->FillNtupleDColumn(placeHolder, fibre0  );
+   analysisManager->FillNtupleDColumn(placeHolder++, fibre0  );
    analysisManager->FillNtupleDColumn(placeHolder++, fibre1  );
    analysisManager->FillNtupleDColumn(placeHolder++, fibre2  );
    analysisManager->FillNtupleDColumn(placeHolder++, fibre3  );
-   //  std::cout << "xPos = " << xBeamPos << std::endl;
-   //   std::cout << "yPos = " << yBeamPos << std::endl;
 
 
-  //  std::cout << "beam pos x = " << xBeamPos << std::endl;
+   //    std::cout << "beam pos x = " << xBeamPos << std::endl;
    analysisManager->FillNtupleDColumn(placeHolder++, xBeamPos  );
-   //  std::cout << "beam pos y = " << yBeamPos << std::endl;
+   //    std::cout << "beam pos y = " << yBeamPos << std::endl;
    analysisManager->FillNtupleDColumn(placeHolder++, yBeamPos  );
 
    
-  //int nBGO = bgoHC->entries()-1; // the last hit is the total energy
-//   int nBGO = 24; // the last hit is the total energy
-//   analysisManager->FillNtupleIColumn(40, nBGO);
-//   for( unsigned i=0; i<nBGO; ++i ) {
-//     EEShashCalorHit* bgoHit_i = (*bgoHC)[i];
-//     analysisManager->FillNtupleDColumn(41+i, bgoHit_i->GetEdep());
-//   }
   
 
   analysisManager->AddNtupleRow();  

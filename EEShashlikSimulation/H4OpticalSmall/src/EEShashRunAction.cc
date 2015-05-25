@@ -85,15 +85,15 @@ EEShashRunAction::EEShashRunAction( )
 
   analysisManager->CreateNtupleIColumn("nLayers");
   // didnt find an easier way to do this
-  for( unsigned i=0; i<nLayers; ++i )
+  for( unsigned i=0; i<nLayers; ++i ){
     analysisManager->CreateNtupleDColumn(Form("Eact_%d", i));
-
+  }
 
   analysisManager->CreateNtupleIColumn("nBGOs");
   for( unsigned i=0; i<nBGOs; ++i ){
     analysisManager->CreateNtupleDColumn(Form("Ebgo_%d", i));
   }
-  analysisManager->CreateNtupleIColumn("nFiber");
+  analysisManager->CreateNtupleIColumn("nFibers");
   for( unsigned i=0; i<nFibers; ++i )
     analysisManager->CreateNtupleDColumn(Form("EFiber_%d", i));
 
