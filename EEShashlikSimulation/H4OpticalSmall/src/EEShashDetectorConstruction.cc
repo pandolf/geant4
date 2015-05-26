@@ -333,11 +333,12 @@ void EEShashDetectorConstruction::DefineMaterials()
   //  mptPolystyrene->AddConstProperty("RESOLUTIONSCALE",1.0);
   mptPolystyrene->AddProperty("WLSCOMPONENT",photonEnergy_emis,emissionPS,nEntries_emis);
   mptPolystyrene->AddConstProperty("WLSTIMECONSTANT", 7.0*ns);
-  
+
+
   polystyrene->SetMaterialPropertiesTable(mptPolystyrene);
  
   // Set the Birks Constant for the Polystyrene scintillator
-  // polystyrene->GetIonisation()->SetBirksConstant(0.126*mm/MeV);
+    polystyrene->GetIonisation()->SetBirksConstant(0.126*mm/MeV);  
 
 
   //PMMA
@@ -498,7 +499,7 @@ void EEShashDetectorConstruction::DefineMaterials()
  // mptCeF->AddProperty ("RINDEX", PhotonEnergy_RI, refractiveIndex_CeF3, nEntries_RI)->SetSpline(true);
  //mptCeF->AddProperty ("ABSLENGTH", PhotonEnergy_ABS, Absorption, nEntries_ABS);
  
- mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 100./MeV);//this should be 1000./MeV
+ mptCeF->AddConstProperty ("SCINTILLATIONYIELD", 1000./MeV);//this should be 1000./MeV
  mptCeF->AddConstProperty ("RESOLUTIONSCALE", 1);
  // mptCeF->AddConstProperty ("RESOLUTIONSCALE", 2.58);
  mptCeF->AddConstProperty ("FASTTIMECONSTANT", 32.5 *ns);
@@ -520,8 +521,8 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   // Geometry parameters
 
   // Shashlik:
-  //fNofLayers = 10;
-  fNofLayers = 1;
+  //fNofLayers = 10; //frascati
+  fNofLayers = 15; //h4
   G4double absThickness = 3.1*mm;
   G4double actThickness = 10.*mm;
   G4double calorSizeXY  = 24.*mm;
@@ -974,10 +975,31 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
       G4double yPos = iy*(calorSizeXY/2.-0.696) + sin(fRotation*3.14159265359/180.)*sqrt(((fibreLength-calorThickness)/2.+calorThickness/2.)*((fibreLength-calorThickness)/2.+calorThickness/2) + xPos*xPos);
 
 
-      G4VPhysicalVolume* FibrePV =  new G4PVPlacement(
+//      G4VPhysicalVolume* FibrePV =  new G4PVPlacement(
+//						      rotation,                // no rotation
+//						      G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696)) ), // its position
+//						      fibreLV,            // its logical volume  
+//						      "FibrePV",   // its name
+//						      labLV,          // its mother  volume
+//						      false,            // no boolean operation
+//						      fibreCopy,      // copy number
+//						      fCheckOverlaps);  // checking overlaps 
+      G4VPhysicalVolume* FibreCorePV =  new G4PVPlacement(
 						      rotation,                // no rotation
 						      G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696)) ), // its position
-						      fibreLV,            // its logical volume  
+						      fibreCoreLV,            // its logical volume  
+						      "FibreCorePV",   // its name
+						      labLV,          // its mother  volume
+						      false,            // no boolean operation
+						      fibreCopy,      // copy number
+						      fCheckOverlaps);  // checking overlaps 
+
+
+
+      G4VPhysicalVolume* FibreCladPV =  new G4PVPlacement(
+						      rotation,                // no rotation
+						      G4ThreeVector(xPos,yPos,  cos(-fRotation*3.14159265359/180.)*((fibreLength-calorThickness)/2.+calorThickness/2.)  - sin(fRotation*3.14159265359/180.)*(iy*(calorSizeXY/2.-0.696)) ), // its position
+						      fibreCladLV,            // its logical volume  
 						      "FibrePV",   // its name
 						      labLV,          // its mother  volume
 						      false,            // no boolean operation
@@ -1179,19 +1201,32 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4OpticalSurface* OpSurfaceFibre = new G4OpticalSurface("OpSurfaceFibre");
   
   OpSurfaceFibre -> SetType(dielectric_metal);
-  OpSurfaceFibre -> SetFinish(polished);
+  //EMA  OpSurfaceFibre -> SetFinish(polished);
+   OpSurfaceFibre -> SetFinish(ground);
   OpSurfaceFibre -> SetModel(glisur);
-  OpSurfaceFibre -> SetPolish(1.0);
-  
+  //EMA  OpSurfaceFibre -> SetPolish(1.0);
+      OpSurfaceFibre -> SetPolish(0.99);
+
   // G4OpticalSurface* OpSurfaceFibre = new G4OpticalSurface("OpSurfaceFibre", glisur, polished, dielectric_metal);
   
-  OpSurfaceFibre -> SetMaterialPropertiesTable(fibre_surf_mt);
+  //  OpSurfaceFibre -> SetMaterialPropertiesTable(fibre_surf_mt);
   
   
-  G4LogicalSkinSurface* SurfaceFibre = new G4LogicalSkinSurface("OpSurfaceFibre", fibreLV, OpSurfaceFibre);
+  //EMA  G4LogicalSkinSurface* SurfaceFibre = new G4LogicalSkinSurface("OpSurfaceFibre", fibreLV, OpSurfaceFibre);
+
+  //it is better not to use G4LogicalSkinSurface since it assigns properties to all the borders of the volume!
+  G4LogicalBorderSurface* surfaceCoreClad_in = new G4LogicalBorderSurface("fib_CoreClad_in",FibreCladPV,FibreCorePV,OpSurfaceFibre);
+  G4LogicalBorderSurface* surfaceCoreClad_out = new G4LogicalBorderSurface("fib_CoreClad_out",FibreCorePV,FibreCladPV,OpSurfaceFibre);
+
+  G4OpticalSurface* optical_surface_fib = new G4OpticalSurface("fib_surface");
+  optical_surface_fib->SetType(dielectric_dielectric);
+  optical_surface_fib->SetModel(unified);
+  optical_surface_fib->SetFinish(etchedair);
+
+
+  G4LogicalBorderSurface* FibreAir_in = new G4LogicalBorderSurface("FibreAir", FibreCladPV , labPV,  optical_surface_fib);    
+  G4LogicalBorderSurface* FibreAir_out = new G4LogicalBorderSurface("FibreAir",  labPV, FibreCladPV ,  optical_surface_fib);    
  
- 
-  
       /*
       G4double ephoton[] = {7.0*eV, 7.14*eV};
       const G4int num = sizeof(ephoton)/sizeof(G4double);
@@ -1470,7 +1505,7 @@ G4VPhysicalVolume* EEShashDetectorConstruction::DefineVolumes()
   G4VisAttributes* magentaBox= new G4VisAttributes(G4Colour(255,0,0));
   magentaBox->SetForceSolid(true);
   fibreCoreLV->SetVisAttributes(magentaBox);
-  fibreCladLV->SetVisAttributes(magentaBox);
+  fibreCladLV->SetVisAttributes(cyanBox);
 
   G4VisAttributes* pomBox= new G4VisAttributes(G4Colour(0,0,255));
   //  pomBox->SetForceSolid(true);

@@ -1,5 +1,7 @@
 #include "SteppingAction.hh"
 #include "common.h"
+#include "G4TransportationManager.hh"
+#include "G4PropagatorInField.hh"
 
 using namespace std;
 using namespace CLHEP;
@@ -56,7 +58,6 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
 
   
   G4int nStep = theTrack -> GetCurrentStepNumber();
-  
   G4TouchableHandle theTouchable = thePrePoint->GetTouchableHandle();
     
   //-------------
@@ -65,7 +66,15 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   G4double global_y = thePrePosition.y()/mm;
   G4double global_z = thePrePosition.z()/mm;
 
+  G4TransportationManager* transportMgr ; 
+  transportMgr = G4TransportationManager::GetTransportationManager() ;
+  G4PropagatorInField * fieldPropagator = transportMgr->GetPropagatorInField() ;
+  if(nStep>100000){
+    //       std::cout<<"mortacci nstep"<<nStep<<" particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" position:"<<global_x<<" "<<global_y<<" "<<global_z<<" energy:"<<theTrack->GetTotalEnergy()/eV<<std::endl;
+    theTrack->SetTrackStatus(fStopAndKill);
+  }
   
+
   // optical photon
   if( particleType == G4OpticalPhoton::OpticalPhotonDefinition() )
     {
@@ -74,8 +83,11 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       G4int motherCopyNo = theTouchable->GetCopyNumber(1);
       
       //FUCK IT Let's just kill them before they bounce that much...
-      if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act"))
-	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+      if( nStep>6 && theTrack->GetLogicalVolumeAtVertex()->GetName().contains("Act")){
+	//	theTrack->SetTrackStatus(fKillTrackAndSecondaries);
+	//	std::cout<<"mortacci Act"<<nStep<<" particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" position:"<<global_x<<" "<<global_y<<" "<<global_z<<" energy:"<<theTrack->GetTotalEnergy()/eV<<std::endl;
+	theTrack->SetTrackStatus(fStopAndKill);
+      }
 
       G4String processName = theTrack->GetCreatorProcess()->GetProcessName();
       
@@ -95,6 +107,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
       if(  thePrePVName.contains("Grease")&& copyNo==0 )	{
 	EOpt_0+=theTrack->GetTotalEnergy()/eV;
 	fibre0 += 1;
+	//		std::cout<<EOpt_0<<std::endl;
 	//	  CreateTree::Instance()->tot_gap_phot_sci += 1;
 	// if you do not want to kill a photon once it exits the fiber, comment here below
 	//  theTrack->SetTrackStatus(fKillTrackAndSecondaries);

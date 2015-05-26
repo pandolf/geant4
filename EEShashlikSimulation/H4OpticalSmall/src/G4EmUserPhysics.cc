@@ -58,6 +58,7 @@
 #include "G4OpRayleigh.hh"
 #include "G4OpMieHG.hh"
 #include "G4OpBoundaryProcess.hh"
+#include "G4EmSaturation.hh"
 
 //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 G4EmUserPhysics::G4EmUserPhysics(const G4int& scint, const G4int& cher) :
@@ -102,8 +103,8 @@ void G4EmUserPhysics::ConstructProcess()
 
   // Use Birks Correction in the Scintillation process
 
-  //G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
-  //  theScintillationProcess->AddSaturation(emSaturation);
+  G4EmSaturation* emSaturation = G4LossTableManager::Instance()->EmSaturation();
+  theScintillationProcess->AddSaturation(emSaturation);
 
   G4ParticleTable::G4PTblDicIterator* theParticleIterator = G4ParticleTable::GetParticleTable() -> GetIterator();
   theParticleIterator -> reset();

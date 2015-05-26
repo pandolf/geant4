@@ -36,7 +36,7 @@
 #include "G4UnitsTable.hh"
 #include "G4SystemOfUnits.hh"
 
-#define nLayers 1
+#define nLayers 15
 #define nBGOs 24
 #define nFibers 4
 
