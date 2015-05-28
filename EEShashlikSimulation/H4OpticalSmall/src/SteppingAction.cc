@@ -69,7 +69,7 @@ void SteppingAction::UserSteppingAction (const G4Step * theStep)
   G4TransportationManager* transportMgr ; 
   transportMgr = G4TransportationManager::GetTransportationManager() ;
   G4PropagatorInField * fieldPropagator = transportMgr->GetPropagatorInField() ;
-  if(nStep>100000){
+  if(nStep>70000){
     //       std::cout<<"mortacci nstep"<<nStep<<" particle:"<<particleType->GetParticleName()<<" volume:"<<theTrack->GetLogicalVolumeAtVertex()->GetName()<<" id:"<<trackID<<" position:"<<global_x<<" "<<global_y<<" "<<global_z<<" energy:"<<theTrack->GetTotalEnergy()/eV<<std::endl;
     theTrack->SetTrackStatus(fStopAndKill);
   }
