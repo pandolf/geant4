@@ -1635,16 +1635,16 @@ void EEShashDetectorConstruction::ConstructSDandField()
 
   // then the surrounding BGO matrix:
   EEShashCalorimeterSD* bgoSD 
-    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", fNofBGOs,1);
+    = new EEShashCalorimeterSD("BgoSD", "BgoHitsCollection", fNofBGOs,-1);//use -1 if it is constructed with placement and not replica
   SetSensitiveDetector("BGOLV",bgoSD);
 
   // then the fibres
   EEShashCalorimeterSD* fibrSDCore 
-    = new EEShashCalorimeterSD("FibrSDCore", "FibrHitsCollectionCore", 4,1);
+    = new EEShashCalorimeterSD("FibrSDCore", "FibrHitsCollectionCore", 4,-1);
   SetSensitiveDetector("FibreCoreLV",fibrSDCore);
 
   EEShashCalorimeterSD* fibrSDClad 
-    = new EEShashCalorimeterSD("FibrSDClad", "FibrHitsCollectionClad", 4,1);
+    = new EEShashCalorimeterSD("FibrSDClad", "FibrHitsCollectionClad", 4,-1);
   SetSensitiveDetector("FibreCladLV",fibrSDClad);
 
 

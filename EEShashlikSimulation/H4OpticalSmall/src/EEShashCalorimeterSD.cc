@@ -97,7 +97,9 @@ G4bool EEShashCalorimeterSD::ProcessHits(G4Step* step,
     
   // Get calorimeter cell id 
   G4int layerNumber = touchable->GetReplicaNumber(fParent);
-  
+  if(fParent<0)layerNumber=touchable->GetCopyNumber();
+
+
   // Get hit accounting data for this cell
   EEShashCalorHit* hit = (*fHitsCollection)[layerNumber];
   if ( ! hit ) {

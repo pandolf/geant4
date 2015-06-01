@@ -204,15 +204,10 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   // fill ntuple
   int placeHolder=0;
   analysisManager->FillNtupleDColumn(0, absHit->GetEdep());
-  std::cout<<"abs pl:"<<placeHolder<<" "<<absHit->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(1, actHit->GetEdep());
-  std::cout<<"act pl:"<<placeHolder<<" "<<actHit->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(2, bgoHit->GetEdep());
-  std::cout<<"bgo pl:"<<placeHolder<<" "<<bgoHit->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(3, fibrHitCore->GetEdep());
-  std::cout<<"fibrcore pl:"<<placeHolder<<" "<<fibrHitCore->GetEdep()<<std::endl;
   analysisManager->FillNtupleDColumn(4, fibrHitClad->GetEdep());  
-  std::cout<<"fibrclad pl:"<<placeHolder<<" "<<fibrHitClad->GetEdep()<<std::endl;
   // analysisManager->FillNtupleDColumn(4, scint1Hit->GetEdep());
   // analysisManager->FillNtupleDColumn(5, hodo11Hit->GetEdep());
   // analysisManager->FillNtupleDColumn(6, hodo12Hit->GetEdep());
@@ -262,8 +257,6 @@ void EEShashEventAction::EndOfEventAction(const G4Event* event)
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_1  );
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_2  );
   analysisManager->FillNtupleDColumn(placeHolder++, EOpt_3  );
-
-
 
   analysisManager->AddNtupleRow();  
 

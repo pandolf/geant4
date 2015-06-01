@@ -122,15 +122,18 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // float y = rand_->Gaus( 0., 0.3 );
   //float x = rand_->Uniform( 0., 30.0 );
   //float y = rand_->Uniform( 0., 30.0 );
-  G4double xBeam = (G4UniformRand()-0.5) * (12.) *mm;
-  G4double yBeam = (G4UniformRand()-0.5) * (12.) *mm;
-  G4cout<<"xBeam:"<<xBeam<<" yBeam:"<<yBeam<<G4endl;
+  G4double xBeam = (G4UniformRand()-0.5) * (15.) *mm;
+  G4double yBeam = (G4UniformRand()-0.5) * (15.) *mm;
+
   //  G4double xBeam = x*mm;
   //G4double yBeam = y*mm;
   //  G4double xBeam = 0.;  // 0,0 with no smearing (well, there's still air scattering)
   //  G4double yBeam = 0.;
-  //G4double xBeam = 12.-0.696; // centered on a fibre
-  //G4double yBeam = 12.-0.696;
+  //      G4double xBeam = 12.-0.696; // centered on a fibre
+  //     G4double yBeam = 12.-0.696;
+  //   G4double xBeam = -12.+0.696; // centered on a fibre
+  //   G4double yBeam = -12.+0.696; // centered on a fibre
+  G4cout<<"xBeam:"<<xBeam<<" yBeam:"<<yBeam<<G4endl;
   fibre0=0;
   fibre1=0;
   fibre2=0;
@@ -143,6 +146,8 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // Set gun position
   fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.587*m));
 
+  //  fParticleGun->SetParticlePosition(G4ThreeVector(0*mm,50*cm, 7*12*mm)); //starting to simulate one muon from cosmics
+  //    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,-1,0));
   fParticleGun->GeneratePrimaryVertex(anEvent);
 
   xBeamPos = xBeam;
