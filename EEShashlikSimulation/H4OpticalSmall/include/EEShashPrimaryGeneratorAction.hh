@@ -34,6 +34,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "globals.hh"
 #include "TRandom3.h"
+#include <CLHEP/Random/RandGeneral.h>
 
 class G4ParticleGun;
 class G4Event;
@@ -55,6 +56,9 @@ public:
   
   // set methods
   void SetRandomFlag(G4bool value);
+
+  double cosmicRayMuonAngle();
+  double cosmicRayMuonMomentum();
 
 private:
   G4ParticleGun*  fParticleGun; // G4 particle gun
