@@ -148,6 +148,7 @@ void EEShashRunAction::BeginOfRunAction(const G4Run* /*run*/)
   // Open an output file
   //
   G4String fileName = "EEShash";
+  //  G4String fileName = "EEShash_cosmics";
   analysisManager->OpenFile(fileName);
 
   //hitsTree_->Branch( "nLayers", &nLayers_, "nLayers/I" );

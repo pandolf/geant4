@@ -146,12 +146,12 @@ void EEShashPrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
   // Set gun position
   fParticleGun->SetParticlePosition(G4ThreeVector(xBeam, yBeam, -1.587*m));
 
+
   //for cosmics
 //  G4double xPos=(G4UniformRand()-0.5) * (15.) *mm;
 //  G4double yPos=10 *cm;
 //  G4double zPos=(G4UniformRand()) * (22.) *cm;
-//  //  fParticleGun->SetParticlePosition(G4ThreeVector(0*mm,50*cm, 7*12*mm)); //starting to simulate one muon from cosmics
-//  //    fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,-1,0));
+//
 //  fParticleGun->SetParticlePosition(G4ThreeVector(xPos,yPos,zPos)); //starting to simulate one muon from cosmics
 //  fParticleGun->SetParticleEnergy(cosmicRayMuonMomentum()*MeV);
 //  fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0,-cosmicRayMuonAngle(),0));
